@@ -54,7 +54,9 @@ Route::middleware('auth')->group(function () {
 
 // User Management Routes (For Admin Only)
 Route::middleware('auth')->group(function () {
-    Route::resource('admin/users', UserController::class)->middleware('role:Admin');
+    Route::resource('admin/users', UserController::class)
+        ->names('admin.users')
+        ->middleware('role:Admin');
 });
 
 // Report Routes (For Admin and Integrity Unit)
