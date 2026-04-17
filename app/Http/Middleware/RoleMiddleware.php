@@ -1,55 +1,48 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Middleware;
 
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response;
 
-class AuthController extends Controller
+class RoleMiddleware
 {
-    // Show the login form
-    public function showLogin()
+    /**
+     * Handle an incoming request.
+     */
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        return view('auth.login');
-    }
-
-    // Handle the login logic
-    public function login(Request $request)
-    {
-        // Validate the login form data
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|min:6',
-        ]);
-
-        // Attempt to log the user in
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            // Redirect based on role
-            return redirect()->intended($this->redirectTo());
+        // 1. If not logged in, send to login
+        if (!Auth::check()) {
+            return redirect('/login');
         }
 
-        // If authentication fails, redirect back with an error message
-        return back()->withErrors(['email' => 'Invalid email or password.']);
-    }
+        // ---> DIAGNOSTIC BLOCK: This will freeze the page and print your data <---
+        // dd([
+        //     '1. User Email' => Auth::user()->email,
+        //     '2. Database Role ID' => Auth::user()->role_id,
+        //     '3. Role Relationship Data' => Auth::user()->role,
+        //     '4. Allowed Roles for this page' => $roles,
+        //     '5. Actual User Role Name' => Auth::user()->role?->name,
+        // ]);
+        // ------------------------------------------------------------------------
 
-    // Log out the user
-    public function logout()
-    {
-        Auth::logout();
-        return redirect()->route('login');
-    }
+        // 2. Get the current user's role name safely
+        $userRole = Auth::user()->role?->name;
 
-    // Redirect the user based on their role
-    protected function redirectTo()
-    {
-        if (Auth::user()->role->name == 'admin') {
-            return route('admin.dashboard');
-        } elseif (Auth::user()->role->name == 'hod') {
-            return route('hod.dashboard');
-        } elseif (Auth::user()->role->name == 'integrity') {
-            return route('integrity.dashboard');
+        // 3. Handle the 'Role1|Role2' pipe format from web.php
+        if (count($roles) === 1 && str_contains($roles[0], '|')) {
+            $roles = explode('|', $roles[0]);
         }
-        return route('user.dashboard'); // Default to user dashboard
+
+        // 4. Check if the user's role is inside the allowed roles list
+        if (in_array($userRole, $roles)) {
+            return $next($request); // Allowed! Proceed to the page.
+        }
+
+        // 5. If they don't match, show an Access Denied error
+        abort(403, 'Unauthorized Access. Your role does not have permission to view this page.');
     }
 }
-

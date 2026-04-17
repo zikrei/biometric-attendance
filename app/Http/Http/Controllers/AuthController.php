@@ -25,9 +25,11 @@ class AuthController extends Controller
             ])->onlyInput('email');
         }
 
+        // Protects against session fixation attacks
         $request->session()->regenerate();
 
-        $role = auth()->user()->role->name;
+        // The ?-> safely gets the role. If a user has no role, it returns null instead of crashing!
+        $role = auth()->user()->role?->name;
 
         if ($role === 'Admin') {
             return redirect()->route('admin.dashboard');
@@ -38,9 +40,10 @@ class AuthController extends Controller
         }
 
         if ($role === 'Integrity') {
-            return redirect()->route('integrity.reports.index');
+            return redirect()->route('integrity.dashboard'); 
         }
 
+        // Default fallback for Staff, or users without an assigned role
         return redirect()->route('dashboard');
     }
 
