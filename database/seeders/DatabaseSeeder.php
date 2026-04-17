@@ -2,23 +2,16 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         $this->call([
-            RoleSeeder::class,
-            DepartmentSeeder::class,
-            AdminUserSeeder::class,
+            DepartmentSeeder::class, // 1st: Create Departments
+            RoleSeeder::class,       // 2nd: Create Roles (Admin, HOD, etc.)
+            AdminUserSeeder::class,  // 3rd: Create Users and assign them the roles/departments
         ]);
     }
 }
