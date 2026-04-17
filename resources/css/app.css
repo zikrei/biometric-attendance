@@ -1,11 +1,42 @@
-@import 'tailwindcss';
+@import 'bootstrap/dist/css/bootstrap.min.css';
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+body {
+    background: #f5f7fb;
+    font-size: 14px;
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+.sidebar {
+    min-height: 100vh;
+    background: #1f2937;
+    color: #fff;
+}
+
+.sidebar a {
+    color: #d1d5db;
+    text-decoration: none;
+    display: block;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: #374151;
+    color: #fff;
+}
+
+.topbar {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.card-stat {
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.page-title {
+    font-weight: 700;
 }
