@@ -1,48 +1,51 @@
 @extends('layouts.app')
-
 @section('title', 'User Management')
-@section('page_title', 'User Management')
-@section('page_subtitle', 'Manage user accounts and roles')
-
-@section('sidebar')
-    <a href="#">Dashboard</a>
-    <a href="#" class="active">User Management</a>
-    <a href="#">Departments</a>
-    <a href="#">Audit Logs</a>
-    <a href="#">System Reports</a>
-@endsection
-
 @section('content')
-<div class="card card-stat">
-    <div class="card-body">
-        <div class="d-flex justify-content-between mb-3">
-            <h5 class="mb-0">Users</h5>
-            <a href="#" class="btn btn-dark">+ Add User</a>
-        </div>
 
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Department</th>
-                    <th>Role</th>
-                    <th width="180">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Ahmad</td>
-                    <td>ahmad@email.com</td>
-                    <td>IT</td>
-                    <td>HOD</td>
-                    <td>
-                        <a href="#" class="btn btn-sm btn-outline-primary">Edit</a>
-                        <a href="#" class="btn btn-sm btn-outline-danger">Delete</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>User Management</h2>
+            <p class="text-muted">Manage user accounts and roles</p>
+        </div>
+        <a href="{{ route('admin.users.create') }}" class="btn btn-dark">+ Add User</a>
     </div>
-</div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+            <h5 class="mb-4">Users</h5>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Role</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($users as $user)
+                            <tr>
+                                <td>{{ $user->name }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>{{ $user->department?->name ?? 'N/A' }}</td>
+                                <td>{{ $user->role?->name ?? 'N/A' }}</td>
+                                <td>
+                                    <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-outline-primary me-2">Edit</a>
+                                    
+                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to delete {{ $user->name }}?')">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 @endsection
