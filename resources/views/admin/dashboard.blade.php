@@ -14,7 +14,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <p class="text-muted mb-1">Total Users</p>
-                            <h3 class="mb-0">150</h3>
+                            <h3 class="mb-0">{{ $totalUsers }}</h3>
                         </div>
                         <div class="fs-2 text-primary">
                             <i class="bi bi-person-fill"></i>
@@ -30,7 +30,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <p class="text-muted mb-1">Attendance Issues</p>
-                            <h3 class="mb-0">5</h3>
+                            <h3 class="mb-0">{{ $attendanceIssues }}</h3>
                         </div>
                         <div class="fs-2 text-warning">
                             <i class="bi bi-exclamation-circle-fill"></i>
@@ -40,6 +40,5 @@
             </div>
         </div>
 
-        <!-- Add more widgets specific to Admin here -->
-    </div>
+        </div>
 @endsection
