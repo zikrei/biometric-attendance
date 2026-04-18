@@ -69,14 +69,14 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         // 2. Validate the incoming data
-        // Notice the email rule: it allows the user to keep their current email without triggering the "unique" error!
+    
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:6', // Nullable means it's optional!
             'role_id' => 'required|exists:roles,id',
             'department_id' => 'required|exists:departments,id',
-            'status' => 'nullable|in:active,inactive' // Allow status updates
+            'status' => 'nullable|in:Active,Inactive'
         ]);
 
         // 3. Handle the password securely

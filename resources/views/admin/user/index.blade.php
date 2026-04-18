@@ -52,10 +52,10 @@
                                 
                                 {{-- Status Badges --}}
                                 <td>
-                                    @if($user->status == 'active' || $user->status === null)
-                                        <span class="badge bg-success bg-opacity-10 text-success border border-success">Active</span>
+                                    @if($user->status == 'Active')
+                                        <span class="badge bg-success">Active</span>
                                     @else
-                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger">Inactive</span>
+                                        <span class="badge bg-danger">Inactive</span>
                                     @endif
                                 </td>
                                 

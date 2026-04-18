@@ -72,9 +72,10 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="status" class="form-label fw-bold">Account Status</label>
-                        <select name="status" id="status" class="form-select">
-                            <option value="active" {{ $user->status == 'active' || $user->status == null ? 'selected' : '' }}>Active</option>
-                            <option value="inactive" {{ $user->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        <select name="status" class="form-select">
+                            {{-- Notice the capital 'Active' and 'Inactive' in the == checks! --}}
+                            <option value="Active" {{ $user->status == 'Active' ? 'selected' : '' }}>Active</option>
+                            <option value="Inactive" {{ $user->status == 'Inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
                     </div>
 
