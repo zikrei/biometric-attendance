@@ -3,13 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Attendance; // <-- REQUIRED: Tells the controller where to find the Attendance table!
 
 class AttendanceController extends Controller
 {
     // Show all attendance records
     public function index()
     {
-        return view('attendance.list');
+        // 1. Fetch all attendance records from the database
+        // (Using 'with("user")' ensures it grabs the employee's name too, preventing errors!)
+        $attendances = Attendance::with('user')->get();
+
+        // 2. Pass the $attendances variable to your view
+        return view('attendance.list', compact('attendances'));
     }
 
     // Show form to create new attendance record

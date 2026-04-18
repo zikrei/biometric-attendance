@@ -180,6 +180,13 @@
                     <i class="bi bi-person-circle me-1"></i> {{ Auth::user()?->name ?? 'Guest User' }}
                 </span>
                 
+                {{-- NEW: Profile Button --}}
+                @auth
+                    <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-person-gear me-1"></i> Profile
+                    </a>
+                @endauth
+                
                 <form method="POST" action="{{ route('logout') }}" class="d-inline mb-0">
                     @csrf
                     <button type="submit" class="btn btn-sm btn-outline-danger">
