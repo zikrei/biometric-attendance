@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ApprovalController;
+use App\Http\Controllers\IntegrityController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
@@ -68,10 +69,18 @@ Route::middleware('auth')->group(function () {
         ->name('attendance.update');
 });
 
-// Approval Routes (For HOD Only)
-Route::middleware('auth')->group(function () {
-    Route::post('/hod/approvals/{id}/approve', [ApprovalController::class, 'approve'])->middleware('role:HOD');
-    Route::post('/hod/approvals/{id}/reject', [ApprovalController::class, 'reject'])->middleware('role:HOD');
+// HOD Approval Routes (Approves Staff)
+    Route::middleware(['auth', 'role:HOD'])->group(function () {
+    Route::get('/hod/approvals', [ApprovalController::class, 'index'])->name('hod.approvals');
+    Route::post('/hod/approvals/{id}/approve', [ApprovalController::class, 'approve'])->name('hod.approve');
+    Route::post('/hod/approvals/{id}/reject', [ApprovalController::class, 'reject'])->name('hod.reject');
+});
+
+// Integrity Approval Routes (Approves HODs)
+    Route::middleware(['auth', 'role:Integrity'])->group(function () {
+    Route::get('/integrity/approvals', [IntegrityController::class, 'approvals'])->name('integrity.approvals');
+    Route::post('/integrity/approvals/{id}/approve', [IntegrityController::class, 'approve'])->name('integrity.approve');
+    Route::post('/integrity/approvals/{id}/reject', [IntegrityController::class, 'reject'])->name('integrity.reject');
 });
 
 // User Management Routes (For Admin Only)

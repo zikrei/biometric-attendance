@@ -59,7 +59,7 @@ class DashboardController extends Controller
     }
 
     // Show HOD Dashboard
-    public function hodDashboard()
+public function hodDashboard()
     {
         // 1. Get the currently logged-in HOD
         $user = Auth::user();
@@ -67,22 +67,13 @@ class DashboardController extends Controller
         // 2. Count Pending Approvals for their specific department
         $pendingApprovals = Attendance::where('status', 'Pending')
             ->whereHas('user', function ($query) use ($user) {
-                // Only look at users who share the same department_id as the HOD
-                $query->where('department_id', $user->department_id);
+                $query->where('department_id', $user->department_id)
+                      ->where('id', '!=', $user->id); // Exclude the HOD's own requests
             })
             ->count();
 
-        // 3. Count Staff Attendance for Today (in their department)
-        $today = date('Y-m-d');
-        $staffAttendance = Attendance::whereDate('date', $today)
-            ->whereNotNull('clock_in') // Make sure they actually clocked in
-            ->whereHas('user', function ($query) use ($user) {
-                $query->where('department_id', $user->department_id);
-            })
-            ->count();
-
-        // 4. Send the data to the HOD dashboard view
-        return view('hod.dashboard', compact('user', 'pendingApprovals', 'staffAttendance'));
+        // 3. Send the data to the HOD dashboard view
+        return view('hod.dashboard', compact('user', 'pendingApprovals'));
     }
 
     // Integrity Unit Dashboard
