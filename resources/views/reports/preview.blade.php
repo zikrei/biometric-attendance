@@ -16,7 +16,7 @@
                 <div class="text-center">
                     <h2>Company Name</h2>
                     <h5>Attendance Report</h5>
-                    <p>From: {{ $from_date }} To: {{ $to_date }}</p>
+                    <p class="text-muted fw-bold">Report Month: {{ \Carbon\Carbon::parse($monthInput)->format('F Y') }}</p>
                 </div>
 
                 <table class="table table-bordered mt-4">

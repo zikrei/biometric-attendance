@@ -3,36 +3,55 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Attendance;
 use App\Models\User; // <-- REQUIRED: Tells the controller where to find the users!
 use Barryvdh\DomPDF\Facade\Pdf; // <-- Add this to unlock PDF features!
+use App\Models\Department; // Make sure your Department model is imported!
 
 class ReportController extends Controller
 {
     // Show the report generation page
     public function index()
     {
-        // 1. Fetch all users from the database, sorted alphabetically by name
-        $users = User::orderBy('name')->get();
+        // Fetch all departments and users to populate the dropdowns
+        $departments = Department::all();
+        $users = User::all(['id', 'name', 'department_id']); 
 
-        // 2. Pass the $users variable to your view using compact()
-        return view('reports.index', compact('users'));
+        // FIX: Change 'admin.reports' to 'reports.index'
+        return view('reports.index', compact('departments', 'users'));
     }
 
     // Generate the report based on user input
     public function generate(Request $request)
     {
-        // 1. Grab the filters from the form submission URL
-        $from_date = $request->input('from_date');
-        $to_date = $request->input('to_date');
-        $department = $request->input('department');
-        $userId = $request->input('user');
+        $monthInput = $request->input('month');
+        $departmentId = $request->input('department_id');
+        $userId = $request->input('user_id');
 
-        // 2. Create an empty array for attendances so the table loop doesn't crash 
-        // (We will add the real database query here later!)
-        $attendances = [];
+        // 1. Base query: Only Approved records
+        $query = Attendance::with(['user'])->where('status', 'Approved');
 
-        // 3. Pass all this data to the preview view
-        return view('reports.preview', compact('from_date', 'to_date', 'department', 'userId', 'attendances'));
+        // 2. Filter by Month
+        if ($monthInput) {
+            $parts = explode('-', $monthInput);
+            $query->whereYear('date', $parts[0])
+                  ->whereMonth('date', $parts[1]);
+        }
+
+        // 3. Filter by User OR Department
+        if ($userId) {
+            // If a specific user is selected, just get them
+            $query->where('user_id', $userId);
+        } elseif ($departmentId) {
+            // If no user is selected but a department IS, get everyone in that department
+            $query->whereHas('user', function($q) use ($departmentId) {
+                $q->where('department_id', $departmentId);
+            });
+        }
+
+        $attendances = $query->orderBy('date', 'desc')->get();
+
+        return view('reports.preview', compact('monthInput', 'attendances'));
     }
 
     // Show the generated report
@@ -45,31 +64,55 @@ class ReportController extends Controller
     // Print the report
     public function print(Request $request)
     {
-        // 1. Grab the date filters from the URL
-        $from_date = $request->input('from_date');
-        $to_date = $request->input('to_date');
-        
-        // 2. Placeholder for attendances (we will query the DB later)
-        $attendances = [];
+        $monthInput = $request->input('month');
+        $departmentId = $request->input('department_id');
+        $userId = $request->input('user_id');
 
-        // 3. Return the print view and pass the data to it
-        return view('reports.print', compact('from_date', 'to_date', 'attendances'));
+        $query = Attendance::with(['user'])->where('status', 'Approved');
+
+        if ($monthInput) {
+            $parts = explode('-', $monthInput);
+            $query->whereYear('date', $parts[0])->whereMonth('date', $parts[1]);
+        }
+
+        if ($userId) {
+            $query->where('user_id', $userId);
+        } elseif ($departmentId) {
+            $query->whereHas('user', function($q) use ($departmentId) {
+                $q->where('department_id', $departmentId);
+            });
+        }
+
+        $attendances = $query->orderBy('date', 'desc')->get();
+
+        return view('reports.print', compact('monthInput', 'attendances'));
     }
 
     // Export the report to PDF
     public function export(Request $request)
     {
-        // 1. Grab the date filters from the URL
-        $from_date = $request->input('from_date');
-        $to_date = $request->input('to_date');
-        
-        // 2. Placeholder for attendances (we will query the DB later)
-        $attendances = [];
+        $monthInput = $request->input('month');
+        $departmentId = $request->input('department_id');
+        $userId = $request->input('user_id');
 
-        // 3. Load a special PDF view and pass the data to it
-        $pdf = Pdf::loadView('reports.pdf', compact('from_date', 'to_date', 'attendances'));
+        $query = Attendance::with(['user'])->where('status', 'Approved');
 
-        // 4. Download the file instantly!
+        if ($monthInput) {
+            $parts = explode('-', $monthInput);
+            $query->whereYear('date', $parts[0])->whereMonth('date', $parts[1]);
+        }
+
+        if ($userId) {
+            $query->where('user_id', $userId);
+        } elseif ($departmentId) {
+            $query->whereHas('user', function($q) use ($departmentId) {
+                $q->where('department_id', $departmentId);
+            });
+        }
+
+        $attendances = $query->orderBy('date', 'desc')->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf', compact('monthInput', 'attendances'));
         return $pdf->download('Attendance_Report.pdf');
     }
 }

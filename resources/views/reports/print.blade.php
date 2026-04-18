@@ -29,7 +29,7 @@
     <div class="text-center">
         <h2>Company Name</h2>
         <h3>Attendance Report</h3>
-        <p>From: <strong>{{ $from_date }}</strong> To: <strong>{{ $to_date }}</strong></p>
+        <p>Report Month: <strong>{{ \Carbon\Carbon::parse($monthInput)->format('F Y') }}</strong></p>
     </div>
 
     <table>
