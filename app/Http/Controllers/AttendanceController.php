@@ -8,14 +8,25 @@ use App\Models\Attendance; // <-- REQUIRED: Tells the controller where to find t
 class AttendanceController extends Controller
 {
     // Show all attendance records
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        // 1. Fetch all attendance records from the database
-        // (Using 'with("user")' ensures it grabs the employee's name too, preventing errors!)
-        $attendances = Attendance::with('user')->get();
+        // 1. Get the month from the URL, or default to the current month (e.g., "2026-04")
+        $selectedMonth = $request->input('month', date('Y-m'));
+        
+        // Split the "YYYY-MM" string into separate year and month variables
+        $parts = explode('-', $selectedMonth);
+        $year = $parts[0];
+        $month = $parts[1];
 
-        // 2. Pass the $attendances variable to your view
-        return view('attendance.list', compact('attendances'));
+        // 2. Fetch attendance securely: Only this user, matching the selected year and month
+        $attendances = Attendance::where('user_id', auth()->id())
+            ->whereYear('date', $year)   // Note: Change 'date' if your database column is named 'recordDate'
+            ->whereMonth('date', $month)
+            ->orderBy('date', 'desc')    // Sort newest to oldest
+            ->get();
+
+        // 3. Pass both the records and the currently selected month back to the view
+        return view('attendance.list', compact('attendances', 'selectedMonth'));
     }
 
     // Show form to create new attendance record
