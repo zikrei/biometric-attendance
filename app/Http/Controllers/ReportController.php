@@ -3,13 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User; // <-- REQUIRED: Tells the controller where to find the users!
 
 class ReportController extends Controller
 {
     // Show the report generation page
     public function index()
     {
-        return view('reports.index');
+        // 1. Fetch all users from the database, sorted alphabetically by name
+        $users = User::orderBy('name')->get();
+
+        // 2. Pass the $users variable to your view using compact()
+        return view('reports.index', compact('users'));
     }
 
     // Generate the report based on user input
