@@ -61,20 +61,10 @@ Route::middleware('auth')->group(function () {
 
 // Report Routes (For Admin and Integrity Unit)
 Route::middleware('auth')->group(function () {
+    Route::get('/admin/reports', [ReportController::class, 'index'])->middleware('role:Admin|Integrity')->name('reports.index');
+    Route::get('/admin/reports/generate', [ReportController::class, 'generate'])->middleware('role:Admin|Integrity')->name('reports.generate');
     
-    Route::get('/admin/reports', [ReportController::class, 'index'])
-        ->middleware('role:Admin|Integrity')
-        ->name('reports.index');
-
-    Route::get('/admin/reports/generate', [ReportController::class, 'generate'])
-        ->middleware('role:Admin|Integrity')
-        ->name('reports.generate'); // <-- THIS FIXES YOUR ERROR
-
-    Route::get('/admin/reports/{id}/show', [ReportController::class, 'show'])
-        ->middleware('role:Admin|Integrity')
-        ->name('reports.show');
-
-    Route::get('/admin/reports/{id}/print', [ReportController::class, 'print'])
-        ->middleware('role:Admin|Integrity')
-        ->name('reports.print');
+    // REMOVED {id} FROM THESE ROUTES:
+    Route::get('/admin/reports/print', [ReportController::class, 'print'])->middleware('role:Admin|Integrity')->name('reports.print');
+    Route::get('/admin/reports/export', [ReportController::class, 'export'])->middleware('role:Admin|Integrity')->name('reports.export');
 });

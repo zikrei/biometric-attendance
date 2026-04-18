@@ -13,14 +13,12 @@
         </div>
         <div class="card-body">
             <div class="mb-5">
-                <!-- Company Header -->
                 <div class="text-center">
                     <h2>Company Name</h2>
                     <h5>Attendance Report</h5>
                     <p>From: {{ $from_date }} To: {{ $to_date }}</p>
                 </div>
 
-                <!-- Report Table -->
                 <table class="table table-bordered mt-4">
                     <thead class="table-light">
                         <tr>
@@ -33,16 +31,19 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($attendances as $attendance)
+                        @forelse($attendances as $attendance)
                             <tr>
                                 <td>{{ $attendance->user->name }}</td>
-                                <td>{{ $attendance->user->department }}</td>
+                                
+                                {{-- Safely print the department name --}}
+                                <td>{{ $attendance->user->department?->name ?? 'N/A' }}</td>
+                                
                                 <td>{{ $attendance->date }}</td>
                                 <td>{{ $attendance->clock_in }}</td>
                                 <td>{{ $attendance->clock_out }}</td>
                                 <td>
                                     @if($attendance->status == 'Pending')
-                                        <span class="badge bg-warning">🟡 Pending</span>
+                                        <span class="badge bg-warning text-dark">🟡 Pending</span>
                                     @elseif($attendance->status == 'Approved')
                                         <span class="badge bg-success">🟢 Approved</span>
                                     @elseif($attendance->status == 'Rejected')
@@ -50,21 +51,24 @@
                                     @endif
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">No attendance records found for this date range.</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
 
-            <!-- Signature Section -->
             <div class="mt-5">
                 <p class="text-center">_______________________</p>
                 <p class="text-center">Signature</p>
             </div>
 
-            <!-- Print / Export Buttons -->
             <div class="text-end mt-4">
-                <a href="{{ route('reports.print') }}" class="btn btn-secondary">Print</a>
-                <a href="{{ route('reports.export') }}" class="btn btn-danger">Export PDF</a>
+                {{-- Added request()->query() to securely pass the date parameters! --}}
+                <a href="{{ route('reports.print', request()->query()) }}" class="btn btn-secondary">Print</a>
+                <a href="{{ route('reports.export', request()->query()) }}" class="btn btn-danger">Export PDF</a>
             </div>
         </div>
     </div>
