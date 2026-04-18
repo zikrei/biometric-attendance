@@ -42,12 +42,16 @@
                                 <td>{{ $attendance->clock_in }}</td>
                                 <td>{{ $attendance->clock_out }}</td>
                                 <td>
-                                    @if($attendance->status == 'Pending')
+                                    {{-- Convert the database status to lowercase before comparing! --}}
+                                    @if(strtolower($attendance->status) == 'pending')
                                         <span class="badge bg-warning text-dark">🟡 Pending</span>
-                                    @elseif($attendance->status == 'Approved')
+                                    @elseif(strtolower($attendance->status) == 'approved')
                                         <span class="badge bg-success">🟢 Approved</span>
-                                    @elseif($attendance->status == 'Rejected')
+                                    @elseif(strtolower($attendance->status) == 'rejected')
                                         <span class="badge bg-danger">🔴 Rejected</span>
+                                    @else
+                                        {{-- Fallback just in case it's something else --}}
+                                        <span class="badge bg-secondary">{{ ucfirst($attendance->status) }}</span>
                                     @endif
                                 </td>
                             </tr>

@@ -28,22 +28,25 @@ class ReportController extends Controller
         $departmentId = $request->input('department_id');
         $userId = $request->input('user_id');
 
-        // 1. Base query: Only Approved records
-        $query = Attendance::with(['user'])->where('status', 'Approved');
+        // 1. Base query: Fetch ALL attendance records
+        $query = Attendance::with(['user']);
 
-        // 2. Filter by Month
-        if ($monthInput) {
-            $parts = explode('-', $monthInput);
-            $query->whereYear('date', $parts[0])
-                  ->whereMonth('date', $parts[1]);
+        // 2. Role Check: If the user is Integrity, ONLY show Approved records. 
+        // Admins and others will see everything.
+        if (auth()->user()->role?->name === 'Integrity') {
+            $query->where('status', 'Approved');
         }
 
-        // 3. Filter by User OR Department
+        // 3. Filter by Month
+        if ($monthInput) {
+            $parts = explode('-', $monthInput);
+            $query->whereYear('date', $parts[0])->whereMonth('date', $parts[1]);
+        }
+
+        // 4. Filter by User OR Department
         if ($userId) {
-            // If a specific user is selected, just get them
             $query->where('user_id', $userId);
         } elseif ($departmentId) {
-            // If no user is selected but a department IS, get everyone in that department
             $query->whereHas('user', function($q) use ($departmentId) {
                 $q->where('department_id', $departmentId);
             });
@@ -68,7 +71,11 @@ class ReportController extends Controller
         $departmentId = $request->input('department_id');
         $userId = $request->input('user_id');
 
-        $query = Attendance::with(['user'])->where('status', 'Approved');
+        $query = Attendance::with(['user']);
+
+        if (auth()->user()->role?->name === 'Integrity') {
+            $query->where('status', 'Approved');
+        }
 
         if ($monthInput) {
             $parts = explode('-', $monthInput);
@@ -95,7 +102,11 @@ class ReportController extends Controller
         $departmentId = $request->input('department_id');
         $userId = $request->input('user_id');
 
-        $query = Attendance::with(['user'])->where('status', 'Approved');
+        $query = Attendance::with(['user']);
+
+        if (auth()->user()->role?->name === 'Integrity') {
+            $query->where('status', 'Approved');
+        }
 
         if ($monthInput) {
             $parts = explode('-', $monthInput);
