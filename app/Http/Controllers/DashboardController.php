@@ -48,18 +48,18 @@ class DashboardController extends Controller
     // Show Admin Dashboard
     public function adminDashboard()
     {
-        // 1. Ask the database to count all registered users
-        $totalUsers = User::count();
+        // 1. Get the currently logged-in Admin
+        $user = Auth::user();
 
-        // 2. Placeholder for Attendance Issues (Set to 0 until we link your Attendance table)
-        $attendanceIssues = 0;
+        // 2. Count the total users in the system
+        $totalUsers = \App\Models\User::count();
 
-        // 3. Send these variables to the Blade view
-        return view('admin.dashboard', compact('totalUsers', 'attendanceIssues'));
+        // 3. Return the view
+        return view('admin.dashboard', compact('user', 'totalUsers'));
     }
 
     // Show HOD Dashboard
-public function hodDashboard()
+    public function hodDashboard()
     {
         // 1. Get the currently logged-in HOD
         $user = Auth::user();

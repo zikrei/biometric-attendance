@@ -130,12 +130,12 @@
                     </a>
                 @endif
                 
-                {{-- Hide Attendance Log from Integrity in the mobile menu too! --}}
-                @if($role !== 'Integrity')
-                    <hr class="border-secondary">
+                {{-- Hide the Attendance Log from Integrity Unit AND Admin --}}
+                @if($role !== 'Integrity' && $role !== 'Admin')
+                <div class="sidebar-title mt-4">General</div>
                     <a href="{{ url('/attendance') }}" class="nav-link">
-                        <i class="bi bi-calendar-check me-2"></i> Attendance Log
-                    </a>
+                        <i class="bi bi-calendar-check"></i>
+                    <span>Attendance Log</span>
                 @endif
             </nav>
         </div>

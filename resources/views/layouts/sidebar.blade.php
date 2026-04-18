@@ -42,8 +42,8 @@
                 </a>
             @endif
 
-            {{-- Hide the Attendance Log from the Integrity Unit --}}
-            @if($role !== 'Integrity')
+            {{-- Hide the Attendance Log from Integrity Unit AND Admin --}}
+            @if($role !== 'Integrity' && $role !== 'Admin')
                 <div class="sidebar-title mt-4">General</div>
                 <a href="{{ url('/attendance') }}" class="nav-link">
                     <i class="bi bi-calendar-check"></i>
