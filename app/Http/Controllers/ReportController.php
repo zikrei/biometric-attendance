@@ -45,8 +45,15 @@ class ReportController extends Controller
     // Print the report
     public function print(Request $request)
     {
-        // We will grab the dates here later!
-        return view('reports.print');
+        // 1. Grab the date filters from the URL
+        $from_date = $request->input('from_date');
+        $to_date = $request->input('to_date');
+        
+        // 2. Placeholder for attendances (we will query the DB later)
+        $attendances = [];
+
+        // 3. Return the print view and pass the data to it
+        return view('reports.print', compact('from_date', 'to_date', 'attendances'));
     }
 
     // Export the report to PDF
