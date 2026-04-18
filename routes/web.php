@@ -47,11 +47,25 @@ Route::middleware('auth')->group(function () {
 // Attendance Routes
 Route::middleware('auth')->group(function () {
     // Updated roles to match database capitalization
-    Route::get('/attendance', [AttendanceController::class, 'index'])->middleware('role:Staff|HOD|Admin');
-    Route::get('/attendance/create', [AttendanceController::class, 'create'])->middleware('role:Staff|HOD|Admin');
-    Route::post('/attendance', [AttendanceController::class, 'store'])->middleware('role:Staff|HOD|Admin');
-    Route::get('/attendance/{id}/edit', [AttendanceController::class, 'edit'])->middleware('role:Staff|HOD|Admin');
-    Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->middleware('role:Staff|HOD|Admin');
+    Route::get('/attendance', [AttendanceController::class, 'index'])
+        ->middleware('role:Staff|HOD|Admin')
+        ->name('attendance.list');
+
+    Route::get('/attendance/create', [AttendanceController::class, 'create'])
+        ->middleware('role:Staff|HOD|Admin')
+        ->name('attendance.create');
+
+    Route::post('/attendance', [AttendanceController::class, 'store'])
+        ->middleware('role:Staff|HOD|Admin')
+        ->name('attendance.store');
+
+    Route::get('/attendance/{id}/edit', [AttendanceController::class, 'edit'])
+        ->middleware('role:Staff|HOD|Admin')
+        ->name('attendance.edit'); // <-- THIS FIXES YOUR ERROR!
+
+    Route::put('/attendance/{id}', [AttendanceController::class, 'update'])
+        ->middleware('role:Staff|HOD|Admin')
+        ->name('attendance.update');
 });
 
 // Approval Routes (For HOD Only)
