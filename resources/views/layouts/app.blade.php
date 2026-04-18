@@ -23,11 +23,20 @@
         .sidebar .menu-section { margin-bottom: 1.5rem; }
         
         /* --- NEW: COLLAPSED SIDEBAR STYLES --- */
-        body.sidebar-collapsed .sidebar { width: 80px; padding: 1.25rem 0.5rem; }
-        body.sidebar-collapsed .sidebar .sidebar-title { opacity: 0; pointer-events: none; height: 0; margin: 0; overflow: hidden; }
+        body.sidebar-collapsed .sidebar { width: 80px !important; padding: 1.25rem 0.5rem; }
+        
+        /* Force titles and dividers to completely vanish */
+        body.sidebar-collapsed .sidebar .sidebar-title,
+        body.sidebar-collapsed .sidebar hr { opacity: 0; pointer-events: none; height: 0; margin: 0; padding: 0; border: none; overflow: hidden; display: none; }
+        
+        /* Hide spans normally */
         body.sidebar-collapsed .sidebar .nav-link span { display: none; }
-        body.sidebar-collapsed .sidebar .nav-link { justify-content: center; padding: 0.85rem 0; gap: 0; }
-        body.sidebar-collapsed .sidebar .nav-link i { font-size: 1.3rem; }
+        
+        /* The Magic Fix: font-size: 0 hides any orphaned text! */
+        body.sidebar-collapsed .sidebar .nav-link { justify-content: center; padding: 0.85rem 0; gap: 0; font-size: 0; }
+        
+        /* Restore the icon size and strip away any awkward margins (like me-2) */
+        body.sidebar-collapsed .sidebar .nav-link i { font-size: 1.3rem; margin: 0 !important; }
         /* ------------------------------------- */
 
         .main-content { flex: 1; padding: 1.5rem; transition: all 0.3s ease; width: 100%; overflow-x: auto; }
@@ -130,8 +139,10 @@
                 @elseif($role === 'Staff')
                     <a href="{{ route('dashboard') }}" class="nav-link"><i class="bi bi-house-door me-2"></i> Staff Dashboard</a>
                 @elseif($role === 'Integrity')
+                @elseif($role === 'Integrity')
                     <a href="{{ route('integrity.dashboard') }}" class="nav-link"><i class="bi bi-house-door me-2"></i> Integrity Dashboard</a>
-                    <a href="{{ url('/admin/reports') }}" class="nav-link"><i class="bi bi-file-earmark-text me-2"></i> Reports</a>
+                    <a href="{{ route('integrity.approvals') }}" class="nav-link"><i class="bi bi-shield-check me-2"></i> HOD Approvals</a>
+                    <a href="{{ url('/admin/reports') }}" class="nav-link"><i class="bi bi-file-earmark-text me-2"></i> System Reports</a>
                 @endif
                 
                 @if($role !== 'Integrity' && $role !== 'Admin')
