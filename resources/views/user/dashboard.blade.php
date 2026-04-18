@@ -1,45 +1,43 @@
 @extends('layouts.app')
 
-@section('title', 'User Dashboard')
-
-@section('page_title', 'Welcome User')
-
-@section('page_subtitle', 'Track your attendance and submit discrepancies.')
-
 @section('content')
+    <div class="mb-4">
+        {{-- Dynamically print the user's name --}}
+        <h2>Welcome {{ $user->name }}</h2>
+        <p class="text-muted">Track your attendance and submit discrepancies.</p>
+    </div>
+
     <div class="row g-4">
-        <div class="col-md-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1">Your Attendance</p>
-                            <h3 class="mb-0">95%</h3>
-                        </div>
-                        <div class="fs-2 text-info">
-                            <i class="bi bi-person-check-fill"></i>
-                        </div>
+        {{-- Attendance Percentage Card --}}
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Your Attendance (This Month)</p>
+                        {{-- Dynamically print the percentage --}}
+                        <h2 class="mb-0">{{ $attendancePercentage }}%</h2>
+                    </div>
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="bi bi-person-check fs-3"></i>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6 col-xl-3">
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1">Pending Discrepancies</p>
-                            <h3 class="mb-0">1</h3>
-                        </div>
-                        <div class="fs-2 text-warning">
-                            <i class="bi bi-exclamation-circle-fill"></i>
-                        </div>
+        {{-- Pending Discrepancies Card --}}
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted mb-1">Pending Discrepancies</p>
+                        {{-- Dynamically print the count --}}
+                        <h2 class="mb-0">{{ $pendingDiscrepancies }}</h2>
+                    </div>
+                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle p-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="bi bi-exclamation-circle fs-3"></i>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Add more widgets specific to User here -->
     </div>
 @endsection
