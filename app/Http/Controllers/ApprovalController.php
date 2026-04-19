@@ -2,27 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ApprovalController extends Controller
 {
-    // Show all pending attendance discrepancies for HOD
+    // HOD fetching Staff requests
     public function index()
     {
-        return view('hod.approvals');
+        $user = Auth::user();
+
+        // Fetch pending requests from the SAME department, EXCEPT the HOD themselves
+        $attendances = Attendance::with('user')
+            ->where('status', 'Pending')
+            ->whereHas('user', function($query) use ($user) {
+                $query->where('department_id', $user->department_id)
+                      ->where('id', '!=', $user->id); // Exclude the logged-in HOD
+            })->orderBy('date', 'desc')->get();
+
+        return view('hod.approvals', compact('attendances'));
     }
 
-    // Approve attendance discrepancy
     public function approve($id)
     {
-        // Logic to approve attendance
-        return redirect()->route('hod.approvals');
+        Attendance::findOrFail($id)->update(['status' => 'Approved']);
+        return back()->with('success', 'Staff discrepancy approved.');
     }
 
-    // Reject attendance discrepancy
     public function reject($id)
     {
-        // Logic to reject attendance
-        return redirect()->route('hod.approvals');
+        Attendance::findOrFail($id)->update(['status' => 'Rejected']);
+        return back()->with('success', 'Staff discrepancy rejected.');
     }
 }
