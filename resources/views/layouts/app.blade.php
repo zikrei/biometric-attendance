@@ -40,23 +40,43 @@
             </div>
 
             <div class="topbar-right">
-                {{-- Only show these elements if the user is LOGGED IN --}}
+                {{-- Only show this dropdown if the user is LOGGED IN --}}
                 @auth
-                    <div class="user-badge">
-                        <i class="bi bi-person-circle"></i>
-                        <span>{{ Auth::user()->name }}</span>
-                    </div>
-
-                    <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-outline-primary action-btn">
-                        <i class="bi bi-person-gear me-1"></i> Account Settings
-                    </a>
-
-                    <form method="POST" action="{{ route('logout') }}" class="d-inline mb-0">
-                        @csrf
-                        <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
-                            <i class="bi bi-box-arrow-right me-1"></i> Secure Logout
+                    <div class="dropdown">
+                        {{-- The Clickable User Badge --}}
+                        <button class="btn border-0 dropdown-toggle d-flex align-items-center gap-2 rounded-pill px-3 py-2" 
+                                type="button" 
+                                id="userDropdown" 
+                                data-bs-toggle="dropdown" 
+                                aria-expanded="false"
+                                style="background-color: rgba(13, 110, 253, 0.1); color: #0d6efd;">
+                            <i class="bi bi-person-circle fs-5"></i>
+                            <span class="fw-semibold">{{ Auth::user()->name }}</span>
                         </button>
-                    </form>
+                        
+                        {{-- The Dropdown Menu --}}
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2" aria-labelledby="userDropdown">
+                            {{-- Account Settings Link --}}
+                            <li>
+                                <a class="dropdown-item py-2 d-flex align-items-center" href="{{ route('profile.edit') }}">
+                                    <i class="bi bi-person-gear me-2 text-primary"></i> Account Settings
+                                </a>
+                            </li>
+                            
+                            {{-- Divider Line --}}
+                            <li><hr class="dropdown-divider"></li>
+                            
+                            {{-- Secure Logout Form --}}
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}" class="mb-0">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item py-2 d-flex align-items-center text-danger">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Secure Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 @endauth
             </div>
         </header>

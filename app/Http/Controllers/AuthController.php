@@ -19,7 +19,11 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (!Auth::attempt($credentials)) {
+        // 1. Check if the "Remember Me" checkbox was ticked
+        $remember = $request->has('remember');
+
+        // 2. Pass $remember as the second argument to Auth::attempt()
+        if (!Auth::attempt($credentials, $remember)) {
             return back()->withErrors([
                 'email' => 'Invalid email or password.',
             ])->onlyInput('email');
@@ -40,7 +44,7 @@ class AuthController extends Controller
         }
 
         if ($role === 'Integrity') {
-            return redirect()->route('integrity.dashboard'); 
+            return redirect()->route('integrity.dashboard');
         }
 
         // Default fallback for Staff, or users without an assigned role
@@ -50,12 +54,10 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-
+        
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect()->route('login');
     }
-
-    
 }

@@ -130,11 +130,17 @@
                         </div>
 
                         <div class="d-flex justify-content-between mb-4">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="remember">
-                                <label class="form-check-label text-muted">Remember Me</label>
+                            <div class="d-flex justify-content-between mb-4">
+                                <div class="form-check">
+                                    {{-- Added id="remember" --}}
+                                    <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                                    
+                                    {{-- Added for="remember" and cursor pointer --}}
+                                    <label class="form-check-label text-muted" for="remember" style="cursor: pointer;">
+                                        Remember Me
+                                    </label>
+                                </div>
                             </div>
-
                             @if (Route::has('password.request'))
                                 <a href="{{ route('password.request') }}" class="text-decoration-none text-primary fw-bold" style="font-size: 0.9rem;">
                                     Forgot Your Password?
