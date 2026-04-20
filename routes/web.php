@@ -9,6 +9,7 @@ use App\Http\Controllers\IntegrityController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PasswordResetController;
 
 // ---> ADD THIS NEW LINE <---
 Route::redirect('/', '/login');
@@ -100,4 +101,12 @@ Route::middleware('auth')->group(function () {
     // REMOVED {id} FROM THESE ROUTES:
     Route::get('/admin/reports/print', [ReportController::class, 'print'])->middleware('role:Admin|Integrity')->name('reports.print');
     Route::get('/admin/reports/export', [ReportController::class, 'export'])->middleware('role:Admin|Integrity')->name('reports.export');
+});
+
+// Password Reset Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/forgot-password', [PasswordResetController::class, 'request'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetController::class, 'email'])->name('password.email');
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'reset'])->name('password.reset');
+    Route::post('/reset-password', [PasswordResetController::class, 'update'])->name('password.update');
 });

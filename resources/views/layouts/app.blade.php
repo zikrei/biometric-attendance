@@ -40,23 +40,24 @@
             </div>
 
             <div class="topbar-right">
-                <div class="user-badge">
-                    <i class="bi bi-person-circle"></i>
-                    <span>{{ Auth::user()?->name ?? 'Unauthenticated' }}</span>
-                </div>
-
+                {{-- Only show these elements if the user is LOGGED IN --}}
                 @auth
+                    <div class="user-badge">
+                        <i class="bi bi-person-circle"></i>
+                        <span>{{ Auth::user()->name }}</span>
+                    </div>
+
                     <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-outline-primary action-btn">
                         <i class="bi bi-person-gear me-1"></i> Account Settings
                     </a>
-                @endauth
 
-                <form method="POST" action="{{ route('logout') }}" class="d-inline mb-0">
-                    @csrf
-                    <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
-                        <i class="bi bi-box-arrow-right me-1"></i> Secure Logout
-                    </button>
-                </form>
+                    <form method="POST" action="{{ route('logout') }}" class="d-inline mb-0">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
+                            <i class="bi bi-box-arrow-right me-1"></i> Secure Logout
+                        </button>
+                    </form>
+                @endauth
             </div>
         </header>
 
@@ -66,17 +67,20 @@
             @endif
 
             <main class="main-content">
-                <div class="page-header">
-                    <div class="header-titles">
-                        <h2 class="page-title">@yield('page_title', 'System Overview')</h2>
-                        <p class="page-subtitle">@yield('page_subtitle', 'Monitor and manage biometric records.')</p>
+                {{-- Only show the page headers to LOGGED IN users --}}
+                @auth
+                    <div class="page-header">
+                        <div class="header-titles">
+                            <h2 class="page-title">@yield('page_title', 'System Overview')</h2>
+                            <p class="page-subtitle">@yield('page_subtitle', 'Monitor and manage biometric records.')</p>
+                        </div>
+                        <div class="header-actions">
+                            @yield('page_actions')
+                        </div>
                     </div>
-                    <div class="header-actions">
-                        @yield('page_actions')
-                    </div>
-                </div>
+                @endauth
 
-                    @yield('content')
+                @yield('content')
   
             </main>
         </div>

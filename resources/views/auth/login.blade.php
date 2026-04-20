@@ -135,7 +135,11 @@
                                 <label class="form-check-label text-muted">Remember Me</label>
                             </div>
 
-                            <a href="#" class="login-link">Forgot Password?</a>
+                            @if (Route::has('password.request'))
+                                <a href="{{ route('password.request') }}" class="text-decoration-none text-primary fw-bold" style="font-size: 0.9rem;">
+                                    Forgot Your Password?
+                                </a>
+                            @endif
                         </div>
 
                         <button type="submit" class="btn btn-login w-100 text-white">
