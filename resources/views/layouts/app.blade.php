@@ -74,7 +74,7 @@
                     <i class="bi bi-list fs-5"></i>
                 </button>
                 
-                <h1 class="brand-title mb-0 ms-1">Biometric Attendance</h1>
+                <h1 class="brand-title mb-0 ms-1">Biometric Attendance Management System</h1>
             </div>
 
             <div class="d-flex align-items-center gap-3">
