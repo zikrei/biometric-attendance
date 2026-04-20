@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Biometric Attendance Management System')</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
     <div class="app-wrapper">
@@ -66,10 +65,8 @@
 
             <main class="main-content">
                 <div class="page-header">
-                    <div>
-                        <h2 class="page-title">@yield('page_title', 'Dashboard')</h2>
-                        <p class="page-subtitle">@yield('page_subtitle', 'Welcome to the biometric attendance management system.')</p>
-                    </div>
+                    <h2 class="page-title">@yield('page_title', 'Dashboard')</h2>
+                    <p class="page-subtitle">@yield('page_subtitle', 'Welcome to the biometric attendance management system.')</p>
                 </div>
 
                 <div class="content-card">
@@ -82,61 +79,6 @@
             <span>&copy; {{ date('Y') }} Biometric Attendance Management System. All rights reserved.</span>
         </footer>
     </div>
-
-    @if(Auth::check())
-        <div class="offcanvas offcanvas-start mobile-sidebar text-white" tabindex="-1" id="mobileSidebar" aria-labelledby="mobileSidebarLabel">
-            <div class="offcanvas-header border-bottom border-secondary">
-                <h5 class="offcanvas-title" id="mobileSidebarLabel">Navigation Menu</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-
-            <div class="offcanvas-body">
-                <nav class="nav flex-column">
-                    @php
-                        $role = auth()->user()->role?->name;
-                    @endphp
-
-                    @if($role === 'Admin')
-                        <a href="{{ route('admin.dashboard') }}" class="nav-link">
-                            <i class="bi bi-house-door me-2"></i> Dashboard
-                        </a>
-                        <a href="{{ url('/admin/users') }}" class="nav-link">
-                            <i class="bi bi-people me-2"></i> User Management
-                        </a>
-                        <a href="{{ url('/admin/reports') }}" class="nav-link">
-                            <i class="bi bi-file-earmark-text me-2"></i> Reports
-                        </a>
-                    @elseif($role === 'HOD')
-                        <a href="{{ route('hod.dashboard') }}" class="nav-link">
-                            <i class="bi bi-house-door me-2"></i> Dashboard
-                        </a>
-                        <a href="{{ url('/attendance') }}" class="nav-link">
-                            <i class="bi bi-calendar-check me-2"></i> Attendance Records
-                        </a>
-                    @elseif($role === 'Staff')
-                        <a href="{{ route('dashboard') }}" class="nav-link">
-                            <i class="bi bi-house-door me-2"></i> Dashboard
-                        </a>
-                        <a href="{{ url('/attendance') }}" class="nav-link">
-                            <i class="bi bi-calendar-check me-2"></i> Attendance Records
-                        </a>
-                    @elseif($role === 'Integrity')
-                        <a href="{{ route('integrity.dashboard') }}" class="nav-link">
-                            <i class="bi bi-house-door me-2"></i> Dashboard
-                        </a>
-                        <a href="{{ route('integrity.approvals') }}" class="nav-link">
-                            <i class="bi bi-shield-check me-2"></i> Approval Records
-                        </a>
-                        <a href="{{ url('/admin/reports') }}" class="nav-link">
-                            <i class="bi bi-file-earmark-text me-2"></i> Reports
-                        </a>
-                    @endif
-                </nav>
-            </div>
-        </div>
-    @endif
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
