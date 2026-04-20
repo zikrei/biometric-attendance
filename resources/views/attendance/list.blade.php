@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Attendance List')
+@section('title', 'Attendance Records')
 
 @section('content')
     <div class="mb-4">
-        <h2>Attendance List</h2>
-        <p class="text-muted">View and manage your attendance records.</p>
+        <h2>Attendance Records</h2>
+        <p class="text-muted">View and manage your attendance records efficiently.</p>
     </div>
 
     <div class="card border-0 shadow-sm rounded-4">
@@ -13,13 +13,13 @@
             
             {{-- Header & Filter Row --}}
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="mb-0">Your Attendance Records</h5>
+                <h5 class="mb-0">Attendance Records</h5>
                 
                 {{-- Month Filter Form --}}
                 <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2">
                     <input type="month" name="month" class="form-control" value="{{ $selectedMonth }}" required>
-                    <button type="submit" class="btn btn-dark">Filter</button>
-                    <a href="{{ url()->current() }}" class="btn btn-outline-secondary">Reset</a>
+                    <button type="submit" class="btn btn-dark">Apply Filter</button>
+                    <a href="{{ url()->current() }}" class="btn btn-outline-secondary">Clear Filter</a>
                 </form>
             </div>
 
@@ -29,10 +29,10 @@
                     <thead class="table-light">
                         <tr>
                             <th>Date</th>
-                            <th>Clock In</th>
-                            <th>Clock Out</th>
+                            <th>Check-In Time</th>
+                            <th>Check-Out Time</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -49,19 +49,19 @@
                                     @elseif($attendance->status == 'Rejected')
                                         <span class="badge bg-danger">🔴 Rejected</span>
                                     @else
-                                        <span class="badge bg-secondary">{{ $attendance->status ?? 'N/A' }}</span>
+                                        <span class="badge bg-secondary">{{ $attendance->status ?? 'Not Available' }}</span>
                                     @endif
                                 </td>
                                 <td>
                                     <a href="{{ route('attendance.edit', $attendance->id) }}" class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-pencil-square"></i> Discrepancy / Edit
+                                        <i class="bi bi-pencil-square"></i> Submit or Edit Discrepancy
                                     </a>
                                 </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="5" class="text-center text-muted py-4">
-                                    No attendance records found for {{ \Carbon\Carbon::parse($selectedMonth)->format('F Y') }}.
+                                    No attendance records are available for {{ \Carbon\Carbon::parse($selectedMonth)->format('F Y') }}.
                                 </td>
                             </tr>
                         @endforelse

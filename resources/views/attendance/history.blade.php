@@ -4,20 +4,20 @@
 
 @section('page_title', 'Attendance History')
 
-@section('page_subtitle', 'View all your previous attendance records.')
+@section('page_subtitle', 'View all recorded attendance entries.')
 
 @section('content')
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-header bg-white border-0">
-            <h5 class="mb-0">Attendance History</h5>
+            <h5 class="mb-0">Attendance Records</h5>
         </div>
         <div class="card-body">
             <table class="table table-striped table-bordered">
                 <thead class="table-light">
                     <tr>
                         <th>Date</th>
-                        <th>Clock In</th>
-                        <th>Clock Out</th>
+                        <th>Check-In Time</th>
+                        <th>Check-Out Time</th>
                         <th>Status</th>
                     </tr>
                 </thead>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Login | Biometric Attendance Management System</title>
+    <title>Sign In | Biometric Attendance Management System</title>
 
     {{-- Icons --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
@@ -22,13 +22,13 @@
             <div class="login-left">
 
                 <span class="system-badge">
-                    <i class="bi bi-shield-lock me-1"></i> Enterprise Access Portal
+                    <i class="bi bi-shield-lock me-1"></i> Secure Access Portal
                 </span>
 
                 <h1>Biometric Attendance Management System</h1>
 
                 <p>
-                    A secure platform for workforce attendance tracking, approval workflows,
+                    A secure platform for attendance tracking, approval workflows,
                     and centralized reporting.
                 </p>
 
@@ -39,9 +39,9 @@
                             <i class="bi bi-fingerprint"></i>
                         </div>
                         <div>
-                            <h6 class="mb-1">Biometric Integration</h6>
+                            <h6 class="mb-1">Biometric Synchronization</h6>
                             <small class="text-white-50">
-                                Real-time synchronization with thumbprint devices.
+                                Real-time synchronization with biometric devices.
                             </small>
                         </div>
                     </div>
@@ -51,9 +51,9 @@
                             <i class="bi bi-person-bounding-box"></i>
                         </div>
                         <div>
-                            <h6 class="mb-1">Role-Based Access</h6>
+                            <h6 class="mb-1">Role-Based Access Control</h6>
                             <small class="text-white-50">
-                                Secure dashboards for Staff, HOD, Admin, and Integrity Unit.
+                                Secure dashboards for Staff, Heads of Department, Administrators, and the Integrity Unit.
                             </small>
                         </div>
                     </div>
@@ -63,9 +63,9 @@
                             <i class="bi bi-clipboard-data"></i>
                         </div>
                         <div>
-                            <h6 class="mb-1">Reporting & Analytics</h6>
+                            <h6 class="mb-1">Reporting and Analytics</h6>
                             <small class="text-white-50">
-                                Generate attendance reports and insights instantly.
+                                Generate attendance reports and analytical summaries efficiently.
                             </small>
                         </div>
                     </div>
@@ -80,9 +80,9 @@
 
                 <div class="w-100">
 
-                    <h2 class="login-card-title">Account Login</h2>
+                    <h2 class="login-card-title">Sign In</h2>
                     <p class="login-card-subtitle">
-                        Please enter your credentials to access the system.
+                        Please enter your credentials to access the system securely.
                     </p>
 
                     {{-- Alerts --}}
@@ -137,26 +137,26 @@
                                     
                                     {{-- Added for="remember" and cursor pointer --}}
                                     <label class="form-check-label text-muted" for="remember" style="cursor: pointer;">
-                                        Remember Me
+                                        Keep me signed in
                                     </label>
                                 </div>
                             </div>
                             @if (Route::has('password.request'))
                                 <a href="{{ route('password.request') }}" class="text-decoration-none text-primary fw-bold" style="font-size: 0.9rem;">
-                                    Forgot Your Password?
+                                    Forgot your password?
                                 </a>
                             @endif
                         </div>
 
                         <button type="submit" class="btn btn-login w-100 text-white">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In to System
                         </button>
                     </form>
 
                     <div class="text-center mt-5">
                         <p class="login-footer-text mb-0">
                             <i class="bi bi-shield-check text-success me-1"></i>
-                            Secure System Access
+                            Secure Access Enabled
                         </p>
                     </div>
 

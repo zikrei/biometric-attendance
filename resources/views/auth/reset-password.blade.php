@@ -11,8 +11,8 @@
                 <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; background: rgba(139, 92, 246, 0.1);">
                     <i class="bi bi-shield-lock-fill fs-2" style="color: #6d28d9;"></i>
                 </div>
-                <h3 class="fw-bold" style="color: #6d28d9;">Create New Password</h3>
-                <p class="text-muted">Enter your new secure password below.</p>
+                <h3 class="fw-bold" style="color: #6d28d9;">Set New Password</h3>
+                <p class="text-muted">Enter your new password below to complete the password reset process.</p>
             </div>
 
             <form method="POST" action="{{ route('password.update') }}">
@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="fw-semibold text-secondary mb-1">Confirm Password</label>
+                    <label class="fw-semibold text-secondary mb-1">Confirm New Password</label>
                     <input type="password" name="password_confirmation" class="form-control form-control-lg bg-light border-0" required>
                 </div>
 
@@ -41,7 +41,7 @@
                             style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border: none; transition: transform 0.2s;" 
                             onmouseover="this.style.transform='translateY(-2px)'" 
                             onmouseout="this.style.transform='translateY(0)'">
-                        Reset Password
+                        Update Password
                     </button>
                 </div>
             </form>

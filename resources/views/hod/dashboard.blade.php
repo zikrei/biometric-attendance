@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'HOD Overview')
+@section('title', 'HOD Dashboard')
 
 {{-- Push the Welcome message directly into the Top Header --}}
 @section('page_title')
-    Welcome back, {{ $user->name ?? 'HOD' }} 👋
+    Welcome, {{ $user->name ?? 'Head of Department' }}
 @endsection
 
-@section('page_subtitle', 'Manage your department\'s requests and track your own attendance.')
+@section('page_subtitle', 'Manage departmental requests and monitor your attendance records.')
 
 @section('content')
 
@@ -18,15 +18,15 @@
         <div class="dashboard-card card-hod-approvals pattern-grid h-100">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Department Actions</p>
+                    <p class="card-label">Approval Overview</p>
                     <h2 class="card-number">{{ $pendingApprovals ?? 0 }}</h2>
-                    <small class="card-desc">Pending staff leave/attendance approvals</small>
+                    <small class="card-desc">Pending attendance and leave requests</small>
                 </div>
                 <div class="card-icon">
                     <i class="bi bi-check2-square"></i>
                 </div>
             </div>
-            <a href="{{ route('hod.approvals') }}" class="stretched-link" aria-label="Review Pending Approvals"></a>
+            <a href="{{ route('hod.approvals') }}" class="stretched-link" aria-label="View Pending Approval Requests"></a>
         </div>
     </div>
 
@@ -35,15 +35,15 @@
         <div class="dashboard-card card-attendance pattern-zigzag h-100">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Daily Log</p>
-                    <h4 class="card-title">Attendance Log</h4>
-                    <small class="card-desc">Review your personal check-ins and statuses</small>
+                    <p class="card-label">Attendance</p>
+                    <h4 class="card-title">Attendance Records</h4>
+                    <small class="card-desc">Review your attendance records and status updates</small>
                 </div>
                 <div class="card-icon">
                     <i class="bi bi-calendar-check"></i>
                 </div>
             </div>
-            <a href="{{ url('/attendance') }}" class="stretched-link" aria-label="View My Attendance Log"></a>
+            <a href="{{ url('/attendance') }}" class="stretched-link" aria-label="View Attendance Records"></a>
         </div>
     </div>
 
@@ -52,15 +52,15 @@
         <div class="dashboard-card card-profile pattern-lines h-100">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Configuration</p>
-                    <h4 class="card-title">Account Settings</h4>
-                    <small class="card-desc">Update your credentials and profile</small>
+                    <p class="card-label">Account</p>
+                    <h4 class="card-title">Profile Settings</h4>
+                    <small class="card-desc">Manage your account information and credentials</small>
                 </div>
                 <div class="card-icon">
                     <i class="bi bi-person-gear"></i>
                 </div>
             </div>
-            <a href="{{ route('profile.edit') }}" class="stretched-link" aria-label="Manage Account Settings"></a>
+            <a href="{{ route('profile.edit') }}" class="stretched-link" aria-label="Manage Profile Settings"></a>
         </div>
     </div>
 

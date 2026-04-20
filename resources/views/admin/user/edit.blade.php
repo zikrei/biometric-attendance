@@ -4,13 +4,13 @@
 
 @section('page_title', 'Edit User: ' . $user->name)
 
-@section('page_subtitle', 'Update user details, roles, and department.')
+@section('page_subtitle', 'Update the user’s account details, role, department, and status.')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h5 class="mb-0">Edit User Details</h5>
+        <h5 class="mb-0">Edit User</h5>
         <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back to List
+            <i class="bi bi-arrow-left"></i> Back to User List
         </a>
     </div>
 
@@ -33,7 +33,7 @@
                 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="name" class="form-label fw-bold">Name</label>
+                        <label for="name" class="form-label fw-bold">Full Name</label>
                         {{-- Pre-filled with existing data using value="{{ $user->name }}" --}}
                         <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $user->name) }}" required>
                     </div>
@@ -46,7 +46,7 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="role_id" class="form-label fw-bold">Assign Role</label>
+                        <label for="role_id" class="form-label fw-bold">Role</label>
                         <select name="role_id" id="role_id" class="form-select" required>
                             @foreach($roles as $role)
                                 {{-- We check if the user's role matches the loop to set it as 'selected' --}}
@@ -58,7 +58,7 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label for="department_id" class="form-label fw-bold">Assign Department</label>
+                        <label for="department_id" class="form-label fw-bold">Department</label>
                         <select name="department_id" id="department_id" class="form-select" required>
                             @foreach($departments as $department)
                                 <option value="{{ $department->id }}" {{ $user->department_id == $department->id ? 'selected' : '' }}>
@@ -71,7 +71,7 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="status" class="form-label fw-bold">Account Status</label>
+                        <label for="status" class="form-label fw-bold">Status</label>
                         <select name="status" class="form-select">
                             {{-- Notice the capital 'Active' and 'Inactive' in the == checks! --}}
                             <option value="Active" {{ $user->status == 'Active' ? 'selected' : '' }}>Active</option>
@@ -80,9 +80,9 @@
                     </div>
 
                     <div class="col-md-6 mb-3">
-                        <label for="password" class="form-label fw-bold">New Password (Optional)</label>
-                        <input type="password" name="password" id="password" class="form-control" placeholder="Leave blank to keep current password">
-                        <small class="text-muted">Only fill this if you want to change the user's password.</small>
+                        <label for="password" class="form-label fw-bold">New Password</label>
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Leave this field blank to keep the current password">
+                        <small class="text-muted">Enter a new password only if you want to update the current password.</small>
                     </div>
                 </div>
                 
@@ -90,7 +90,7 @@
 
                 <div class="d-flex justify-content-end gap-2 mt-3">
                     <a href="{{ route('admin.users.index') }}" class="btn btn-light">Cancel</a>
-                    <button type="submit" class="btn btn-primary">Update User</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
                 </div>
             </form>
         </div>

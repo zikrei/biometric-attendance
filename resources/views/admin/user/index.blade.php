@@ -2,14 +2,14 @@
 
 @section('title', 'User Management')
 
-@section('page_title', 'Manage Users')
+@section('page_title', 'User Management')
 
-@section('page_subtitle', 'View, create, edit, or delete users.')
+@section('page_subtitle', 'View, create, update, and remove user accounts.')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h5 class="mb-0">Users List</h5>
-        <a href="{{ route('admin.users.create') }}" class="btn btn-dark">+ Add User</a>
+        <h5 class="mb-0">User List</h5>
+        <a href="{{ route('admin.users.create') }}" class="btn btn-dark">+ Create User</a>
     </div>
 
     <div class="card border-0 shadow-sm rounded-4">
@@ -18,12 +18,12 @@
                 <table class="table table-striped table-hover align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>Name</th>
+                            <th>Full Name</th>
                             <th>Email</th>
                             <th>Department</th>
                             <th>Role</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -31,7 +31,7 @@
                             <tr>
                                 <td class="fw-semibold">{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
-                                <td>{{ $user->department?->name ?? 'N/A' }}</td>
+                                <td>{{ $user->department?->name ?? 'Not Assigned' }}</td>
                                 
                                 {{-- Dynamic Role Badges --}}
                                 <td>
@@ -46,7 +46,7 @@
                                     @elseif($roleName === 'Integrity')
                                         <span class="badge" style="background-color: #6f42c1;">🕵️ Integrity Unit</span>
                                     @else
-                                        <span class="badge bg-secondary">Unassigned</span>
+                                        <span class="badge bg-secondary">Not Assigned</span>
                                     @endif
                                 </td>
                                 
@@ -67,7 +67,7 @@
                                         </a>
                                         
                                         {{-- Delete Form with JavaScript Confirmation --}}
-                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete {{ $user->name }}? This action cannot be undone.');">
+                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete the account for {{ $user->name }}? This action cannot be undone.');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-sm btn-outline-danger">

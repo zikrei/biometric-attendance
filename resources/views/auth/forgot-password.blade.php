@@ -11,8 +11,8 @@
                 <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; background: rgba(139, 92, 246, 0.1);">
                     <i class="bi bi-key-fill fs-2" style="color: #6d28d9;"></i>
                 </div>
-                <h3 class="fw-bold" style="color: #6d28d9;">Reset Password</h3>
-                <p class="text-muted">Enter your email address to receive a password reset link.</p>
+                <h3 class="fw-bold" style="color: #6d28d9;">Password Reset</h3>
+                <p class="text-muted">Enter your registered email address to receive a password reset link.</p>
             </div>
 
             @if(session('success'))
@@ -35,13 +35,13 @@
                             style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border: none; transition: transform 0.2s;" 
                             onmouseover="this.style.transform='translateY(-2px)'" 
                             onmouseout="this.style.transform='translateY(0)'">
-                        Send Reset Link
+                        Send Password Reset Link
                     </button>
                 </div>
                 
                 <div class="text-center mt-4">
                     <a href="{{ route('login') }}" class="text-decoration-none fw-semibold" style="color: #8b5cf6;">
-                        <i class="bi bi-arrow-left me-1"></i> Back to Login
+                        <i class="bi bi-arrow-left me-1"></i> Return to Sign In
                     </a>
                 </div>
             </form>
