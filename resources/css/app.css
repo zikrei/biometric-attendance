@@ -1,42 +1,576 @@
-@import 'bootstrap/dist/css/bootstrap.min.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* =========================================================
+   Base / Reset
+========================================================= */
+:root {
+    --bg-body: #f4f7fb;
+    --bg-white: #ffffff;
+    --bg-sidebar: #111827;
+    --bg-sidebar-hover: #1f2937;
+    --bg-card: #ffffff;
+    --border-color: #e5e7eb;
+    --text-dark: #111827;
+    --text-body: #374151;
+    --text-muted: #6b7280;
+    --primary: #2563eb;
+    --primary-soft: #eff6ff;
+    --danger: #dc2626;
+    --success: #16a34a;
+    --warning: #d97706;
+    --purple: #7c3aed;
+    --shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.06);
+    --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.10);
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 18px;
+    --transition: all 0.25s ease;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    overflow-x: hidden;
+}
 
 body {
-    background: #f5f7fb;
+    margin: 0;
+    background: var(--bg-body);
+    color: var(--text-body);
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 14px;
+    line-height: 1.6;
 }
 
-.sidebar {
+/* =========================================================
+   Layout
+========================================================= */
+.app-wrapper {
     min-height: 100vh;
-    background: #1f2937;
-    color: #fff;
+    display: flex;
+    flex-direction: column;
 }
 
-.sidebar a {
-    color: #d1d5db;
-    text-decoration: none;
-    display: block;
-    padding: 10px 14px;
-    border-radius: 8px;
-    margin-bottom: 6px;
+.layout-body {
+    display: flex;
+    flex: 1;
+    min-height: calc(100vh - 72px);
 }
 
-.sidebar a:hover,
-.sidebar a.active {
-    background: #374151;
-    color: #fff;
+.main-content {
+    flex: 1;
+    width: 100%;
+    padding: 24px;
+    transition: var(--transition);
+    overflow-x: auto;
 }
 
+.content-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.page-title {
+    margin: 0 0 6px;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.96rem;
+}
+
+/* =========================================================
+   Topbar
+========================================================= */
 .topbar {
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
+    height: 72px;
+    background: var(--bg-white);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+}
+
+.topbar-left,
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.2;
+}
+
+.brand-subtitle {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+}
+
+.desktop-sidebar-toggle,
+.mobile-sidebar-toggle {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-white);
+    transition: var(--transition);
+}
+
+.desktop-sidebar-toggle i,
+.mobile-sidebar-toggle i {
+    font-size: 1.1rem;
+}
+
+.desktop-sidebar-toggle:hover,
+.mobile-sidebar-toggle:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary-soft);
+    color: #1e3a8a;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 0.86rem;
+    white-space: nowrap;
+}
+
+.action-btn {
+    border-radius: 10px;
+    font-weight: 500;
+    padding: 0.45rem 0.85rem;
+}
+
+/* =========================================================
+   Sidebar
+========================================================= */
+.sidebar {
+    width: 260px;
+    min-height: calc(100vh - 72px);
+    background: var(--bg-sidebar);
+    color: #ffffff;
+    padding: 20px 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: width 0.3s ease, padding 0.3s ease;
+}
+
+.sidebar .menu-section {
+    margin-bottom: 24px;
+}
+
+.sidebar .sidebar-title {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    margin-bottom: 14px;
+    transition: opacity 0.2s ease;
+}
+
+.sidebar .nav-link {
+    color: #d1d5db;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    transition: var(--transition);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background: var(--bg-sidebar-hover);
+    color: #ffffff;
+}
+
+.sidebar .nav-link i {
+    font-size: 1.05rem;
+}
+
+/* Collapsed Sidebar */
+body.sidebar-collapsed .sidebar {
+    width: 82px !important;
+    padding: 20px 8px;
+}
+
+body.sidebar-collapsed .sidebar .sidebar-title,
+body.sidebar-collapsed .sidebar hr {
+    display: none !important;
+}
+
+body.sidebar-collapsed .sidebar .nav-link {
+    justify-content: center;
+    gap: 0;
+    font-size: 0;
+    padding: 14px 0;
+}
+
+body.sidebar-collapsed .sidebar .nav-link span {
+    display: none !important;
+}
+
+body.sidebar-collapsed .sidebar .nav-link i {
+    font-size: 1.25rem;
+    margin: 0 !important;
+}
+
+/* =========================================================
+   Mobile Sidebar
+========================================================= */
+.mobile-sidebar {
+    background: var(--bg-sidebar);
+}
+
+.mobile-sidebar .offcanvas-title {
+    font-weight: 600;
+}
+
+.mobile-sidebar .nav-link {
+    display: flex;
+    align-items: center;
+    color: #d1d5db;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    padding: 12px 14px;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.mobile-sidebar .nav-link:hover,
+.mobile-sidebar .nav-link.active {
+    background: var(--bg-sidebar-hover);
+    color: #ffffff;
+}
+
+/* =========================================================
+   Cards / Stats
+========================================================= */
+.card,
+.card-stat,
+.dashboard-card {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    background: var(--bg-white);
+}
+
+.dashboard-card {
+    padding: 20px;
+    transition: var(--transition);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .card-stat {
     border: none;
     border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    box-shadow: var(--shadow-sm);
 }
 
-.page-title {
+/* =========================================================
+   Tables
+========================================================= */
+.table-container {
+    background: var(--bg-white);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.table {
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+.table thead th {
+    background: #f8fafc;
+    color: var(--text-dark);
     font-weight: 700;
+    border-bottom: 1px solid var(--border-color);
+    padding: 14px 16px;
+    font-size: 0.9rem;
+}
+
+.table tbody td {
+    padding: 14px 16px;
+    border-color: #edf2f7;
+    color: var(--text-body);
+}
+
+.table tbody tr:hover {
+    background: #f9fbfd;
+}
+
+.table-responsive {
+    border-radius: var(--radius-md);
+}
+
+/* =========================================================
+   Forms
+========================================================= */
+.form-container {
+    background: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.form-control,
+.form-select,
+textarea.form-control {
+    border-radius: 12px;
+    border: 1px solid #d1d5db;
+    padding: 11px 14px;
+    font-size: 0.95rem;
+    min-height: 46px;
+    box-shadow: none;
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea.form-control:focus {
+    border-color: #93c5fd;
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.10);
+}
+
+.form-section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+}
+
+/* =========================================================
+   Buttons
+========================================================= */
+.btn {
+    border-radius: 10px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-danger:hover,
+.btn-outline-secondary:hover {
+    transform: translateY(-1px);
+}
+
+.btn-sm {
+    padding: 0.42rem 0.8rem;
+}
+
+/* =========================================================
+   Badges
+========================================================= */
+.badge,
+.status-badge,
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+.status-badge-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-badge-approved {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-badge-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.role-badge-admin {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.role-badge-user {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.role-badge-hod {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.role-badge-integrity {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+/* =========================================================
+   Footer
+========================================================= */
+.footer {
+    background: var(--bg-white);
+    border-top: 1px solid var(--border-color);
+    padding: 14px 20px;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+}
+
+/* =========================================================
+   Utility
+========================================================= */
+.section-divider {
+    border-top: 1px solid var(--border-color);
+    margin: 20px 0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 36px 20px;
+    color: var(--text-muted);
+}
+
+.shadow-soft {
+    box-shadow: var(--shadow-sm);
+}
+
+.rounded-soft {
+    border-radius: var(--radius-md);
+}
+
+/* =========================================================
+   Responsive
+========================================================= */
+@media (max-width: 991.98px) {
+    .sidebar {
+        display: none !important;
+    }
+
+    .desktop-sidebar-toggle {
+        display: none !important;
+    }
+
+    .mobile-sidebar-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .main-content {
+        padding: 16px;
+    }
+
+    .content-card {
+        padding: 18px;
+    }
+
+    .page-title {
+        font-size: 1.35rem;
+    }
+
+    .topbar {
+        padding: 0 14px;
+    }
+
+    .brand-subtitle {
+        display: none;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .topbar {
+        height: auto;
+        min-height: 72px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .topbar-left,
+    .topbar-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .user-badge {
+        font-size: 0.8rem;
+        padding: 7px 12px;
+    }
+
+    .content-card,
+    .form-container {
+        padding: 16px;
+    }
+
+    .table thead th,
+    .table tbody td {
+        padding: 12px;
+    }
 }
