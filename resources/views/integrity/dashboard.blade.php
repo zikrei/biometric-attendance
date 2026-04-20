@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Integrity Overview')
+@section('title', 'Integrity Dashboard')
 
 {{-- Push the Welcome message directly into the Top Header --}}
 @section('page_title')
-    Welcome back, {{ $user->name ?? 'Integrity Officer' }} 👋
+    Welcome, {{ $user->name ?? 'Integrity Officer' }}
 @endsection
 
-@section('page_subtitle', 'Oversee HOD attendance and system-wide discrepancies.')
+@section('page_subtitle', 'Monitor HOD attendance records and system-wide discrepancies.')
 
 @section('content')
 
@@ -18,15 +18,15 @@
         <div class="dashboard-card card-integrity-approvals pattern-diagonal-reverse h-100">
             <div class="card-content">
                 <div>
-                    <p class="card-label">HOD Requests</p>
+                    <p class="card-label">HOD Approval Requests</p>
                     <h2 class="card-number">{{ $pendingApprovals ?? 0 }}</h2>
-                    <small class="card-desc">Pending attendance & discrepancy approvals</small>
+                    <small class="card-desc">Pending attendance and discrepancy requests</small>
                 </div>
                 <div class="card-icon">
                     <i class="bi bi-shield-check"></i>
                 </div>
             </div>
-            <a href="{{ route('integrity.approvals') }}" class="stretched-link" aria-label="Review Pending Approvals"></a>
+            <a href="{{ route('integrity.approvals') }}" class="stretched-link" aria-label="View HOD Approval Requests"></a>
         </div>
     </div>
 
@@ -35,15 +35,15 @@
         <div class="dashboard-card card-admin-reports pattern-diagonal h-100">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Analytics</p>
-                    <h4 class="card-title">System Reports</h4>
-                    <small class="card-desc">Generate and view system-wide logs</small>
+                    <p class="card-label">Reporting</p>
+                    <h4 class="card-title">Reports</h4>
+                    <small class="card-desc">Generate and review system-wide attendance reports</small>
                 </div>
                 <div class="card-icon">
                     <i class="bi bi-file-earmark-bar-graph"></i>
                 </div>
             </div>
-            <a href="{{ url('/admin/reports') }}" class="stretched-link" aria-label="Generate System Reports"></a>
+            <a href="{{ url('/admin/reports') }}" class="stretched-link" aria-label="Access Reports"></a>
         </div>
     </div>
 
@@ -52,15 +52,15 @@
         <div class="dashboard-card card-profile pattern-lines h-100">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Configuration</p>
-                    <h4 class="card-title">Account Settings</h4>
-                    <small class="card-desc">Update your credentials and profile</small>
+                    <p class="card-label">Account</p>
+                    <h4 class="card-title">Profile Settings</h4>
+                    <small class="card-desc">Manage your account information and credentials</small>
                 </div>
                 <div class="card-icon">
                     <i class="bi bi-person-gear"></i>
                 </div>
             </div>
-            <a href="{{ route('profile.edit') }}" class="stretched-link" aria-label="Manage Account Settings"></a>
+            <a href="{{ route('profile.edit') }}" class="stretched-link" aria-label="Manage Profile Settings"></a>
         </div>
     </div>
 

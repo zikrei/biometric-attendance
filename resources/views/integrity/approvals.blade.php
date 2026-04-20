@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Pending Approvals')
+@section('title', 'Pending Attendance Approvals')
 
 @section('content')
     <div class="mb-4">
-        <h2>Pending Approvals</h2>
-        <p class="text-muted">Review and manage discrepancy requests.</p>
+        <h2>Pending Attendance Approvals</h2>
+        <p class="text-muted">Review and process attendance discrepancy requests.</p>
     </div>
 
     @if(session('success'))
@@ -18,13 +18,13 @@
                 <table class="table table-striped align-middle">
                     <thead class="table-light">
                         <tr>
-                            <th>Name</th>
+                            <th>Employee Name</th>
                             <th>Date</th>
-                            <th>Clock In</th>
-                            <th>Clock Out</th>
-                            <th>Reason</th>
-                            <th>Attachment</th>
-                            <th>Action</th>
+                            <th>Check-In Time</th>
+                            <th>Check-Out Time</th>
+                            <th>Reason for Discrepancy</th>
+                            <th>Supporting Document</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -37,9 +37,9 @@
                                 <td>{{ $attendance->reason }}</td>
                                 <td>
                                     @if($attendance->attachment)
-                                        <a href="{{ asset('storage/' . $attendance->attachment) }}" target="_blank" class="btn btn-sm btn-outline-info">View</a>
+                                        <a href="{{ asset('storage/' . $attendance->attachment) }}" target="_blank" class="btn btn-sm btn-outline-info">View Document</a>
                                     @else
-                                        <span class="text-muted small">None</span>
+                                        <span class="text-muted small">No Document</span>
                                     @endif
                                 </td>
                                 <td>
@@ -47,18 +47,24 @@
                                         {{-- CHANGE 'hod' to 'integrity' for the Integrity view --}}
                                         <form action="{{ route('hod.approve', $attendance->id) }}" method="POST">
                                             @csrf
-                                            <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg"></i></button>
+                                            <button type="submit" class="btn btn-sm btn-success">
+                                                <i class="bi bi-check-lg"></i> Approve
+                                            </button>
                                         </form>
                                         <form action="{{ route('hod.reject', $attendance->id) }}" method="POST">
                                             @csrf
-                                            <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-x-lg"></i></button>
+                                            <button type="submit" class="btn btn-sm btn-danger">
+                                                <i class="bi bi-x-lg"></i> Reject
+                                            </button>
                                         </form>
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">No pending requests to approve! 🎉</td>
+                                <td colspan="7" class="text-center py-4 text-muted">
+                                    There are currently no pending attendance requests requiring review.
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>
