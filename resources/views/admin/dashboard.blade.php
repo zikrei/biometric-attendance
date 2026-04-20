@@ -1,77 +1,66 @@
 @extends('layouts.app')
 
 @section('title', 'Admin Dashboard')
-@section('page_title', 'Admin Dashboard')
-@section('page_subtitle', 'Manage users, monitor system activity, and generate reports.')
+
+{{-- Push the Welcome message directly into the Top Header --}}
+@section('page_title')
+    Welcome back, {{ $user->name ?? 'System Admin' }} 👋
+@endsection
+
+@section('page_subtitle', 'Here is what\'s happening with your biometric attendance system today.')
 
 @section('content')
 
-<div class="dashboard-welcome mb-4">
-    <h3 class="fw-bold">Welcome, {{ $user->name }}</h3>
-    <p class="text-muted mb-0">
-        Monitor system performance and manage key administrative functions.
-    </p>
-</div>
+<div class="row g-4 mt-1">
 
-<div class="row g-4">
-
-    {{-- Total Users --}}
+    {{-- Active Users Metric Card --}}
     <div class="col-md-6 col-xl-4">
-        <div class="dashboard-card card-admin-users">
-
+        <div class="dashboard-card card-admin-users h-100">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Users</p>
+                    <p class="card-label">System Data</p>
                     <h2 class="card-number">{{ $totalUsers }}</h2>
-                    <small class="card-desc">Total registered users</small>
+                    <small class="card-desc">Total registered active users</small>
                 </div>
-
                 <div class="card-icon">
-                    <i class="bi bi-people-fill"></i>
+                    <i class="bi bi-people"></i>
                 </div>
             </div>
-
-            <a href="{{ url('/admin/users') }}" class="stretched-link"></a>
+            <a href="{{ url('/admin/users') }}" class="stretched-link" aria-label="View User Directory"></a>
         </div>
     </div>
 
-    {{-- Reports --}}
+    {{-- Reports Action Card --}}
     <div class="col-md-6 col-xl-4">
-        <div class="dashboard-card card-admin-reports">
-
+        <div class="dashboard-card card-admin-reports h-100">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Reports</p>
-                    <h4 class="card-title">Generate Reports</h4>
-                    <small class="card-desc">View and export attendance reports</small>
+                    <p class="card-label">Analytics</p>
+                    <h4 class="card-title">System Reports</h4>
+                    <small class="card-desc">Export and view attendance logs</small>
                 </div>
-
                 <div class="card-icon">
-                    <i class="bi bi-file-earmark-text-fill"></i>
+                    <i class="bi bi-file-earmark-bar-graph"></i>
                 </div>
             </div>
-
-            <a href="{{ url('/admin/reports') }}" class="stretched-link"></a>
+            <a href="{{ url('/admin/reports') }}" class="stretched-link" aria-label="Generate System Reports"></a>
         </div>
     </div>
 
-    {{-- Profile --}}
+    {{-- Profile Action Card --}}
     <div class="col-md-6 col-xl-4">
-        <div class="dashboard-card card-admin-profile">
-
+        <div class="dashboard-card card-admin-profile h-100">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Account</p>
-                    <h4 class="card-title">Manage Profile</h4>
-                    <small class="card-desc">Update your personal information</small>
+                    <p class="card-label">Configuration</p>
+                    <h4 class="card-title">Account Settings</h4>
+                    <small class="card-desc">Update your credentials and profile</small>
                 </div>
-
                 <div class="card-icon">
-                    <i class="bi bi-person-badge-fill"></i>
+                    <i class="bi bi-shield-lock"></i>
                 </div>
             </div>
-
-            <a href="{{ route('profile.edit') }}" class="stretched-link"></a>
+            <a href="{{ route('profile.edit') }}" class="stretched-link" aria-label="Manage Account Settings"></a>
         </div>
     </div>
 

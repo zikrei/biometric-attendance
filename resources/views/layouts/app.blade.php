@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Biometric Attendance Management System')</title>
+    <meta name="theme-color" content="#ffffff">
+    <title>@yield('title', 'Biometric Attendance System')</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+<body class="antialiased">
     <div class="app-wrapper">
         <header class="topbar">
             <div class="topbar-left">
                 <button
-                    class="btn btn-outline-secondary mobile-sidebar-toggle"
+                    class="btn btn-outline-secondary mobile-sidebar-toggle d-lg-none"
                     type="button"
                     data-bs-toggle="offcanvas"
                     data-bs-target="#mobileSidebar"
                     aria-controls="mobileSidebar"
+                    aria-label="Toggle mobile menu"
                 >
                     <i class="bi bi-list"></i>
                 </button>
@@ -26,33 +28,33 @@
                     class="btn btn-light desktop-sidebar-toggle d-none d-lg-flex align-items-center justify-content-center"
                     type="button"
                     id="desktopToggleBtn"
-                    aria-label="Toggle sidebar"
+                    aria-label="Toggle desktop sidebar"
                 >
                     <i class="bi bi-list"></i>
                 </button>
 
                 <div class="brand-block">
-                    <h1 class="brand-title mb-0">Biometric Attendance Management System</h1>
-                    <small class="brand-subtitle">Attendance and reporting platform</small>
+                    <h1 class="brand-title mb-0">Biometric Attendance</h1>
+                    <small class="brand-subtitle">Management Platform</small>
                 </div>
             </div>
 
             <div class="topbar-right">
                 <div class="user-badge">
                     <i class="bi bi-person-circle"></i>
-                    <span>{{ Auth::user()?->name ?? 'Guest User' }}</span>
+                    <span>{{ Auth::user()?->name ?? 'Unauthenticated' }}</span>
                 </div>
 
                 @auth
                     <a href="{{ route('profile.edit') }}" class="btn btn-sm btn-outline-primary action-btn">
-                        <i class="bi bi-person-gear me-1"></i> My Profile
+                        <i class="bi bi-person-gear me-1"></i> Account Settings
                     </a>
                 @endauth
 
                 <form method="POST" action="{{ route('logout') }}" class="d-inline mb-0">
                     @csrf
                     <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
-                        <i class="bi bi-box-arrow-right me-1"></i> Sign Out
+                        <i class="bi bi-box-arrow-right me-1"></i> Secure Logout
                     </button>
                 </form>
             </div>
@@ -65,18 +67,22 @@
 
             <main class="main-content">
                 <div class="page-header">
-                    <h2 class="page-title">@yield('page_title', 'Dashboard')</h2>
-                    <p class="page-subtitle">@yield('page_subtitle', 'Welcome to the biometric attendance management system.')</p>
+                    <div class="header-titles">
+                        <h2 class="page-title">@yield('page_title', 'System Overview')</h2>
+                        <p class="page-subtitle">@yield('page_subtitle', 'Monitor and manage biometric records.')</p>
+                    </div>
+                    <div class="header-actions">
+                        @yield('page_actions')
+                    </div>
                 </div>
 
-                <div class="content-card">
                     @yield('content')
-                </div>
+  
             </main>
         </div>
 
         <footer class="footer text-center">
-            <span>&copy; {{ date('Y') }} Biometric Attendance Management System. All rights reserved.</span>
+            <span>&copy; {{ date('Y') }} Biometric Attendance System. All rights reserved.</span>
         </footer>
     </div>
 
