@@ -4,7 +4,7 @@
     @endphp
 
     <div class="menu-section">
-        <div class="sidebar-title">Navigation</div>
+        <div class="sidebar-title">Main Navigation</div>
 
         <nav class="nav flex-column">
             @if($role === 'Admin')
@@ -42,7 +42,7 @@
                 <a href="{{ route('hod.approvals') }}"
                    class="nav-link {{ request()->routeIs('hod.approvals') ? 'active' : '' }}">
                     <i class="bi bi-check2-square"></i>
-                    <span>Approval Records</span>
+                    <span>Attendance Approvals</span>
                 </a>
 
             @elseif($role === 'Staff')
@@ -68,7 +68,7 @@
                 <a href="{{ route('integrity.approvals') }}"
                    class="nav-link {{ request()->routeIs('integrity.approvals') ? 'active' : '' }}">
                     <i class="bi bi-shield-check"></i>
-                    <span>Approval Records</span>
+                    <span>Attendance Approvals</span>
                 </a>
 
                 <a href="{{ url('/admin/reports') }}"

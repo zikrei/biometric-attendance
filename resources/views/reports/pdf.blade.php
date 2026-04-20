@@ -12,9 +12,9 @@
 </head>
 <body>
     <div class="text-center">
-        <h2>Company Name</h2>
-        <h3>Attendance Report</h3>
-        <p>Report Month: <strong>{{ \Carbon\Carbon::parse($monthInput)->format('F Y') }}</strong></p>
+        <h2>{{ config('app.name') }}</h2>
+        <h3>Attendance Report Overview</h3>
+        <p>Report for the Month of <strong>{{ \Carbon\Carbon::parse($monthInput)->format('F Y') }}</strong></p>
     </div>
 
     <table>
@@ -40,7 +40,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="text-center">No attendance records found for this date range.</td>
+                    <td colspan="6" class="text-center">No attendance records are available for the selected date range.</td>
                 </tr>
             @endforelse
         </tbody>
