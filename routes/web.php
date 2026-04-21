@@ -69,6 +69,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/attendance/{id}', [AttendanceController::class, 'update'])
         ->middleware('role:Staff|HOD|Admin')
         ->name('attendance.update');
+    
+    Route::get('/attendance/print', [AttendanceController::class, 'print'])->middleware('role:Staff|HOD|Admin')->name('attendance.print');
 });
 
 // HOD Approval Routes (Approves Staff)
@@ -92,14 +94,12 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:Admin');
 });
 
-// Report Routes (For Admin and Integrity Unit)
+// Report Routes (For Admin, Integrity Unit, and HOD)
 Route::middleware('auth')->group(function () {
-    Route::get('/admin/reports', [ReportController::class, 'index'])->middleware('role:Admin|Integrity')->name('reports.index');
-    Route::get('/admin/reports/generate', [ReportController::class, 'generate'])->middleware('role:Admin|Integrity')->name('reports.generate');
-    
-    // REMOVED {id} FROM THESE ROUTES:
-    Route::get('/admin/reports/print', [ReportController::class, 'print'])->middleware('role:Admin|Integrity')->name('reports.print');
-    Route::get('/admin/reports/export', [ReportController::class, 'export'])->middleware('role:Admin|Integrity')->name('reports.export');
+    Route::get('/admin/reports', [ReportController::class, 'index'])->middleware('role:Admin|Integrity|HOD')->name('reports.index');
+    Route::get('/admin/reports/generate', [ReportController::class, 'generate'])->middleware('role:Admin|Integrity|HOD')->name('reports.generate');
+    Route::get('/admin/reports/print', [ReportController::class, 'print'])->middleware('role:Admin|Integrity|HOD')->name('reports.print');
+    Route::get('/admin/reports/export', [ReportController::class, 'export'])->middleware('role:Admin|Integrity|HOD')->name('reports.export');
 });
 
 // Password Reset Routes

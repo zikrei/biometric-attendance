@@ -67,32 +67,31 @@ class ReportController extends Controller
     // Print the report
     public function print(Request $request)
     {
-        $monthInput = $request->input('month');
-        $departmentId = $request->input('department_id');
-        $userId = $request->input('user_id');
+        $selectedMonth = $request->input('month', now()->format('Y-m'));
+        $departmentId = $request->input('department_id'); // If filtered via a dropdown
+        $currentUser = auth()->user();
 
-        $query = Attendance::with(['user']);
+        // Start querying USERS, bringing along their attendance for the specific month
+        $query = \App\Models\User::with(['attendances' => function($q) use ($selectedMonth) {
+            $q->whereMonth('date', \Carbon\Carbon::parse($selectedMonth)->month)
+              ->whereYear('date', \Carbon\Carbon::parse($selectedMonth)->year);
+        }]);
 
-        if (auth()->user()->role?->name === 'Integrity') {
-            $query->where('status', 'Approved');
-        }
-
-        if ($monthInput) {
-            $parts = explode('-', $monthInput);
-            $query->whereYear('date', $parts[0])->whereMonth('date', $parts[1]);
-        }
-
-        if ($userId) {
-            $query->where('user_id', $userId);
+        // SECURE THE SCOPE based on role
+        if ($currentUser->role?->name === 'HOD') {
+            // HODs are locked to their own department's staff
+            $query->where('department_id', $currentUser->department_id)
+                  ->whereHas('role', function($q) {
+                      $q->where('name', 'Staff');
+                  });
         } elseif ($departmentId) {
-            $query->whereHas('user', function($q) use ($departmentId) {
-                $q->where('department_id', $departmentId);
-            });
+            // Admin or Integrity filtering by a specific department
+            $query->where('department_id', $departmentId);
         }
 
-        $attendances = $query->orderBy('date', 'desc')->get();
+        $users = $query->orderBy('name')->get();
 
-        return view('reports.print', compact('monthInput', 'attendances'));
+        return view('reports.print', compact('users', 'selectedMonth'));
     }
 
     // Export the report to PDF

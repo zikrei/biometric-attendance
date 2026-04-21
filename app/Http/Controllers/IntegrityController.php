@@ -8,14 +8,17 @@ use Illuminate\Http\Request;
 class IntegrityController extends Controller
 {
     // Integrity fetching HOD requests
-    public function approvals()
+    public function approvals() // or index()
     {
-        // Fetch pending requests ONLY from users who have the 'HOD' role
-        $attendances = Attendance::with('user')
+        // Fetch pending attendances ONLY for users with the HOD role
+        $attendances = \App\Models\Attendance::with('user')
             ->where('status', 'Pending')
-            ->whereHas('user.role', function($query) {
-                $query->where('name', 'HOD');
-            })->orderBy('date', 'desc')->get();
+            ->whereHas('user', function ($query) {
+                $query->whereHas('role', function($roleQuery) {
+                    $roleQuery->where('name', 'HOD');
+                });
+            })
+            ->paginate(10);
 
         return view('integrity.approvals', compact('attendances'));
     }

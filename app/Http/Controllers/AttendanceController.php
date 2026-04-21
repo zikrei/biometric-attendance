@@ -85,4 +85,18 @@ class AttendanceController extends Controller
     {
         return view('attendance.history');
     }
+
+    //Print method
+    public function print(Request $request)
+    {
+        $selectedMonth = $request->input('month', now()->format('Y-m'));
+        $user = auth()->user();
+        
+        $attendances = \App\Models\Attendance::where('user_id', $user->id)
+            ->whereMonth('date', \Carbon\Carbon::parse($selectedMonth)->month)
+            ->whereYear('date', \Carbon\Carbon::parse($selectedMonth)->year)
+            ->get();
+
+        return view('attendance.print', compact('attendances', 'selectedMonth', 'user'));
+    }
 }

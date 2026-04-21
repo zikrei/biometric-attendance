@@ -11,15 +11,20 @@ class ApprovalController extends Controller
     // HOD fetching Staff requests
     public function index()
     {
-        $user = Auth::user();
+        $hod = auth()->user();
 
-        // Fetch pending requests from the SAME department, EXCEPT the HOD themselves
-        $attendances = Attendance::with('user')
+        // Fetch pending attendances ONLY for Staff in the HOD's department
+        $attendances = \App\Models\Attendance::with('user')
             ->where('status', 'Pending')
-            ->whereHas('user', function($query) use ($user) {
-                $query->where('department_id', $user->department_id)
-                      ->where('id', '!=', $user->id); // Exclude the logged-in HOD
-            })->orderBy('date', 'desc')->get();
+            ->whereHas('user', function ($query) use ($hod) {
+                // 1. Must match the HOD's department
+                $query->where('department_id', $hod->department_id)
+                      // 2. Must be a regular Staff member
+                      ->whereHas('role', function($roleQuery) {
+                          $roleQuery->where('name', 'Staff');
+                      });
+            })
+            ->paginate(10);
 
         return view('hod.approvals', compact('attendances'));
     }

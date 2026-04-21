@@ -2,69 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance Report Print View</title>
+    <title>Monthly Attendance Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        /* Printer-friendly styling */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; padding: 20px; color: black; background: white; }
-        .text-center { text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background-color: #f8f9fa; font-weight: bold; }
+        body { background-color: white; color: black; font-size: 14px; }
         
-        /* Hide buttons when the page is actually printing */
+        /* This forces a new page for every user when printing to PDF! */
+        .user-page { page-break-after: always; padding: 20px; }
+        .user-page:last-child { page-break-after: auto; }
+        
         @media print {
             .no-print { display: none !important; }
-            body { padding: 0; }
         }
     </style>
 </head>
 <body onload="window.print()">
 
-    <div class="no-print" style="margin-bottom: 30px; text-align: right;">
-        <button onclick="window.history.back()" style="padding: 8px 16px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">Go Back</button>
-        <button onclick="window.print()" style="padding: 8px 16px; background: #0d6efd; color: white; border: none; border-radius: 4px; cursor: pointer;">Print Again</button>
+    <div class="p-3 text-end no-print">
+        <button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button>
     </div>
 
-    <div class="text-center">
-        <h2>{{ config('app.name') }}</h2>
-        <h3>Attendance Report</h3>
-        <p>Attendance Report for the Month of <strong>{{ \Carbon\Carbon::parse($monthInput)->format('F Y') }}</strong></p>
-    </div>
+    @forelse($users as $user)
+        <div class="user-page">
+            <div class="mb-4 border-bottom pb-3">
+                <h3 class="mb-1">Attendance Record</h3>
+                <p class="mb-0 fs-5"><strong>Employee:</strong> {{ $user->name }}</p>
+                <p class="mb-0 text-muted"><strong>Month:</strong> {{ \Carbon\Carbon::parse($selectedMonth)->format('F Y') }}</p>
+                @if($user->department)
+                    <p class="mb-0 text-muted"><strong>Department:</strong> {{ $user->department->name ?? 'N/A' }}</p>
+                @endif
+            </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Department</th>
-                <th>Date</th>
-                <th>Check-in</th>
-                <th>Check-out</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($attendances as $attendance)
-                <tr>
-                    <td>{{ $attendance->user->name }}</td>
-                    <td>{{ $attendance->user->department?->name ?? 'N/A' }}</td>
-                    <td>{{ $attendance->date }}</td>
-                    <td>{{ $attendance->clock_in }}</td>
-                    <td>{{ $attendance->clock_out }}</td>
-                    <td>{{ $attendance->status }}</td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="6" class="text-center">No attendance records are available for the selected date range.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            <table class="table table-bordered table-sm align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-start">Date</th>
+                        <th>Check-In</th>
+                        <th>Check-Out</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        $currentMonth = \Carbon\Carbon::parse($selectedMonth);
+                        $daysInMonth = $currentMonth->daysInMonth;
+                        // Key the attendances by date for this specific user
+                        $attendanceMap = $user->attendances->keyBy('date');
+                    @endphp
 
-    <div style="margin-top: 60px;">
-        <p class="text-center">_______________________</p>
-        <p class="text-center">Authorized Signature</p>
-    </div>
+                    @for($i = 1; $i <= $daysInMonth; $i++)
+                        @php
+                            $loopDate = $currentMonth->copy()->day($i);
+                            $dateString = $loopDate->format('Y-m-d');
+                            $isWeekend = $loopDate->isWeekend();
+                            $record = $attendanceMap->get($dateString);
+                            
+                            $displayStatus = $record->status ?? ($isWeekend ? 'Weekend' : 'Absent');
+                        @endphp
+                        <tr class="{{ $isWeekend ? 'table-secondary text-muted' : '' }}">
+                            <td class="text-start fw-medium">{{ $loopDate->format('Y-m-d (l)') }}</td>
+                            <td>{{ $record->clock_in ?? '--:--' }}</td>
+                            <td>{{ $record->clock_out ?? '--:--' }}</td>
+                            <td>{{ ucfirst($displayStatus) }}</td>
+                        </tr>
+                    @endfor
+                </tbody>
+            </table>
+        </div>
+    @empty
+        <div class="text-center p-5">
+            <h4>No records found for the selected criteria.</h4>
+        </div>
+    @endforelse
 
 </body>
 </html>
