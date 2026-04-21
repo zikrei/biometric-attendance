@@ -9,8 +9,15 @@ class Attendance extends Model
 {
     use HasFactory;
 
+    // Added 'reason' and 'attachment' to allow the database to save them!
     protected $fillable = [
-        'user_id', 'date', 'clock_in', 'clock_out', 'status',
+        'user_id', 
+        'date', 
+        'clock_in', 
+        'clock_out', 
+        'status',
+        'reason',
+        'attachment'
     ];
 
     // Attendance belongs to a user

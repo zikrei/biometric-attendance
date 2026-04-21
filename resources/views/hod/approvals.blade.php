@@ -16,9 +16,9 @@
         <div class="card-body p-4">
             
             {{-- Header Row (Filter Removed) --}}
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            {{-- <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5 class="mb-0">Approval Queue</h5>
-            </div>
+            </div> --}}
 
             <div class="table-responsive">
                 <table class="table table-striped align-middle">

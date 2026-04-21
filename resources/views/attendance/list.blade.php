@@ -1,32 +1,27 @@
 @extends('layouts.app')
 
 @section('title', 'Attendance Records')
+@section('page_title', 'Attendance Records')
+@section('page_subtitle', 'View and manage your attendance records efficiently.')
+
+{{-- 1. Move the Filter and Print buttons to the Top Right --}}
+@section('page_actions')
+    <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2 align-items-center mb-0">
+        <input type="month" name="month" class="form-control" value="{{ $selectedMonth ?? now()->format('Y-m') }}" required>
+        <button type="submit" class="btn btn-dark">Apply</button>
+        <a href="{{ url()->current() }}" class="btn btn-outline-secondary">Clear</a>
+        
+        <a href="{{ route('attendance.print', ['month' => $selectedMonth ?? now()->format('Y-m')]) }}" target="_blank" class="btn btn-outline-primary ms-2">
+            <i class="bi bi-printer me-1"></i> Print
+        </a>
+    </form>
+@endsection
 
 @section('content')
-    <div class="mb-4">
-        <h2>Attendance Records</h2>
-        <p class="text-muted">View and manage your attendance records efficiently.</p>
-    </div>
-
-    <div class="card border-0 shadow-sm rounded-4">
+    <div class="card border-0 shadow-sm rounded-4 mt-3">
         <div class="card-body p-4">
+            {{-- The inner "Attendance Records" title has been removed! --}}
             
-            {{-- Header, Filter Row & Print Button --}}
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="mb-0">Attendance Records</h5>
-                
-                <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2 align-items-center">
-                    <input type="month" name="month" class="form-control" value="{{ $selectedMonth ?? now()->format('Y-m') }}" required>
-                    <button type="submit" class="btn btn-dark">Apply</button>
-                    <a href="{{ url()->current() }}" class="btn btn-outline-secondary">Clear</a>
-                    
-                    {{-- Updated Print Button to use the web.php route --}}
-                    <a href="{{ route('attendance.print', ['month' => $selectedMonth ?? now()->format('Y-m')]) }}" target="_blank" class="btn btn-outline-primary ms-2">
-                        <i class="bi bi-printer me-1"></i> Print
-                    </a>
-                </form>
-            </div>
-
             <div class="table-responsive">
                 <table class="table table-striped align-middle">
                     <thead class="table-light fs-5">
@@ -61,17 +56,37 @@
                                 }
 
                                 $needsAction = false;
-                                $displayStatus = $record->status ?? 'Absent';
+                                $displayStatus = 'Absent';
 
                                 if ($isWeekend) {
                                     $displayStatus = 'Weekend';
                                 } else {
-                                    if (!$clockIn || !$clockOut) {
-                                        $displayStatus = 'Pending';
-                                        $needsAction = true;
-                                    } elseif ($hoursWorked < 8) {
-                                        $needsAction = true;
+                                    // If a discrepancy was submitted or it was approved/rejected
+                                    if ($record && in_array(strtolower($record->status), ['pending', 'approved', 'rejected'])) {
+                                        $displayStatus = ucfirst($record->status);
+                                        
+                                        // If pending, change display wording to Awaiting Approval (Action button naturally hides)
+                                        if (strtolower($displayStatus) === 'pending') {
+                                            $displayStatus = 'Awaiting Approval';
+                                        }
+                                    } else {
+                                        // If no action has been taken yet, evaluate the times
+                                        if (!$clockIn || !$clockOut) {
+                                            $displayStatus = 'Need Discrepancy';
+                                            $needsAction = true;
+                                        } elseif ($hoursWorked < 9) {
+                                            $displayStatus = 'Need Discrepancy';
+                                            $needsAction = true;
+                                        } elseif ($hoursWorked >= 9) {
+                                            $displayStatus = 'Approved';
+                                        }
                                     }
+                                }
+                                
+                                // Clean UI: Don't show "Need Discrepancy" for dates in the future
+                                if ($loopDate->isFuture() && !$isWeekend) {
+                                    $displayStatus = '--';
+                                    $needsAction = false;
                                 }
                             @endphp
 
@@ -80,21 +95,24 @@
                                 <td>{{ $clockIn ?? '--:--' }}</td>
                                 <td>{{ $clockOut ?? '--:--' }}</td>
                                 <td>
-                                    {{-- Colored Status Badges --}}
+                                    {{-- Status Badges --}}
                                     @if(strtolower($displayStatus) === 'approved')
-                                        <span class="badge bg-success text-white">Approved</span>
-                                    @elseif(strtolower($displayStatus) === 'pending')
-                                        <span class="badge bg-warning text-dark">Pending</span>
+                                        <span class="badge bg-success border">🟢 Approved</span>
+                                    @elseif(strtolower($displayStatus) === 'awaiting approval')
+                                        <span class="badge bg-warning text-dark border">🟡 Awaiting Approval</span>
                                     @elseif(strtolower($displayStatus) === 'rejected')
-                                        <span class="badge bg-danger text-white">Rejected</span>
+                                        <span class="badge bg-danger border">🔴 Rejected</span>
+                                    @elseif(strtolower($displayStatus) === 'need discrepancy')
+                                        <span class="badge bg-danger text-white border">🔴 Need Discrepancy</span>
                                     @elseif(strtolower($displayStatus) === 'weekend')
                                         <span class="badge bg-light text-dark border">Weekend</span>
                                     @else
-                                        <span class="badge bg-secondary text-white">{{ ucfirst($displayStatus) }}</span>
+                                        <span class="badge bg-secondary border">{{ $displayStatus }}</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($needsAction && !$isWeekend)
+                                    {{-- Discrepancy Button (Only shows if needsAction is true!) --}}
+                                    @if($needsAction)
                                         <a href="{{ $record ? route('attendance.edit', $record->id) : route('attendance.create', ['date' => $dateString]) }}" 
                                            class="btn btn-sm btn-primary text-white">
                                             <i class="bi bi-pencil-square"></i> Submit Discrepancy
@@ -106,7 +124,6 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
     </div>
 @endsection
