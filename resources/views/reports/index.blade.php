@@ -11,30 +11,35 @@
         
         <form action="{{ url('/admin/reports/generate') }}" method="GET">
             <div class="row g-3 mb-4">
-                {{-- 1. Month Picker --}}
-                <div class="col-md-4">
+                
+                {{-- Determine if the user is an HOD to hide the department box --}}
+                @php $isHOD = auth()->user()->role?->name === 'HOD'; @endphp
+
+                {{-- 1. Month Picker (Expands if HOD) --}}
+                <div class="{{ $isHOD ? 'col-md-6' : 'col-md-4' }}">
                     <label class="form-label fw-bold">Choose Month</label>
                     <input type="month" name="month" class="form-control" value="{{ date('Y-m') }}" required>
                 </div>
 
-                {{-- 2. Department Dropdown --}}
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Select Department (Optional)</label>
-                    <select name="department_id" id="departmentSelect" class="form-select">
-                        <option value="">All Departments</option>
-                        @foreach($departments as $dept)
-                            <option value="{{ $dept->id }}">{{ $dept->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
+                {{-- 2. Department Dropdown (HIDDEN ENTIRELY FOR HODs) --}}
+                @if(!$isHOD)
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Select Department (Optional)</label>
+                        <select name="department_id" id="departmentSelect" class="form-select">
+                            <option value="">All Departments</option>
+                            @foreach($departments as $dept)
+                                <option value="{{ $dept->id }}">{{ $dept->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
 
-                {{-- 3. Auto-sorting User Dropdown --}}
-                <div class="col-md-4">
+                {{-- 3. Auto-sorting User Dropdown (Expands if HOD) --}}
+                <div class="{{ $isHOD ? 'col-md-6' : 'col-md-4' }}">
                     <label class="form-label fw-bold">Select User (Optional)</label>
                     <select name="user_id" id="userSelect" class="form-select">
                         <option value="">All Users</option>
                         @foreach($users as $user)
-                            {{-- data-dept powers the JavaScript sorting! --}}
                             <option value="{{ $user->id }}" data-dept="{{ $user->department_id }}">
                                 {{ $user->name }}
                             </option>
@@ -56,23 +61,20 @@
         const deptSelect = document.getElementById('departmentSelect');
         const userSelect = document.getElementById('userSelect');
         
-        // Save all original user options when the page first loads
+        // If the user is an HOD, the department select doesn't exist, so we skip this script!
+        if (!deptSelect) return; 
+
         const allUserOptions = Array.from(userSelect.options);
 
         deptSelect.addEventListener('change', function() {
             const selectedDept = this.value;
-
-            // Clear the user dropdown
             userSelect.innerHTML = '<option value="">All Users</option>';
-
-            // Loop through our saved list of users
+            
             allUserOptions.forEach(option => {
                 if (option.value === '') {
                     userSelect.appendChild(option.cloneNode(true));
                     return; 
                 }
-                
-                // If no department is selected, OR the user's department matches the selection, put them back!
                 if (selectedDept === '' || option.getAttribute('data-dept') === selectedDept) {
                     userSelect.appendChild(option.cloneNode(true));
                 }

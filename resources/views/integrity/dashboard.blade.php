@@ -19,7 +19,7 @@
             <div class="card-content">
                 <div>
                     <p class="card-label">HOD Approval Requests</p>
-                    <h2 class="card-number">{{ $pendingApprovals ?? 0 }}</h2>
+                    <h2 class="card-number">{{ $totalPending ?? 0 }}</h2>
                     <small class="card-desc">Pending attendance and discrepancy requests</small>
                 </div>
                 <div class="card-icon">

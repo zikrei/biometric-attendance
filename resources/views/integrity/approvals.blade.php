@@ -44,14 +44,14 @@
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        {{-- CHANGE 'hod' to 'integrity' for the Integrity view --}}
-                                        <form action="{{ route('hod.approve', $attendance->id) }}" method="POST">
+                                        {{-- Updated to Integrity Routes! --}}
+                                        <form action="{{ route('integrity.approve', $attendance->id) }}" method="POST">
                                             @csrf
                                             <button type="submit" class="btn btn-sm btn-success">
                                                 <i class="bi bi-check-lg"></i> Approve
                                             </button>
                                         </form>
-                                        <form action="{{ route('hod.reject', $attendance->id) }}" method="POST">
+                                        <form action="{{ route('integrity.reject', $attendance->id) }}" method="POST">
                                             @csrf
                                             <button type="submit" class="btn btn-sm btn-danger">
                                                 <i class="bi bi-x-lg"></i> Reject

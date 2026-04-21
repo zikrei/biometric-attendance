@@ -10,12 +10,30 @@ use App\Models\Department;
 
 class ReportController extends Controller
 {
+    // Helper method to get the correct dropdown data securely based on role
+    private function getDropdownData()
+    {
+        $currentUser = auth()->user();
+        
+        if ($currentUser->role?->name === 'HOD') {
+            $departments = Department::where('id', $currentUser->department_id)->get();
+            // ONLY fetch Staff inside the HOD's department
+            $users = User::where('department_id', $currentUser->department_id)
+                         ->whereHas('role', function($q) {
+                             $q->where('name', 'Staff');
+                         })->orderBy('name')->get(['id', 'name', 'department_id']);
+        } else {
+            $departments = Department::all();
+            $users = User::orderBy('name')->get(['id', 'name', 'department_id']); 
+        }
+        
+        return [$departments, $users];
+    }
+
     // Show the report generation filter page
     public function index()
     {
-        $departments = Department::all();
-        $users = User::all(['id', 'name', 'department_id']); 
-
+        [$departments, $users] = $this->getDropdownData();
         return view('reports.index', compact('departments', 'users'));
     }
 
@@ -61,16 +79,14 @@ class ReportController extends Controller
 
         $attendances = $query->orderBy('date', 'desc')->get();
 
-        // 4. Fetch the department name to send to the Blade View!
         $department = null;
         if ($departmentId) {
             $department = Department::find($departmentId);
         }
 
-        $departments = Department::all();
-        $users = User::all(['id', 'name', 'department_id']); 
+        // Fetch secure dropdown data so the preview page form also obeys the rules!
+        [$departments, $users] = $this->getDropdownData();
 
-        // --> UPDATE THE COMPACT LIST <--
         return view('reports.preview', compact('monthInput', 'attendances', 'department', 'departments', 'users'));
     }
 
@@ -112,7 +128,6 @@ class ReportController extends Controller
         $departmentId = $request->input('department_id');
         $currentUser = auth()->user();
 
-        // Query users instead of attendances so the PDF has page-breaks per employee!
         $query = \App\Models\User::with(['attendances' => function($q) use ($selectedMonth) {
             $q->whereMonth('date', \Carbon\Carbon::parse($selectedMonth)->month)
               ->whereYear('date', \Carbon\Carbon::parse($selectedMonth)->year);
@@ -129,7 +144,6 @@ class ReportController extends Controller
 
         $users = $query->orderBy('name')->get();
 
-        // Reuse the print view for the PDF! DomPDF handles page-breaks perfectly.
         $pdf = Pdf::loadView('reports.print', compact('users', 'selectedMonth'));
         
         return $pdf->download('Department_Attendance_Report.pdf');

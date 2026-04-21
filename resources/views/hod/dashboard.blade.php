@@ -64,6 +64,24 @@
         </div>
     </div>
 
+    {{-- 4. Reporting Card (Green Gradient) --}}
+    <div class="col-md-6 col-xl-4 mb-4">
+        <div class="dashboard-card card-admin-reports h-100">
+            <div class="card-content">
+                <div>
+                    <p class="card-label">REPORTING</p>
+                    <h2 class="card-title mb-2">Reports</h2>
+                    <small class="card-desc">Generate and review department attendance reports</small>
+                </div>
+                <div class="card-icon">
+                    <i class="bi bi-file-earmark-bar-graph"></i>
+                </div>
+            </div>
+            {{-- Links directly to the reports page --}}
+            <a href="{{ route('reports.index') }}" class="stretched-link" aria-label="View Reports"></a>
+        </div>
+    </div>
+
 </div>
 
 @endsection

@@ -1,121 +1,114 @@
-<aside class="sidebar">
-
+<aside class="sidebar d-flex flex-column" id="mobileSidebar">
+    
     {{-- CSS for handling the collapse animation cleanly --}}
     <style>
-        .brand-text { transition: opacity 0.2s; }
+        /* Smooth transitions */
+        .brand-text, .brand-icon { transition: opacity 0.2s; }
+        .toggle-icon { transition: transform 0.3s ease; }
         
         /* What happens when the sidebar is collapsed */
-        body.sidebar-collapsed .brand-text { display: none !important; }
+        body.sidebar-collapsed .brand-text,
+        body.sidebar-collapsed .brand-icon { 
+            display: none !important; 
+        }
         
+        /* Center the toggle button when collapsed */
         body.sidebar-collapsed .sidebar-header {
-            flex-direction: column !important;
             justify-content: center !important;
             padding-left: 0 !important;
             padding-right: 0 !important;
-            gap: 10px;
+        }
+
+        /* Flip the arrows to point right (>>) when collapsed */
+        body.sidebar-collapsed .toggle-icon {
+            transform: rotate(180deg);
         }
     </style>
 
     {{-- Sidebar Header (Brand + Toggle Button) --}}
-    <div class="sidebar-header d-flex align-items-center justify-content-between px-3 py-3" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-        
-        {{-- The Icon & Text --}}
+    <div class="sidebar-header d-flex align-items-center justify-content-between px-3 py-3" style="border-bottom: 1px solid rgba(255,255,255,0.05); min-height: 76px;">
         <div class="d-flex align-items-center gap-2 overflow-hidden">
-            <i class="bi bi-fingerprint text-white flex-shrink-0" style="font-size: 2rem;"></i>
+            <i class="bi bi-fingerprint text-white flex-shrink-0 brand-icon" style="font-size: 2rem;"></i>
             <div class="brand-text text-nowrap">
                 <h5 class="text-white fw-bold mb-0" style="letter-spacing: 0.5px;">Biometric</h5>
                 <small class="text-white-50" style="font-size: 0.75rem;">Attendance System</small>
             </div>
         </div>
         
-        {{-- The NEW Desktop Toggle Button (Inside Sidebar) --}}
-        <button class="btn btn-link text-white-50 p-0 d-none d-lg-block flex-shrink-0" id="sidebarToggleBtn">
-            <i class="bi bi-list fs-4"></i>
+        <button class="btn btn-link text-white-50 p-0 d-none d-lg-flex align-items-center justify-content-center flex-shrink-0" id="sidebarToggleBtn" style="width: 35px; height: 35px; text-decoration: none;">
+            <i class="bi bi-chevron-double-left fs-4 toggle-icon"></i>
         </button>
     </div>
 
-    {{-- Your existing sidebar navigation links start below here... --}}
-    <ul class="nav flex-column..."></ul>
-    @php
-        $role = auth()->user()->role?->name;
-    @endphp
+    {{-- Navigation Links --}}
+    <div class="sidebar-title">MAIN NAVIGATION</div>
+    
+    <ul class="nav flex-column gap-1 px-2 mb-auto">
+        
+        @php $role = Auth::user()->role?->name; @endphp
 
-    <div class="menu-section">
-
-    {{-- NEW: Brand Block inside the Sidebar --}}
-        <div class="sidebar-title">Main Navigation</div>
-
-        <nav class="nav flex-column">
+        {{-- 1. DASHBOARD (Dynamic based on role) --}}
+        <li class="nav-item">
             @if($role === 'Admin')
-                <a href="{{ route('admin.dashboard') }}"
-                   class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-house-door"></i>
-                    <span>Dashboard</span>
-                </a>
-
-                <a href="{{ url('/admin/users') }}"
-                   class="nav-link {{ request()->is('admin/users*') ? 'active' : '' }}">
-                    <i class="bi bi-people"></i>
-                    <span>User Management</span>
-                </a>
-
-                <a href="{{ url('/admin/reports') }}"
-                   class="nav-link {{ request()->is('admin/reports*') ? 'active' : '' }}">
-                    <i class="bi bi-file-earmark-text"></i>
-                    <span>Reports</span>
-                </a>
-
+                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
             @elseif($role === 'HOD')
-                <a href="{{ route('hod.dashboard') }}"
-                   class="nav-link {{ request()->routeIs('hod.dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-house-door"></i>
-                    <span>Dashboard</span>
-                </a>
-
-                <a href="{{ url('/attendance') }}"
-                   class="nav-link {{ request()->is('attendance*') ? 'active' : '' }}">
-                    <i class="bi bi-calendar-check"></i>
-                    <span>Attendance Records</span>
-                </a>
-
-                <a href="{{ route('hod.approvals') }}"
-                   class="nav-link {{ request()->routeIs('hod.approvals') ? 'active' : '' }}">
-                    <i class="bi bi-check2-square"></i>
-                    <span>Attendance Approvals</span>
-                </a>
-
-            @elseif($role === 'Staff')
-                <a href="{{ route('dashboard') }}"
-                   class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-house-door"></i>
-                    <span>Dashboard</span>
-                </a>
-
-                <a href="{{ url('/attendance') }}"
-                   class="nav-link {{ request()->is('attendance*') ? 'active' : '' }}">
-                    <i class="bi bi-calendar-check"></i>
-                    <span>Attendance Records</span>
-                </a>
-
+                <a href="{{ route('hod.dashboard') }}" class="nav-link {{ request()->routeIs('hod.dashboard') ? 'active' : '' }}">
             @elseif($role === 'Integrity')
-                <a href="{{ route('integrity.dashboard') }}"
-                   class="nav-link {{ request()->routeIs('integrity.dashboard') ? 'active' : '' }}">
-                    <i class="bi bi-house-door"></i>
-                    <span>Dashboard</span>
-                </a>
-
-                <a href="{{ route('integrity.approvals') }}"
-                   class="nav-link {{ request()->routeIs('integrity.approvals') ? 'active' : '' }}">
-                    <i class="bi bi-shield-check"></i>
-                    <span>Attendance Approvals</span>
-                </a>
-
-                <a href="{{ url('/admin/reports') }}"
-                   class="nav-link {{ request()->is('admin/reports*') ? 'active' : '' }}">
-                    <i class="bi bi-file-earmark-text"></i>
-                    <span>Reports</span>
-                </a>
+                <a href="{{ route('integrity.dashboard') }}" class="nav-link {{ request()->routeIs('integrity.dashboard') ? 'active' : '' }}">
+            @else
+                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             @endif
-        </nav>
-    </div>
+                <i class="bi bi-house-door"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+
+        {{-- 2. USER MANAGEMENT (Admin Only) --}}
+        @if($role === 'Admin')
+        <li class="nav-item">
+            <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                <i class="bi bi-people"></i>
+                <span>User Management</span>
+            </a>
+        </li>
+        @endif
+
+        {{-- 3. ATTENDANCE RECORDS (Staff & HOD) --}}
+        @if(in_array($role, ['Staff', 'HOD']))
+        <li class="nav-item">
+            <a href="{{ route('attendance.list') }}" class="nav-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
+                <i class="bi bi-calendar-check"></i>
+                <span>Attendance Records</span>
+            </a>
+        </li>
+        @endif
+
+        {{-- 4. ATTENDANCE APPROVALS (HOD & Integrity) --}}
+        @if($role === 'HOD')
+        <li class="nav-item">
+            <a href="{{ route('hod.approvals') }}" class="nav-link {{ request()->routeIs('hod.*') && !request()->routeIs('hod.dashboard') ? 'active' : '' }}">
+                <i class="bi bi-check-square"></i>
+                <span>Attendance Approvals</span>
+            </a>
+        </li>
+        @elseif($role === 'Integrity')
+        <li class="nav-item">
+            <a href="{{ route('integrity.approvals') }}" class="nav-link {{ request()->routeIs('integrity.*') && !request()->routeIs('integrity.dashboard') ? 'active' : '' }}">
+                <i class="bi bi-shield-check"></i>
+                <span>Attendance Approvals</span>
+            </a>
+        </li>
+        @endif
+
+        {{-- 5. REPORTS (Admin, Integrity, AND NOW HOD!) --}}
+        @if(in_array($role, ['Admin', 'Integrity', 'HOD']))
+        <li class="nav-item mt-2">
+            <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>Reports</span>
+            </a>
+        </li>
+        @endif
+
+    </ul>
 </aside>

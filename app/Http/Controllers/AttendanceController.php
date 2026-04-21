@@ -139,17 +139,19 @@ class AttendanceController extends Controller
         return view('attendance.history');
     }
 
-    // Print method
+    // Print method (Staff - Uses Universal Template)
     public function print(Request $request)
     {
         $selectedMonth = $request->input('month', now()->format('Y-m'));
-        $user = auth()->user();
+        $currentUser = auth()->user();
         
-        $attendances = Attendance::where('user_id', $user->id)
-            ->whereMonth('date', Carbon::parse($selectedMonth)->month)
-            ->whereYear('date', Carbon::parse($selectedMonth)->year)
-            ->get();
+        // Wrap the single user in the exact same query structure used by the ReportController
+        $users = \App\Models\User::with(['attendances' => function($q) use ($selectedMonth) {
+            $q->whereMonth('date', \Carbon\Carbon::parse($selectedMonth)->month)
+              ->whereYear('date', \Carbon\Carbon::parse($selectedMonth)->year);
+        }])->where('id', $currentUser->id)->get();
 
-        return view('attendance.print', compact('attendances', 'selectedMonth', 'user'));
+        // Point directly to the universal A4 template!
+        return view('reports.print', compact('users', 'selectedMonth'));
     }
 }

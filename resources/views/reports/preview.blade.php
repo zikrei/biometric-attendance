@@ -8,7 +8,6 @@
 @section('content')
     <style>
         @media print {
-            /* Hide UI elements including the filter form when printing directly */
             .topbar, .sidebar-wrapper, .page-header, .no-print, footer, .filter-section {
                 display: none !important;
             }
@@ -32,26 +31,34 @@
             
             <form action="{{ url('/admin/reports/generate') }}" method="GET">
                 <div class="row g-3 mb-4">
-                    <div class="col-md-4">
+                    
+                    @php $isHOD = auth()->user()->role?->name === 'HOD'; @endphp
+
+                    {{-- 1. Month Picker (Expands if HOD) --}}
+                    <div class="{{ $isHOD ? 'col-md-6' : 'col-md-4' }}">
                         <label class="form-label fw-bold">Choose Month</label>
                         <input type="month" name="month" class="form-control" value="{{ request('month', date('Y-m')) }}" required>
                     </div>
 
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Select Department (Optional)</label>
-                        <select name="department_id" id="departmentSelect" class="form-select">
-                            <option value="">All Departments</option>
-                            @if(isset($departments))
-                                @foreach($departments as $dept)
-                                    <option value="{{ $dept->id }}" {{ request('department_id') == $dept->id ? 'selected' : '' }}>
-                                        {{ $dept->name }}
-                                    </option>
-                                @endforeach
-                            @endif
-                        </select>
-                    </div>
+                    {{-- 2. Department Dropdown (HIDDEN ENTIRELY FOR HODs) --}}
+                    @if(!$isHOD)
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Select Department (Optional)</label>
+                            <select name="department_id" id="departmentSelect" class="form-select">
+                                <option value="">All Departments</option>
+                                @if(isset($departments))
+                                    @foreach($departments as $dept)
+                                        <option value="{{ $dept->id }}" {{ request('department_id') == $dept->id ? 'selected' : '' }}>
+                                            {{ $dept->name }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
+                    @endif
 
-                    <div class="col-md-4">
+                    {{-- 3. Auto-sorting User Dropdown (Expands if HOD) --}}
+                    <div class="{{ $isHOD ? 'col-md-6' : 'col-md-4' }}">
                         <label class="form-label fw-bold">Select User (Optional)</label>
                         <select name="user_id" id="userSelect" class="form-select">
                             <option value="">All Users</option>
@@ -73,7 +80,7 @@
         </div>
     </div>
 
-    {{-- REPORT PREVIEW SECTION (Consolidated View) --}}
+    {{-- REPORT PREVIEW SECTION --}}
     <div class="card border-0 shadow-sm rounded-4 mt-3">
         <div class="card-body p-4">
             <div class="mb-5">
@@ -126,9 +133,8 @@
                 </div>
             </div>
 
-            {{-- ACTION BUTTONS - Bottom Right Corner --}}
+            {{-- ACTION BUTTONS --}}
             <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top no-print">
-                {{-- This opens the Print layout (1 Staff Per Page) in a new tab! --}}
                 <a href="{{ route('reports.print', request()->query()) }}" target="_blank" class="btn btn-primary px-4">
                     <i class="bi bi-printer me-2"></i> Print Individual Staff Reports
                 </a>
@@ -143,6 +149,9 @@
             const deptSelect = document.getElementById('departmentSelect');
             const userSelect = document.getElementById('userSelect');
             
+            // If the user is an HOD, skip this script!
+            if (!deptSelect) return; 
+
             const allUserOptions = Array.from(userSelect.options);
 
             function filterUsers() {
