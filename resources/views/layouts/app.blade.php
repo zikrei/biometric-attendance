@@ -71,20 +71,21 @@
                 </div>
             </header>
 
+            {{-- MAIN PAGE CONTENT --}}
             <main class="main-content">
+                
+                {{-- If you have page actions (like the Print button), we keep them but align them to the right --}}
                 @auth
-                    <div class="page-header">
-                        <div class="header-titles">
-                            <h2 class="page-title">@yield('page_title', 'Dashboard Overview')</h2>
-                            <p class="page-subtitle">@yield('page_subtitle', 'Monitor and manage attendance records and system activities.')</p>
-                        </div>
-                        <div class="header-actions">
+                    @hasSection('page_actions')
+                        <div class="d-flex justify-content-end mb-3">
                             @yield('page_actions')
                         </div>
-                    </div>
+                    @endif
                 @endauth
 
+                {{-- The main page content loads here --}}
                 @yield('content')
+                
             </main>
 
             <footer class="footer">
