@@ -2,22 +2,21 @@
 <html>
 <head>
     <title>Attendance Report</title>
-    <style>
-        body { font-family: sans-serif; font-size: 14px; }
-        .text-center { text-align: center; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #333; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-    </style>
+    
+    {{-- Connect your external app.css file --}}
+    {{-- NOTE: If your PDF generator (like dompdf) ignores the CSS, change asset() to public_path() like this: --}}
+    {{-- <link rel="stylesheet" href="{{ public_path('css/app.css') }}"> --}}
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-<body>
+<body class="pdf-layout">
+    
     <div class="text-center">
         <h2>{{ config('app.name') }}</h2>
         <h3>Attendance Report Overview</h3>
         <p>Report for the Month of <strong>{{ \Carbon\Carbon::parse($monthInput)->format('F Y') }}</strong></p>
     </div>
 
-    <table>
+    <table class="pdf-table">
         <thead>
             <tr>
                 <th>Name</th>
@@ -46,9 +45,11 @@
         </tbody>
     </table>
 
-    <div style="margin-top: 50px;">
+    {{-- Replaced inline style with the new semantic class --}}
+    <div class="pdf-signature-block">
         <p class="text-center">_______________________</p>
         <p class="text-center">Authorized Signature</p>
     </div>
+    
 </body>
 </html>

@@ -1,17 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-{{-- The d-flex and min-height perfectly center the box on the screen --}}
-<div class="container d-flex justify-content-center align-items-center" style="min-height: 75vh;">
+{{-- The d-flex and auth-page-wrapper perfectly center the box on the screen --}}
+<div class="container d-flex justify-content-center align-items-center auth-page-wrapper">
     <div class="col-12 col-md-6 col-lg-5">
         <div class="card shadow-lg border-0 rounded-4 p-4 p-md-5">
             
             {{-- Centered Purple Header & Icon --}}
             <div class="text-center mb-4">
-                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px; background: rgba(139, 92, 246, 0.1);">
-                    <i class="bi bi-key-fill fs-2" style="color: #6d28d9;"></i>
+                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 auth-icon-circle">
+                    <i class="bi bi-key-fill fs-2 text-purple-primary"></i>
                 </div>
-                <h3 class="fw-bold" style="color: #6d28d9;">Password Reset</h3>
+                <h3 class="fw-bold text-purple-primary">Password Reset</h3>
                 <p class="text-muted">Enter your registered email address to receive a password reset link.</p>
             </div>
 
@@ -31,16 +31,13 @@
                 
                 {{-- Centered Purple Button --}}
                 <div class="text-center">
-                    <button type="submit" class="btn text-white w-100 fw-bold rounded-3 py-2" 
-                            style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border: none; transition: transform 0.2s;" 
-                            onmouseover="this.style.transform='translateY(-2px)'" 
-                            onmouseout="this.style.transform='translateY(0)'">
+                    <button type="submit" class="btn w-100 fw-bold rounded-3 py-2 btn-purple-gradient">
                         Send Password Reset Link
                     </button>
                 </div>
                 
                 <div class="text-center mt-4">
-                    <a href="{{ route('login') }}" class="text-decoration-none fw-semibold" style="color: #8b5cf6;">
+                    <a href="{{ route('login') }}" class="auth-back-link">
                         <i class="bi bi-arrow-left me-1"></i> Return to Sign In
                     </a>
                 </div>

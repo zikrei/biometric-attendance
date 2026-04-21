@@ -6,23 +6,6 @@
 @section('page_subtitle', 'Preview the attendance report before generating a printable or exportable version.')
 
 @section('content')
-    <style>
-        @media print {
-            .topbar, .sidebar-wrapper, .page-header, .no-print, footer, .filter-section {
-                display: none !important;
-            }
-            body, .app-wrapper, .layout-body, .main-content {
-                background-color: white !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 100% !important;
-            }
-            .card {
-                box-shadow: none !important;
-                border: none !important;
-            }
-        }
-    </style>
 
     {{-- FILTER FORM SECTION --}}
     <div class="card border-0 shadow-sm rounded-4 mb-4 filter-section no-print">

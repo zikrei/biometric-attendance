@@ -1,41 +1,16 @@
 <aside class="sidebar d-flex flex-column" id="mobileSidebar">
-    
-    {{-- CSS for handling the collapse animation cleanly --}}
-    <style>
-        /* Smooth transitions */
-        .brand-text, .brand-icon { transition: opacity 0.2s; }
-        .toggle-icon { transition: transform 0.3s ease; }
-        
-        /* What happens when the sidebar is collapsed */
-        body.sidebar-collapsed .brand-text,
-        body.sidebar-collapsed .brand-icon { 
-            display: none !important; 
-        }
-        
-        /* Center the toggle button when collapsed */
-        body.sidebar-collapsed .sidebar-header {
-            justify-content: center !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-        }
-
-        /* Flip the arrows to point right (>>) when collapsed */
-        body.sidebar-collapsed .toggle-icon {
-            transform: rotate(180deg);
-        }
-    </style>
 
     {{-- Sidebar Header (Brand + Toggle Button) --}}
-    <div class="sidebar-header d-flex align-items-center justify-content-between px-3 py-3" style="border-bottom: 1px solid rgba(255,255,255,0.05); min-height: 76px;">
+    <div class="sidebar-header d-flex align-items-center justify-content-between px-3 py-3">
         <div class="d-flex align-items-center gap-2 overflow-hidden">
-            <i class="bi bi-fingerprint text-white flex-shrink-0 brand-icon" style="font-size: 2rem;"></i>
+            <i class="bi bi-fingerprint text-white flex-shrink-0 brand-icon"></i>
             <div class="brand-text text-nowrap">
-                <h5 class="text-white fw-bold mb-0" style="letter-spacing: 0.5px;">Biometric</h5>
-                <small class="text-white-50" style="font-size: 0.75rem;">Attendance System</small>
+                <h5 class="text-white fw-bold mb-0">Biometric</h5>
+                <small class="text-white-50">Attendance System</small>
             </div>
         </div>
         
-        <button class="btn btn-link text-white-50 p-0 d-none d-lg-flex align-items-center justify-content-center flex-shrink-0" id="sidebarToggleBtn" style="width: 35px; height: 35px; text-decoration: none;">
+        <button class="btn btn-link text-white-50 p-0 d-none d-lg-flex align-items-center justify-content-center flex-shrink-0" id="sidebarToggleBtn">
             <i class="bi bi-chevron-double-left fs-4 toggle-icon"></i>
         </button>
     </div>

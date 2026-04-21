@@ -561,3 +561,254 @@ body.login-page .form-control:focus {
     .login-left { display: none; }
     .login-right { padding: 2rem 1.5rem; }
 }
+
+/* =========================================================
+   11. Print Layouts (Users & Reports)
+========================================================= */
+@page { 
+    size: A4 portrait; 
+    margin: 15mm; 
+}
+
+body.print-layout {
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    background: white;
+}
+
+.print-layout .header {
+    text-align: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #000;
+    padding-bottom: 10px;
+}
+
+.print-layout .header h2 { 
+    margin: 0 0 5px 0; 
+    text-transform: uppercase; 
+}
+
+.print-layout .header p { 
+    margin: 0; 
+    color: #555; 
+}
+
+.print-layout .data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.print-layout .data-table th, 
+.print-layout .data-table td {
+    border: 1px solid #999;
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.print-layout .data-table th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 11px;
+}
+
+.print-layout .text-center { 
+    text-align: center !important; 
+}
+
+/* Print Floating Button */
+.print-btn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    padding: 12px 24px;
+    background: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+@media print { 
+    .no-print { display: none !important; } 
+}
+
+/* =========================================================
+   12. Personal Attendance Print Layout
+========================================================= */
+body.personal-print-layout { 
+    background-color: white; 
+    color: black; 
+    padding: 20px; 
+}
+
+/* =========================================================
+   13. Authentication & Password Reset Pages
+========================================================= */
+.auth-page-wrapper {
+    min-height: 75vh;
+}
+
+.auth-icon-circle {
+    width: 60px;
+    height: 60px;
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.text-purple-primary {
+    color: #6d28d9 !important;
+}
+
+.btn-purple-gradient {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    border: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    color: white;
+}
+
+.btn-purple-gradient:hover {
+    transform: translateY(-2px);
+    color: white;
+    box-shadow: var(--shadow-md); /* Gives it a nice pop when hovered! */
+}
+
+.auth-back-link {
+    color: #8b5cf6;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.auth-back-link:hover {
+    color: #6d28d9;
+}
+
+/* =========================================================
+   14. Sidebar Header & Collapse Animations
+========================================================= */
+.sidebar-header {
+    border-bottom: 1px solid rgba(255,255,255,0.05); 
+    min-height: 76px;
+}
+
+.brand-icon {
+    font-size: 2rem;
+    transition: opacity 0.2s ease;
+}
+
+.brand-text {
+    transition: opacity 0.2s ease;
+}
+
+.brand-text h5 {
+    letter-spacing: 0.5px;
+}
+
+.brand-text small {
+    font-size: 0.75rem;
+}
+
+#sidebarToggleBtn {
+    width: 35px; 
+    height: 35px; 
+    text-decoration: none;
+}
+
+.toggle-icon { 
+    transition: transform 0.3s ease; 
+}
+
+/* --- Collapsed State Overrides --- */
+body.sidebar-collapsed .brand-text,
+body.sidebar-collapsed .brand-icon { 
+    display: none !important; 
+}
+
+body.sidebar-collapsed .sidebar-header {
+    justify-content: center !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+body.sidebar-collapsed .toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* =========================================================
+   15. PDF Report Layout
+========================================================= */
+body.pdf-layout { 
+    font-family: sans-serif; 
+    font-size: 14px; 
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.pdf-layout .text-center { 
+    text-align: center; 
+}
+
+.pdf-layout .pdf-table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 20px; 
+}
+
+.pdf-layout .pdf-table th, 
+.pdf-layout .pdf-table td { 
+    border: 1px solid #333; 
+    padding: 8px; 
+    text-align: left; 
+}
+
+.pdf-layout .pdf-table th { 
+    background-color: #f2f2f2; 
+}
+
+.pdf-signature-block {
+    margin-top: 50px;
+}
+
+/* =========================================================
+   16. Global App Print Reset (Direct browser printing)
+========================================================= */
+@media print {
+    /* Hide navigation, filters, and print-exempt elements */
+    .topbar, 
+    .sidebar, 
+    .sidebar-wrapper, 
+    .page-header, 
+    footer, 
+    .filter-section, 
+    .no-print {
+        display: none !important;
+    }
+    
+    /* Reset layout wrapper backgrounds and margins for A4 paper */
+    body, 
+    .app-wrapper, 
+    .content-wrapper, 
+    .layout-body, 
+    .main-content {
+        background-color: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+    
+    /* Remove card shadows and borders so it looks flat on paper */
+    .card {
+        box-shadow: none !important;
+        border: none !important;
+    }
+}
+

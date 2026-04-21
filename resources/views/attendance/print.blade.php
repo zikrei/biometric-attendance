@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>Attendance Record - {{ $user->name }}</title>
+    
+    {{-- Keep the Bootstrap CDN --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: white; color: black; padding: 20px; }
-        @media print {
-            .no-print { display: none !important; }
-        }
-    </style>
+    
+    {{-- Connect your external app.css file --}}
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-<body onload="window.print()">
+
+{{-- Added the specific class for padding and background color --}}
+<body class="personal-print-layout" onload="window.print()">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>

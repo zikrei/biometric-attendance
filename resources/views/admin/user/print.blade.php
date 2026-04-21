@@ -3,68 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>System Users List</title>
-    <style>
-        @page { size: A4 portrait; margin: 15mm; }
-        
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            background: white;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-        }
-        
-        .header h2 { margin: 0 0 5px 0; text-transform: uppercase; }
-        .header p { margin: 0; color: #555; }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .data-table th, .data-table td {
-            border: 1px solid #999;
-            padding: 8px 10px;
-            text-align: left;
-            vertical-align: middle;
-        }
-        
-        .data-table th {
-            background-color: #f0f0f0;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 11px;
-        }
-
-        .text-center { text-align: center !important; }
-        
-        @media print { .no-print { display: none !important; } }
-        
-        .print-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            padding: 12px 24px;
-            background: #0d6efd;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-    </style>
+    
+    {{-- Connect the external app.css file so the print styles are loaded --}}
+    {{-- Note: If you use Laravel Vite, replace the <link> below with: @vite(['resources/css/app.css']) --}}
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
-<body>
+
+{{-- Added the print-layout class to trigger the specific print CSS --}}
+<body class="print-layout">
     
     <button onclick="window.print()" class="print-btn no-print">🖨️ Print Document</button>
 
