@@ -9,7 +9,16 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h5 class="mb-0">User List</h5>
-        <a href="{{ route('admin.users.create') }}" class="btn btn-dark">+ Create User</a>
+        {{-- <a href="{{ route('admin.users.create') }}" class="btn btn-dark">+ Create User</a> --}}
+    
+        <div class="d-flex justify-content-end gap-2 mb-3">
+            <a href="{{ route('admin.users.print') }}" target="_blank" class="btn btn-outline-primary">
+                <i class="bi bi-printer me-1"></i> Print List
+            </a>
+            <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i> Create User
+            </a>
+        </div>
     </div>
 
     <div class="card border-0 shadow-sm rounded-4">
@@ -21,6 +30,7 @@
                             <th>Full Name</th>
                             <th>Email</th>
                             <th>Department</th>
+                            <th>Device ID</th>
                             <th>Role</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -32,6 +42,13 @@
                                 <td class="fw-semibold">{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
                                 <td>{{ $user->department?->name ?? 'Not Assigned' }}</td>
+                                <td>
+                                    @if($user->device_user_id)
+                                        <span class="fw-bold">{{ $user->device_user_id }}</span>
+                                    @else
+                                        <span class="text-muted small">Not Assigned</span>
+                                    @endif
+                                </td>
                                 
                                 {{-- Dynamic Role Badges --}}
                                 <td>

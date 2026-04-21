@@ -99,7 +99,8 @@ class ReportController extends Controller
     public function print(Request $request)
     {
         $selectedMonth = $request->input('month', now()->format('Y-m'));
-        $departmentId = $request->input('department_id'); 
+        $departmentId = $request->input('department_id');
+        $userId = $request->input('user_id'); // <-- 1. Fetch the chosen user!
         $currentUser = auth()->user();
 
         $query = \App\Models\User::with(['attendances' => function($q) use ($selectedMonth) {
@@ -107,13 +108,20 @@ class ReportController extends Controller
               ->whereYear('date', \Carbon\Carbon::parse($selectedMonth)->year);
         }]);
 
+        // 2. Apply Security Scoping
         if ($currentUser->role?->name === 'HOD') {
             $query->where('department_id', $currentUser->department_id)
                   ->whereHas('role', function($q) {
                       $q->where('name', 'Staff');
                   });
-        } elseif ($departmentId) {
+        } elseif ($departmentId && !$userId) {
+            // Only grab the whole department if a specific user wasn't selected
             $query->where('department_id', $departmentId);
+        }
+
+        // 3. Apply the specific User filter
+        if ($userId) {
+            $query->where('id', $userId);
         }
 
         $users = $query->orderBy('name')->get();
@@ -121,11 +129,12 @@ class ReportController extends Controller
         return view('reports.print', compact('users', 'selectedMonth'));
     }
 
-    // Export the report to PDF (Grouped by User to match Print layout)
+    // Export the report to PDF
     public function export(Request $request)
     {
         $selectedMonth = $request->input('month', now()->format('Y-m'));
         $departmentId = $request->input('department_id');
+        $userId = $request->input('user_id'); // <-- 1. Fetch the chosen user!
         $currentUser = auth()->user();
 
         $query = \App\Models\User::with(['attendances' => function($q) use ($selectedMonth) {
@@ -133,13 +142,19 @@ class ReportController extends Controller
               ->whereYear('date', \Carbon\Carbon::parse($selectedMonth)->year);
         }]);
 
+        // 2. Apply Security Scoping
         if ($currentUser->role?->name === 'HOD') {
             $query->where('department_id', $currentUser->department_id)
                   ->whereHas('role', function($q) {
                       $q->where('name', 'Staff');
                   });
-        } elseif ($departmentId) {
+        } elseif ($departmentId && !$userId) {
             $query->where('department_id', $departmentId);
+        }
+
+        // 3. Apply the specific User filter
+        if ($userId) {
+            $query->where('id', $userId);
         }
 
         $users = $query->orderBy('name')->get();

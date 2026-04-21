@@ -102,7 +102,7 @@
 
         {{-- 5. REPORTS (Admin, Integrity, AND NOW HOD!) --}}
         @if(in_array($role, ['Admin', 'Integrity', 'HOD']))
-        <li class="nav-item mt-2">
+        <li class="nav-item">
             <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
                 <i class="bi bi-file-earmark-text"></i>
                 <span>Reports</span>

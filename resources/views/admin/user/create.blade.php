@@ -65,9 +65,22 @@
                     </div>
                 </div>
                 
-                <div class="mb-4">
-                    <label for="password" class="form-label fw-bold">Initial Password</label>
-                    <input type="password" name="password" id="password" class="form-control" placeholder="Minimum 6 characters required" required>
+                {{-- 3rd Row: Device User ID & Password --}}
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Device User ID <span class="text-danger">*</span></label>
+                        <input type="text" name="device_user_id" class="form-control @error('device_user_id') is-invalid @enderror" value="{{ old('device_user_id') }}" placeholder="e.g. 1001" required>
+                        @error('device_user_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Initial Password <span class="text-danger">*</span></label>
+                        <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Minimum 6 characters required" required>
+                        @error('password')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
                 
                 <hr>

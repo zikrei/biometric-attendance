@@ -33,19 +33,27 @@ class UserController extends Controller
     // Store new user in the database
     public function store(Request $request)
     {
+        // 1. Add device_user_id to the validation rules
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
             'role_id' => 'required|exists:roles,id',
             'department_id' => 'required|exists:departments,id',
+            'device_user_id' => 'required|string|unique:users,device_user_id', // <-- Added validation (Ensures no duplicates)
+            'password' => 'required|string|min:6',
         ]);
 
-        $validated['password'] = Hash::make($validated['password']);
+        // 2. Include it when creating the User
+        User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'role_id' => $validated['role_id'],
+            'department_id' => $validated['department_id'],
+            'device_user_id' => $validated['device_user_id'], // <-- SAVE TO DATABASE
+            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+        ]);
 
-        User::create($validated);
-
-        return redirect()->route('admin.users.index')->with('success', 'User created successfully!');
+        return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
     }
 
     // Show form to edit user
@@ -106,5 +114,14 @@ class UserController extends Controller
 
         // 3. Redirect back to the table with a success message
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully!');
+    }
+
+    // Print all users list
+    public function print()
+    {
+        // Fetch all users with their roles and departments, sorted alphabetically
+        $users = \App\Models\User::with(['role', 'department'])->orderBy('name')->get();
+        
+        return view('admin.user.print', compact('users'));
     }
 }

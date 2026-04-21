@@ -88,10 +88,11 @@ Route::middleware('auth')->group(function () {
 });
 
 // User Management Routes (For Admin Only)
-Route::middleware('auth')->group(function () {
-    Route::resource('admin/users', UserController::class)
-        ->names('admin.users')
-        ->middleware('role:Admin');
+Route::middleware(['auth', 'role:Admin'])->group(function () {
+    // MUST go before the resource route!
+    Route::get('/admin/users/print', [UserController::class, 'print'])->name('admin.users.print');
+    
+    Route::resource('admin/users', UserController::class)->names('admin.users');
 });
 
 // Report Routes (For Admin, Integrity Unit, and HOD)
