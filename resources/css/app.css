@@ -59,23 +59,27 @@ body {
    2. Layout & Structure
 ========================================================= */
 .app-wrapper { 
-    min-height: 100vh; 
+    height: 100vh; 
     display: flex; 
-    flex-direction: column; 
+    flex-direction: row; /* FIX: Puts sidebar and right-content side-by-side! */
+    overflow: hidden; /* Stops the main window from scrolling */
 }
 
-.layout-body { 
-    display: flex; 
-    flex: 1; 
-    min-height: calc(100vh - 72px); 
+/* NEW: Wrapper for the right side (Topbar + Main Content) */
+.content-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto; /* Allows only the right side to scroll */
+    min-width: 0;
+    background: var(--bg-body);
 }
 
 .main-content {
     flex: 1;
     width: 100%;
-    padding: 24px 32px 80px 32px; 
+    padding: 24px 32px 40px 32px; 
     transition: var(--transition);
-    overflow-x: auto;
 }
 
 .page-header {
@@ -174,13 +178,14 @@ body {
 ========================================================= */
 .sidebar {
     width: 260px;
-    min-height: calc(100vh - 72px);
+    height: 100vh; /* FIX: Spans the full height of the screen */
     background: var(--bg-sidebar);
     color: #ffffff;
     padding: 24px 16px;
-    overflow: hidden;
+    overflow-y: auto;
     white-space: nowrap;
     transition: width 0.3s ease, padding 0.3s ease;
+    flex-shrink: 0; /* Prevents the sidebar from getting squished */
 }
 
 .sidebar .sidebar-title {
@@ -404,31 +409,16 @@ body.sidebar-collapsed .sidebar .nav-link i { margin: 0 !important; font-size: 1
 .status-badge-rejected { background: #fee2e2; color: #b91c1c; }
 
 /* =========================================================
-   8. Footer (Fixed to Bottom)
+   8. Footer (Pushed to Bottom naturally via Flexbox)
 ========================================================= */
 .footer {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    width: 100%; /* Default to full width for mobile */
-    z-index: 1020;
-    background: var(--bg-body); 
+    margin-top: auto; /* Pushes it to the bottom of the content-wrapper */
+    background: #ffffff; 
     border-top: 1px solid rgba(0, 0, 0, 0.05);
     padding: 14px 20px;
     font-size: 1rem;
     color: var(--text-muted);
     text-align: center;
-    transition: width 0.3s ease; /* Matches your sidebar animation */
-}
-
-/* On Desktop, make the footer dodge the sidebar perfectly! */
-@media (min-width: 992px) {
-    .footer {
-        width: calc(100% - 260px); /* 100% minus the open sidebar width */
-    }
-    body.sidebar-collapsed .footer {
-        width: calc(100% - 80px); /* 100% minus the collapsed sidebar width */
-    }
 }
 
 /* =========================================================

@@ -1,9 +1,48 @@
 <aside class="sidebar">
+
+    {{-- CSS for handling the collapse animation cleanly --}}
+    <style>
+        .brand-text { transition: opacity 0.2s; }
+        
+        /* What happens when the sidebar is collapsed */
+        body.sidebar-collapsed .brand-text { display: none !important; }
+        
+        body.sidebar-collapsed .sidebar-header {
+            flex-direction: column !important;
+            justify-content: center !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            gap: 10px;
+        }
+    </style>
+
+    {{-- Sidebar Header (Brand + Toggle Button) --}}
+    <div class="sidebar-header d-flex align-items-center justify-content-between px-3 py-3" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+        
+        {{-- The Icon & Text --}}
+        <div class="d-flex align-items-center gap-2 overflow-hidden">
+            <i class="bi bi-fingerprint text-white flex-shrink-0" style="font-size: 2rem;"></i>
+            <div class="brand-text text-nowrap">
+                <h5 class="text-white fw-bold mb-0" style="letter-spacing: 0.5px;">Biometric</h5>
+                <small class="text-white-50" style="font-size: 0.75rem;">Attendance System</small>
+            </div>
+        </div>
+        
+        {{-- The NEW Desktop Toggle Button (Inside Sidebar) --}}
+        <button class="btn btn-link text-white-50 p-0 d-none d-lg-block flex-shrink-0" id="sidebarToggleBtn">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+    </div>
+
+    {{-- Your existing sidebar navigation links start below here... --}}
+    <ul class="nav flex-column..."></ul>
     @php
         $role = auth()->user()->role?->name;
     @endphp
 
     <div class="menu-section">
+
+    {{-- NEW: Brand Block inside the Sidebar --}}
         <div class="sidebar-title">Main Navigation</div>
 
         <nav class="nav flex-column">

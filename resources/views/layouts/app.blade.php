@@ -10,84 +10,68 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="antialiased">
+    
     <div class="app-wrapper">
-        <header class="topbar">
-            <div class="topbar-left">
-                <button
-                    class="btn btn-outline-secondary mobile-sidebar-toggle d-lg-none"
-                    type="button"
-                    data-bs-toggle="offcanvas"
-                    data-bs-target="#mobileSidebar"
-                    aria-controls="mobileSidebar"
-                    aria-label="Open mobile navigation menu"
-                >
-                    <i class="bi bi-list"></i>
-                </button>
+        
+        {{-- 1. THE FULL-HEIGHT SIDEBAR --}}
+        @if(Auth::check())
+            @include('layouts.sidebar')
+        @endif
 
-                <button
-                    class="btn btn-light desktop-sidebar-toggle d-none d-lg-flex align-items-center justify-content-center"
-                    type="button"
-                    id="desktopToggleBtn"
-                    aria-label="Toggle sidebar navigation"
-                >
-                    <i class="bi bi-list"></i>
-                </button>
+        {{-- 2. THE RIGHT CONTENT WRAPPER --}}
+        <div class="content-wrapper">
+            
+            <header class="topbar">
+                <div class="topbar-left d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-secondary mobile-sidebar-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                        <i class="bi bi-list"></i>
+                    </button>
 
-                <div class="brand-block">
-                    <h1 class="brand-title mb-0">Biometric Attendance Management</h1>
-                    <small class="brand-subtitle">System Platform</small>
+                    @auth
+                        <div class="d-flex align-items-center gap-2 px-3 py-1 rounded" style="border: 1px solid #14b8a6; background-color: #f0fdfa; color: #0f766e;">
+                            <i class="bi bi-person-vcard fs-5"></i>
+                            <span class="fw-bold">{{ Auth::user()->role?->name ?? 'Staff' }}</span>
+                        </div>
+                    @endauth
                 </div>
-            </div>
 
-            <div class="topbar-right">
-                {{-- Only show this dropdown if the user is LOGGED IN --}}
-                @auth
-                    <div class="dropdown">
-                        {{-- The Clickable User Badge --}}
-                        <button class="btn border-0 dropdown-toggle d-flex align-items-center gap-2 rounded-pill px-3 py-2"
-                                type="button"
-                                id="userDropdown"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
-                                style="background-color: rgba(13, 110, 253, 0.1); color: #0d6efd;">
-                            <i class="bi bi-person-circle fs-5"></i>
-                            <span class="fw-semibold">{{ Auth::user()->name }}</span>
-                        </button>
+                <div class="topbar-right d-flex align-items-center">
+                    @auth
+                        <div class="dropdown">
+                            <button class="btn border-0 dropdown-toggle d-flex align-items-center gap-2 bg-transparent p-1" 
+                                    type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                
+                                <div class="text-end d-none d-sm-block me-1">
+                                    <small class="text-muted d-block" style="font-size: 0.75rem; margin-bottom: -3px;">Welcome,</small>
+                                    <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ Auth::user()->name }}</span>
+                                </div>
+                                
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=6d28d9&color=fff&bold=true" 
+                                     alt="Profile" class="rounded-circle shadow-sm" width="38" height="38">
+                            </button>
 
-                        {{-- The Dropdown Menu --}}
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2" aria-labelledby="userDropdown">
-                            {{-- Account Settings Link --}}
-                            <li>
-                                <a class="dropdown-item py-2 d-flex align-items-center" href="{{ route('profile.edit') }}">
-                                    <i class="bi bi-person-gear me-2 text-primary"></i> Profile Settings
-                                </a>
-                            </li>
-
-                            {{-- Divider Line --}}
-                            <li><hr class="dropdown-divider"></li>
-
-                            {{-- Secure Logout Form --}}
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}" class="mb-0">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item py-2 d-flex align-items-center text-danger">
-                                        <i class="bi bi-box-arrow-right me-2"></i> Sign Out
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                @endauth
-            </div>
-        </header>
-
-        <div class="layout-body">
-            @if(Auth::check())
-                @include('layouts.sidebar')
-            @endif
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded-3 mt-2" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item py-2 d-flex align-items-center" href="{{ route('profile.edit') }}">
+                                        <i class="bi bi-person-gear me-2 text-primary"></i> Profile Settings
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}" class="mb-0">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item py-2 d-flex align-items-center text-danger">
+                                            <i class="bi bi-box-arrow-right me-2"></i> Sign Out
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    @endauth
+                </div>
+            </header>
 
             <main class="main-content">
-                {{-- Only show the page headers to LOGGED IN users --}}
                 @auth
                     <div class="page-header">
                         <div class="header-titles">
@@ -101,21 +85,20 @@
                 @endauth
 
                 @yield('content')
-
             </main>
-        </div>
 
-        <footer class="footer text-center">
-            <span>&copy; {{ date('Y') }} Biometric Attendance Management System. All rights reserved.</span>
-        </footer>
+            <footer class="footer">
+                <span>&copy; {{ date('Y') }} Biometric Attendance Management System. All rights reserved.</span>
+            </footer>
+        </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const desktopToggleBtn = document.getElementById('desktopToggleBtn');
+            const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
 
-            if (desktopToggleBtn) {
-                desktopToggleBtn.addEventListener('click', function () {
+            if (sidebarToggleBtn) {
+                sidebarToggleBtn.addEventListener('click', function () {
                     document.body.classList.toggle('sidebar-collapsed');
                 });
             }

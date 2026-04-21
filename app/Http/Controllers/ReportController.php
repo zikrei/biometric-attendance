@@ -4,49 +4,56 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Attendance;
-use App\Models\User; // <-- REQUIRED: Tells the controller where to find the users!
-use Barryvdh\DomPDF\Facade\Pdf; // <-- Add this to unlock PDF features!
-use App\Models\Department; // Make sure your Department model is imported!
+use App\Models\User; 
+use Barryvdh\DomPDF\Facade\Pdf; 
+use App\Models\Department; 
 
 class ReportController extends Controller
 {
-    // Show the report generation page
+    // Show the report generation filter page
     public function index()
     {
-        // Fetch all departments and users to populate the dropdowns
         $departments = Department::all();
         $users = User::all(['id', 'name', 'department_id']); 
 
-        // FIX: Change 'admin.reports' to 'reports.index'
         return view('reports.index', compact('departments', 'users'));
     }
 
-    // Generate the report based on user input
+    // Generate the preview report
     public function generate(Request $request)
     {
-        $monthInput = $request->input('month');
+        $monthInput = $request->input('month', now()->format('Y-m'));
         $departmentId = $request->input('department_id');
         $userId = $request->input('user_id');
+        $currentUser = auth()->user();
 
-        // 1. Base query: Fetch ALL attendance records
-        $query = Attendance::with(['user']);
+        $query = Attendance::with(['user.department']);
 
-        // 2. Role Check: If the user is Integrity, ONLY show Approved records. 
-        // Admins and others will see everything.
-        if (auth()->user()->role?->name === 'Integrity') {
+        // 1. Role Security Scoping
+        if ($currentUser->role?->name === 'HOD') {
+            // Force the department ID to the HOD's department
+            $departmentId = $currentUser->department_id; 
+            
+            $query->whereHas('user', function($q) use ($departmentId) {
+                $q->where('department_id', $departmentId)
+                  ->whereHas('role', function($roleQ) {
+                      $roleQ->where('name', 'Staff');
+                  });
+            });
+        } elseif ($currentUser->role?->name === 'Integrity') {
             $query->where('status', 'Approved');
         }
 
-        // 3. Filter by Month
+        // 2. Month Filter
         if ($monthInput) {
             $parts = explode('-', $monthInput);
             $query->whereYear('date', $parts[0])->whereMonth('date', $parts[1]);
         }
 
-        // 4. Filter by User OR Department
+        // 3. User / Department Filter (For Admin & Integrity)
         if ($userId) {
             $query->where('user_id', $userId);
-        } elseif ($departmentId) {
+        } elseif ($departmentId && $currentUser->role?->name !== 'HOD') {
             $query->whereHas('user', function($q) use ($departmentId) {
                 $q->where('department_id', $departmentId);
             });
@@ -54,38 +61,42 @@ class ReportController extends Controller
 
         $attendances = $query->orderBy('date', 'desc')->get();
 
-        return view('reports.preview', compact('monthInput', 'attendances'));
+        // 4. Fetch the department name to send to the Blade View!
+        $department = null;
+        if ($departmentId) {
+            $department = Department::find($departmentId);
+        }
+
+        $departments = Department::all();
+        $users = User::all(['id', 'name', 'department_id']); 
+
+        // --> UPDATE THE COMPACT LIST <--
+        return view('reports.preview', compact('monthInput', 'attendances', 'department', 'departments', 'users'));
     }
 
-    // Show the generated report
     public function show($id)
     {
-        // Logic to show specific report
         return view('reports.show');
     }
 
-    // Print the report
+    // Print the report (Grouped by User)
     public function print(Request $request)
     {
         $selectedMonth = $request->input('month', now()->format('Y-m'));
-        $departmentId = $request->input('department_id'); // If filtered via a dropdown
+        $departmentId = $request->input('department_id'); 
         $currentUser = auth()->user();
 
-        // Start querying USERS, bringing along their attendance for the specific month
         $query = \App\Models\User::with(['attendances' => function($q) use ($selectedMonth) {
             $q->whereMonth('date', \Carbon\Carbon::parse($selectedMonth)->month)
               ->whereYear('date', \Carbon\Carbon::parse($selectedMonth)->year);
         }]);
 
-        // SECURE THE SCOPE based on role
         if ($currentUser->role?->name === 'HOD') {
-            // HODs are locked to their own department's staff
             $query->where('department_id', $currentUser->department_id)
                   ->whereHas('role', function($q) {
                       $q->where('name', 'Staff');
                   });
         } elseif ($departmentId) {
-            // Admin or Integrity filtering by a specific department
             $query->where('department_id', $departmentId);
         }
 
@@ -94,35 +105,33 @@ class ReportController extends Controller
         return view('reports.print', compact('users', 'selectedMonth'));
     }
 
-    // Export the report to PDF
+    // Export the report to PDF (Grouped by User to match Print layout)
     public function export(Request $request)
     {
-        $monthInput = $request->input('month');
+        $selectedMonth = $request->input('month', now()->format('Y-m'));
         $departmentId = $request->input('department_id');
-        $userId = $request->input('user_id');
+        $currentUser = auth()->user();
 
-        $query = Attendance::with(['user']);
+        // Query users instead of attendances so the PDF has page-breaks per employee!
+        $query = \App\Models\User::with(['attendances' => function($q) use ($selectedMonth) {
+            $q->whereMonth('date', \Carbon\Carbon::parse($selectedMonth)->month)
+              ->whereYear('date', \Carbon\Carbon::parse($selectedMonth)->year);
+        }]);
 
-        if (auth()->user()->role?->name === 'Integrity') {
-            $query->where('status', 'Approved');
-        }
-
-        if ($monthInput) {
-            $parts = explode('-', $monthInput);
-            $query->whereYear('date', $parts[0])->whereMonth('date', $parts[1]);
-        }
-
-        if ($userId) {
-            $query->where('user_id', $userId);
+        if ($currentUser->role?->name === 'HOD') {
+            $query->where('department_id', $currentUser->department_id)
+                  ->whereHas('role', function($q) {
+                      $q->where('name', 'Staff');
+                  });
         } elseif ($departmentId) {
-            $query->whereHas('user', function($q) use ($departmentId) {
-                $q->where('department_id', $departmentId);
-            });
+            $query->where('department_id', $departmentId);
         }
 
-        $attendances = $query->orderBy('date', 'desc')->get();
+        $users = $query->orderBy('name')->get();
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('reports.pdf', compact('monthInput', 'attendances'));
-        return $pdf->download('Attendance_Report.pdf');
+        // Reuse the print view for the PDF! DomPDF handles page-breaks perfectly.
+        $pdf = Pdf::loadView('reports.print', compact('users', 'selectedMonth'));
+        
+        return $pdf->download('Department_Attendance_Report.pdf');
     }
 }

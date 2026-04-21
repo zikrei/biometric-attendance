@@ -1,73 +1,175 @@
 @extends('layouts.app')
 
-@section('title', 'Attendance Report Preview')
+@section('title', 'Attendance Report')
 
 @section('page_title', 'Attendance Report Preview')
-
 @section('page_subtitle', 'Preview the attendance report before generating a printable or exportable version.')
 
 @section('content')
-    <div class="card border-0 shadow-sm rounded-4">
-        <div class="card-header bg-white border-0">
-            <h5 class="mb-0">Attendance Report</h5>
-        </div>
-        <div class="card-body">
-            <div class="mb-5">
-                <div class="text-center">
-                    <h2>{{ config('app.name') }}</h2>
-                    <h5>Attendance Report</h5>
-                    <p class="text-muted fw-bold">Report for the month of {{ \Carbon\Carbon::parse($monthInput)->format('F Y') }}</p>
+    <style>
+        @media print {
+            /* Hide UI elements including the filter form when printing directly */
+            .topbar, .sidebar-wrapper, .page-header, .no-print, footer, .filter-section {
+                display: none !important;
+            }
+            body, .app-wrapper, .layout-body, .main-content {
+                background-color: white !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: none !important;
+            }
+        }
+    </style>
+
+    {{-- FILTER FORM SECTION --}}
+    <div class="card border-0 shadow-sm rounded-4 mb-4 filter-section no-print">
+        <div class="card-body p-4">
+            <h5 class="mb-4">Generate Attendance Report</h5>
+            
+            <form action="{{ url('/admin/reports/generate') }}" method="GET">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Choose Month</label>
+                        <input type="month" name="month" class="form-control" value="{{ request('month', date('Y-m')) }}" required>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Select Department (Optional)</label>
+                        <select name="department_id" id="departmentSelect" class="form-select">
+                            <option value="">All Departments</option>
+                            @if(isset($departments))
+                                @foreach($departments as $dept)
+                                    <option value="{{ $dept->id }}" {{ request('department_id') == $dept->id ? 'selected' : '' }}>
+                                        {{ $dept->name }}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Select User (Optional)</label>
+                        <select name="user_id" id="userSelect" class="form-select">
+                            <option value="">All Users</option>
+                            @if(isset($users))
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}" data-dept="{{ $user->department_id }}" {{ request('user_id') == $user->id ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
                 </div>
 
-                <table class="table table-bordered mt-4">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Name</th>
-                            <th>Department</th>
-                            <th>Date</th>
-                            <th>Check-In</th>
-                            <th>Check-Out</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($attendances as $attendance)
-                            <tr>
-                                <td>{{ $attendance->user->name }}</td>
-                                <td>{{ $attendance->user->department?->name ?? 'N/A' }}</td>
-                                <td>{{ $attendance->date }}</td>
-                                <td>{{ $attendance->clock_in }}</td>
-                                <td>{{ $attendance->clock_out }}</td>
-                                <td>
-                                    @if(strtolower($attendance->status) == 'pending')
-                                        <span class="badge bg-warning text-dark">🟡 Awaiting Approval</span>
-                                    @elseif(strtolower($attendance->status) == 'approved')
-                                        <span class="badge bg-success">🟢 Approved</span>
-                                    @elseif(strtolower($attendance->status) == 'rejected')
-                                        <span class="badge bg-danger">🔴 Rejected</span>
-                                    @else
-                                        <span class="badge bg-secondary">{{ ucfirst($attendance->status) }}</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center text-muted py-4">No attendance records available for the selected date range.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="mt-5">
-                <p class="text-center">_______________________</p>
-                <p class="text-center">Signature</p>
-            </div>
-
-            <div class="text-end mt-4">
-                <a href="{{ route('reports.print', request()->query()) }}" class="btn btn-secondary">Print Report</a>
-                <a href="{{ route('reports.export', request()->query()) }}" class="btn btn-danger">Export as PDF</a>
-            </div>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-dark">Generate Preview</button>
+                </div>
+            </form>
         </div>
     </div>
+
+    {{-- REPORT PREVIEW SECTION (Consolidated View) --}}
+    <div class="card border-0 shadow-sm rounded-4 mt-3">
+        <div class="card-body p-4">
+            <div class="mb-5">
+                <div class="text-center mb-4">
+                    <h2 class="fw-bold mb-2">Department Attendance Report</h2>
+                    <h5 class="text-muted">
+                        {{ $department->name ?? 'All Departments' }} - {{ \Carbon\Carbon::parse($monthInput)->format('F Y') }}
+                    </h5>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered mt-4 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Name</th>
+                                <th>Department</th>
+                                <th>Date</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($attendances as $attendance)
+                                <tr>
+                                    <td>{{ $attendance->user->name }}</td>
+                                    <td>{{ $attendance->user->department?->name ?? 'N/A' }}</td>
+                                    <td>{{ $attendance->date }}</td>
+                                    <td>{{ $attendance->clock_in ?? '--:--' }}</td>
+                                    <td>{{ $attendance->clock_out ?? '--:--' }}</td>
+                                    <td>
+                                        @if(strtolower($attendance->status) == 'pending')
+                                            <span class="badge bg-warning text-dark border">🟡 Awaiting Approval</span>
+                                        @elseif(strtolower($attendance->status) == 'approved')
+                                            <span class="badge bg-success border">🟢 Approved</span>
+                                        @elseif(strtolower($attendance->status) == 'rejected')
+                                            <span class="badge bg-danger border">🔴 Rejected</span>
+                                        @else
+                                            <span class="badge bg-secondary border">{{ ucfirst($attendance->status) }}</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">No attendance records available for the selected criteria.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- ACTION BUTTONS - Bottom Right Corner --}}
+            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top no-print">
+                {{-- This opens the Print layout (1 Staff Per Page) in a new tab! --}}
+                <a href="{{ route('reports.print', request()->query()) }}" target="_blank" class="btn btn-primary px-4">
+                    <i class="bi bi-printer me-2"></i> Print Individual Staff Reports
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    {{-- JavaScript to Auto-Sort Users based on Department --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deptSelect = document.getElementById('departmentSelect');
+            const userSelect = document.getElementById('userSelect');
+            
+            const allUserOptions = Array.from(userSelect.options);
+
+            function filterUsers() {
+                const selectedDept = deptSelect.value;
+                const previouslySelectedUser = userSelect.value; 
+
+                userSelect.innerHTML = '<option value="">All Users</option>';
+                
+                allUserOptions.forEach(option => {
+                    if (option.value === '') return; 
+                    
+                    if (selectedDept === '' || option.getAttribute('data-dept') === selectedDept) {
+                        const newOption = option.cloneNode(true);
+                        if (newOption.value === previouslySelectedUser) {
+                            newOption.selected = true;
+                        }
+                        userSelect.appendChild(newOption);
+                    }
+                });
+            }
+
+            filterUsers();
+
+            deptSelect.addEventListener('change', function() {
+                userSelect.value = ''; 
+                filterUsers();
+            });
+        });
+    </script>
 @endsection
