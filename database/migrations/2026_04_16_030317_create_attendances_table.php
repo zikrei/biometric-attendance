@@ -9,21 +9,17 @@ class CreateAttendancesTable extends Migration
    /**
     * Run the migrations.
     */
-   public function up(): void
-   {
-       Schema::create('attendances', function (Blueprint $table) {
-           $table->id();
-
-           // Foreign key reference to users
-           $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-
-           $table->date('date');
-           $table->time('clock_in');
-           $table->time('clock_out');
-           $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-           $table->timestamps();
-       });
-   }
+public function up()
+    {
+        Schema::create('attendances', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->date('date');
+            $table->time('clock_in')->nullable();
+            $table->time('clock_out')->nullable();
+            $table->timestamps();
+        });
+    }
 
    /**
     * Reverse the migrations.

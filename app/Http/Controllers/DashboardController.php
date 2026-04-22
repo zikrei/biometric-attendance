@@ -17,8 +17,10 @@ class DashboardController extends Controller
 
         // 2. Count their Pending Discrepancies
         $pendingDiscrepancies = Attendance::where('user_id', $user->id)
-            ->where('status', 'Pending')
-            ->count();
+        ->whereHas('justification', function ($query) {
+        $query->where('status', 'pending');
+        })
+    ->count();
 
         // 3. Calculate Attendance Percentage for the Current Month
         $currentMonth = date('m');

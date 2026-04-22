@@ -21,12 +21,13 @@ class CreateUsersTable extends Migration
            $table->string('device_user_id')->nullable()->unique();  // Optional device link
 
            // Basic user info
-           $table->string('name');
-           $table->string('email')->unique();
-           $table->timestamp('email_verified_at')->nullable();
-           $table->string('password');
-           $table->rememberToken();
-           $table->timestamps();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->enum('status', ['Active', 'Inactive'])->default('Active');
+            $table->rememberToken();
+            $table->timestamps();
        });
    }
 

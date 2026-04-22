@@ -35,7 +35,7 @@
                     <td>{{ $attendance->date }}</td>
                     <td>{{ $attendance->clock_in }}</td>
                     <td>{{ $attendance->clock_out }}</td>
-                    <td>{{ $attendance->status }}</td>
+                    <td>{{ $attendance->justification->status ?? 'Normal' }}</td>
                 </tr>
             @empty
                 <tr>

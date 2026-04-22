@@ -40,7 +40,7 @@
                                 <td>{{ $attendance->date }}</td>
                                 <td>{{ $attendance->clock_in ?? '--:--' }}</td>
                                 <td>{{ $attendance->clock_out ?? '--:--' }}</td>
-                                <td>{{ $attendance->reason }}</td>
+                                <td>{{ $attendance->justification->reason ?? '-' }}</td>
                                 <td>
                                     @if($attendance->attachment)
                                         <a href="{{ asset('storage/' . $attendance->attachment) }}" target="_blank" class="btn btn-sm btn-outline-info">View Document</a>

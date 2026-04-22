@@ -43,4 +43,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Attendance::class);
     }
+
+    // 4. NEW: User has many raw biometric logs (Linked via the device ID, not the normal user ID!)
+    public function biometricLogs()
+    {
+        return $this->hasMany(BiometricLog::class, 'device_user_id', 'device_user_id');
+    }
 }
