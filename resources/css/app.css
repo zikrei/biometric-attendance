@@ -196,13 +196,13 @@ body {
 
 body.sidebar-collapsed .sidebar { width: 80px !important; padding: 1.5rem 0.5rem; }
 body.sidebar-collapsed .sidebar .sidebar-title,
-body.sidebar-collapsed .brand-text,
-body.sidebar-collapsed .brand-icon { display: none !important; }
+body.sidebar-collapsed .brand-text { display: none !important; }
 body.sidebar-collapsed .sidebar .nav-link { justify-content: center; padding: 0.75rem 0; }
 body.sidebar-collapsed .sidebar .nav-link span { display: none !important; }
 body.sidebar-collapsed .sidebar .nav-link i { margin: 0 !important; font-size: var(--fs-lg); }
 body.sidebar-collapsed .sidebar-header { justify-content: center !important; padding: 0 !important; }
 body.sidebar-collapsed .toggle-icon { transform: rotate(180deg); }
+body.sidebar-collapsed .sidebar-toggle-btn { position: static !important; margin-bottom: 15px; margin-top: 10px;}
 
 /* =========================================================
    5. Dashboard Cards
@@ -260,17 +260,28 @@ body.sidebar-collapsed .toggle-icon { transform: rotate(180deg); }
     overflow: hidden;
 }
 
-.table { margin-bottom: 0; vertical-align: middle; }
+.table-responsive {
+    max-height: 65vh; /* Sets a max height (65% of screen height) */
+    overflow-y: auto; /* Adds a scrollbar to the table when it gets too long */
+}
+
+/* Make the header sticky */
 .table thead th {
-    background: #f8fafc;
+    position: sticky;
+    top: 0; /* Sticks to the very top of the table wrapper */
+    z-index: 10; /* Keeps the header floating above the rows below it */
+    background: #f8fafc; /* Critical: Solid background so rows don't show through! */
     color: var(--text-muted);
     font-weight: 600;
     text-transform: uppercase;
     font-size: var(--fs-xs);
     letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--border-color);
     padding: 0.75rem 1.25rem;
     white-space: nowrap;
+    
+    /* Trick: Use a box-shadow instead of border-bottom so it doesn't glitch when scrolling */
+    border-bottom: none;
+    box-shadow: inset 0 -1px 0 var(--border-color); 
 }
 .table tbody td { padding: 1rem 1.25rem; border-color: #f1f5f9; color: var(--text-dark); font-size: var(--fs-sm); }
 .table tbody tr:hover { background: #f8fafc; }
@@ -422,4 +433,45 @@ body.print-layout { font-family: Arial, sans-serif; font-size: var(--fs-sm); col
     .topbar-left, .topbar-right { width: 100%; justify-content: space-between; }
     .brand-subtitle, .login-left { display: none; }
     .login-right { padding: 2rem 1.5rem; }
+}
+
+/* =========================================================
+   12. Scroll to Top Button
+========================================================= */
+#scrollToTopBtn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--bg-sidebar);
+    color: white;
+    border: none;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    z-index: 1050;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(15px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+#scrollToTopBtn.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+#scrollToTopBtn:hover {
+    background: var(--bg-sidebar-hover);
+    transform: translateY(-3px);
+}
+
+@media print {
+    #scrollToTopBtn { display: none !important; }
 }

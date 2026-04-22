@@ -45,7 +45,7 @@
 
     {{-- Profile Action Card --}}
     <div class="col-md-6 col-xl-4">
-        <div class="dashboard-card card-admin-profile h-100">
+        <div class="dashboard-card card-profile h-100">
             <div class="card-content">
                 <div>
                     <p class="card-label">Account</p>

@@ -7,10 +7,8 @@
 @section('content')
 
     {{-- FILTER FORM SECTION --}}
-    <div class="card border-0 shadow-sm rounded-4 mb-4 filter-section no-print">
-        <div class="card-body p-4">
-            {{-- <h2 class="mb-4">Department Attendance Report</h2>
-            <p class="text-muted">Generate, preview, and export monthly attendance summaries for your staff.</p> --}}
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">        
             <form action="{{ url('/admin/reports/generate') }}" method="GET">
                 <div class="row g-3 mb-4">
                     
@@ -56,14 +54,20 @@
                 </div>
 
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-dark">Generate Preview</button>
+                    <button type="submit" class="btn btn-primary">Generate Attendance Report</button>
                 </div>
             </form>
         </div>
     </div>
 
+    {{-- ACTION BUTTONS --}}
+    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top no-print">
+        <a href="{{ route('reports.print', request()->query()) }}" target="_blank" class="btn btn-primary px-4">
+            <i class="bi bi-printer me-2"></i> Print Individual Staff Reports
+        </a>
+    </div>
     {{-- REPORT PREVIEW SECTION --}}
-    <div class="card border-0 shadow-sm rounded-4 mt-3">
+    <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-4">
             <div class="mb-5">
                 <div class="text-center mb-4">
@@ -74,7 +78,7 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-bordered mt-4 align-middle">
+                    <table class="table table-striped align-middle">
                         <thead class="table-light">
                             <tr>
                                 <th>Name</th>
@@ -115,12 +119,47 @@
                 </div>
             </div>
 
-            {{-- ACTION BUTTONS --}}
-            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top no-print">
-                <a href="{{ route('reports.print', request()->query()) }}" target="_blank" class="btn btn-primary px-4">
-                    <i class="bi bi-printer me-2"></i> Print Individual Staff Reports
-                </a>
-            </div>
+    {{-- SCROLL TO TOP BUTTON --}}
+    <button id="scrollToTopBtn" title="Go to top">
+        <i class="bi bi-arrow-up"></i>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Sidebar Toggle Logic
+            const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+            if (sidebarToggleBtn) {
+                sidebarToggleBtn.addEventListener('click', function () {
+                    document.body.classList.toggle('sidebar-collapsed');
+                });
+            }
+
+            // Scroll to Top Logic (Targeting your specific content-wrapper)
+            const contentWrapper = document.querySelector('.content-wrapper');
+            const scrollTopBtn = document.getElementById('scrollToTopBtn');
+
+            if (contentWrapper && scrollTopBtn) {
+                // Show button when scrolled down 300px
+                contentWrapper.addEventListener('scroll', function () {
+                    if (contentWrapper.scrollTop > 300) {
+                        scrollTopBtn.classList.add('show');
+                    } else {
+                        scrollTopBtn.classList.remove('show');
+                    }
+                });
+
+                // Smooth scroll back to top when clicked
+                scrollTopBtn.addEventListener('click', function () {
+                    contentWrapper.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
 
         </div>
     </div>

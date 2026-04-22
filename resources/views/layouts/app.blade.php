@@ -98,6 +98,40 @@
                 
             </main>
 
+            {{-- SCROLL TO TOP BUTTON --}}
+    <button id="scrollToTopBtn" title="Go to top">
+        <i class="bi bi-arrow-up"></i>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Because the login page might just use the body to scroll, we check for both
+            const contentWrapper = document.querySelector('.content-wrapper') || window;
+            const scrollTopBtn = document.getElementById('scrollToTopBtn');
+
+            if (scrollTopBtn) {
+                // Show button when scrolled down 300px
+                contentWrapper.addEventListener('scroll', function () {
+                    const scrollPos = contentWrapper.scrollTop || window.scrollY;
+                    if (scrollPos > 300) {
+                        scrollTopBtn.classList.add('show');
+                    } else {
+                        scrollTopBtn.classList.remove('show');
+                    }
+                });
+
+                // Smooth scroll back to top when clicked
+                scrollTopBtn.addEventListener('click', function () {
+                    if (contentWrapper === window) {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    } else {
+                        contentWrapper.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            }
+        });
+    </script>
+
             <footer class="footer">
                 <span>&copy; {{ date('Y') }} Biometric Attendance Management System. All rights reserved.</span>
             </footer>

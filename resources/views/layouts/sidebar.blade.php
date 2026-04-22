@@ -1,18 +1,21 @@
 <aside class="sidebar d-flex flex-column" id="mobileSidebar">
 
     {{-- Sidebar Header (Brand + Toggle Button) --}}
-    <div class="sidebar-header d-flex align-items-center justify-content-between px-3 py-3">
-        <div class="d-flex align-items-center gap-2 overflow-hidden">
-            <i class="bi bi-fingerprint text-white flex-shrink-0 brand-icon"></i>
-            <div class="brand-text text-nowrap">
-                <h5 class="text-white fw-bold mb-0">Biometric</h5>
-                <small class="text-white-50">Attendance System</small>
-            </div>
+    <div class="sidebar-header d-flex flex-column align-items-center position-relative py-3">
+        
+        <button class="btn btn-link text-white-50 p-0 d-none d-lg-flex position-absolute sidebar-toggle-btn" 
+                style="top: 20px; right: 12px;" id="sidebarToggleBtn">
+            {{-- CHANGE HERE: Swapped to fs-2 to make the arrow much bigger! --}}
+            <i class="bi bi-chevron-double-left fs-2 toggle-icon"></i>
+        </button>
+
+        <i class="bi bi-fingerprint text-white brand-icon mb-2" style="font-size: 2rem; line-height: 1;"></i>
+        
+        <div class="brand-text text-center text-nowrap">
+            <h5 class="text-white fw-bold mb-0">Biometric</h5>
+            <small class="text-white-50" style="font-size: 0.75rem;">Attendance System</small>
         </div>
         
-        <button class="btn btn-link text-white-50 p-0 d-none d-lg-flex align-items-center justify-content-center flex-shrink-0" id="sidebarToggleBtn">
-            <i class="bi bi-chevron-double-left fs-4 toggle-icon"></i>
-        </button>
     </div>
 
     {{-- Navigation Links --}}
