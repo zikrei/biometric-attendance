@@ -4,15 +4,17 @@
 @section('page_subtitle', 'Review and process attendance discrepancy requests.')
 
 @section('content')
+{{-- Simple Flex Wrapper (No "row" negative margins to mess up your background colors!) --}}
+<div class="d-flex justify-content-end mb-3">
     <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2 align-items-center mb-0">
-        <input type="month" name="month" class="form-control" value="{{ $selectedMonth ?? now()->format('Y-m') }}" required>
-        <button type="submit" class="btn btn-dark shadow-sm">Apply</button>
-        <a href="{{ url()->current() }}" class="btn btn-outline-secondary shadow-sm">Clear</a>
-        
+        <input type="month" name="month" class="form-control" style="width: 180px;" value="{{ $selectedMonth ?? now()->format('Y-m') }}" required>
+        <button type="submit" class="btn btn-dark text-white shadow-sm">Apply</button>
+            <a href="{{ url()->current() }}" class="btn btn-outline-secondary shadow-sm">Clear</a>
         <a href="{{ route('attendance.print', ['month' => $selectedMonth ?? now()->format('Y-m')]) }}" target="_blank" class="btn btn-outline-primary ms-2 shadow-sm">
             <i class="bi bi-printer me-1"></i> Print
         </a>
     </form>
+</div>
     <div class="card border-0 shadow-sm rounded-4 mt-3">
         <div class="card-body p-4">        
             <div class="table-responsive">

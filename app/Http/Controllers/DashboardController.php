@@ -86,10 +86,17 @@ class DashboardController extends Controller
         // 1. Get the currently logged-in Integrity officer
         $user = Auth::user();
 
-        // 2. Count system-wide Pending Discrepancies (ALL departments)
+        // 2. Count ONLY Pending Discrepancies from HODs
         $totalPending = Attendance::whereHas('justification', function ($query) {
             $query->where('status', 'pending');
-        })->count();
+        })
+        ->whereHas('user.role', function ($query) {
+            // NOTE: Make sure 'HOD' matches exactly what is in your roles table! 
+            // If your database spells it out, change this to 'Head of Department'
+            $query->where('name', 'HOD'); 
+        })
+        ->count();
+
         // 3. Count system-wide Staff Attendance for Today
         $today = date('Y-m-d');
         $totalAttendanceToday = Attendance::whereDate('date', $today)
