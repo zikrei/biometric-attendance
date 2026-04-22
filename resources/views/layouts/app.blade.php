@@ -22,20 +22,21 @@
         <div class="content-wrapper">
             
             <header class="topbar">
-                <div class="topbar-left d-flex align-items-center gap-3">
-                    <button class="btn btn-outline-secondary mobile-sidebar-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                <div class="topbar-left">
+                    <button class="btn mobile-sidebar-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
                         <i class="bi bi-list"></i>
                     </button>
 
                     @auth
-                        <div class="d-flex align-items-center gap-2 px-3 py-1 rounded" style="border: 1px solid #14b8a6; background-color: #f0fdfa; color: #0f766e;">
-                            <i class="bi bi-person-vcard fs-5"></i>
-                            <span class="fw-bold">{{ Auth::user()->role?->name ?? 'Staff' }}</span>
+                        {{-- STANDARDIZED: Uses the CSS .user-badge class instead of inline styles --}}
+                        <div class="user-badge">
+                            <i class="bi bi-person-vcard fs-6"></i>
+                            <span>{{ Auth::user()->role?->name ?? 'Staff' }}</span>
                         </div>
                     @endauth
                 </div>
 
-                <div class="topbar-right d-flex align-items-center">
+                <div class="topbar-right">
                     @auth
                         <div class="dropdown">
                             <button class="btn border-0 dropdown-toggle d-flex align-items-center gap-2 bg-transparent p-1" 
@@ -46,7 +47,7 @@
                                     <span class="fw-bold text-dark" style="font-size: 0.9rem;">{{ Auth::user()->name }}</span>
                                 </div>
                                 
-                                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=6d28d9&color=fff&bold=true" 
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=8b5cf6&color=fff&bold=true" 
                                      alt="Profile" class="rounded-circle shadow-sm" width="38" height="38">
                             </button>
 
@@ -74,16 +75,26 @@
             {{-- MAIN PAGE CONTENT --}}
             <main class="main-content">
                 
-                {{-- If you have page actions (like the Print button), we keep them but align them to the right --}}
-                @auth
-                    @hasSection('page_actions')
-                        <div class="d-flex justify-content-end mb-3">
-                            @yield('page_actions')
+                {{-- STANDARDIZED DYNAMIC HEADER --}}
+                {{-- This automatically formats titles, subtitles, and buttons for EVERY page! --}}
+                @if(View::hasSection('page_title'))
+                    <div class="page-header">
+                        <div>
+                            <h1 class="page-title">@yield('page_title')</h1>
+                            @if(View::hasSection('page_subtitle'))
+                                <p class="page-subtitle">@yield('page_subtitle')</p>
+                            @endif
                         </div>
-                    @endif
-                @endauth
+                        
+                        @if(View::hasSection('page_actions'))
+                            <div class="page-actions d-flex align-items-center gap-2">
+                                @yield('page_actions')
+                            </div>
+                        @endif
+                    </div>
+                @endif
 
-                {{-- The main page content loads here --}}
+                {{-- The main page cards load here --}}
                 @yield('content')
                 
             </main>

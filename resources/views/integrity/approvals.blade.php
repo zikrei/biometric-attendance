@@ -36,8 +36,10 @@
                                 <td>{{ $attendance->clock_out ?? '--:--' }}</td>
                                 <td>{{ $attendance->justification->reason ?? '-' }}</td>
                                 <td>
-                                    @if($attendance->attachment)
-                                        <a href="{{ asset('storage/' . $attendance->attachment) }}" target="_blank" class="btn btn-sm btn-outline-info">View Document</a>
+                                    @if($attendance->justification && $attendance->justification->attachment)
+                                        <a href="{{ asset('storage/' . $attendance->justification->attachment) }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-file-earmark-text"></i> View Document
+                                        </a>
                                     @else
                                         <span class="text-muted small">No Document</span>
                                     @endif

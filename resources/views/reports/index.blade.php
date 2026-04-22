@@ -1,14 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Generate Attendance Report')
-@section('page_title', 'Attendance Report')
-@section('page_subtitle', 'Generate and view detailed attendance reports for your selected criteria.')
+@section('title', 'Reports')
+@section('page_title', 'Department Attendance Reports')
+@section('page_subtitle', 'Generate, preview, and export monthly attendance summaries for your staff.')
 
 @section('content')
 <div class="card border-0 shadow-sm rounded-4">
-    <div class="card-body p-4">
-        <h5 class="mb-4">Generate Attendance Report</h5>
-        
+    <div class="card-body p-4">        
         <form action="{{ url('/admin/reports/generate') }}" method="GET">
             <div class="row g-3 mb-4">
                 

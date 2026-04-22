@@ -66,13 +66,15 @@ class DashboardController extends Controller
         // 1. Get the currently logged-in HOD
         $user = Auth::user();
 
-        // 2. Count Pending Approvals for their specific department
-        $pendingApprovals = Attendance::where('status', 'Pending')
-            ->whereHas('user', function ($query) use ($user) {
-                $query->where('department_id', $user->department_id)
-                      ->where('id', '!=', $user->id); // Exclude the HOD's own requests
-            })
-            ->count();
+        //Using whereHas to check the justification status
+        $pendingApprovals = Attendance::whereHas('justification', function ($query) {
+        $query->where('status', 'pending'); // Looks inside the new table!
+        })
+        ->whereHas('user', function ($query) use ($user) {
+            $query->where('department_id', $user->department_id)
+                    ->where('id', '!=', $user->id); // Exclude the HOD's own requests
+        })
+        ->count();
 
         // 3. Send the data to the HOD dashboard view
         return view('hod.dashboard', compact('user', 'pendingApprovals'));
@@ -85,8 +87,9 @@ class DashboardController extends Controller
         $user = Auth::user();
 
         // 2. Count system-wide Pending Discrepancies (ALL departments)
-        $totalPending = Attendance::where('status', 'Pending')->count();
-
+        $totalPending = Attendance::whereHas('justification', function ($query) {
+            $query->where('status', 'pending');
+        })->count();
         // 3. Count system-wide Staff Attendance for Today
         $today = date('Y-m-d');
         $totalAttendanceToday = Attendance::whereDate('date', $today)

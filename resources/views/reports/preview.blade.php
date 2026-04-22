@@ -1,17 +1,16 @@
 @extends('layouts.app')
 
 @section('title', 'Attendance Report')
-
-@section('page_title', 'Attendance Report Preview')
-@section('page_subtitle', 'Preview the attendance report before generating a printable or exportable version.')
+@section('page_title', 'Department Attendance Reports')
+@section('page_subtitle', 'Generate, preview, and export monthly attendance summaries for your staff.')
 
 @section('content')
 
     {{-- FILTER FORM SECTION --}}
     <div class="card border-0 shadow-sm rounded-4 mb-4 filter-section no-print">
         <div class="card-body p-4">
-            <h5 class="mb-4">Generate Attendance Report</h5>
-            
+            {{-- <h2 class="mb-4">Department Attendance Report</h2>
+            <p class="text-muted">Generate, preview, and export monthly attendance summaries for your staff.</p> --}}
             <form action="{{ url('/admin/reports/generate') }}" method="GET">
                 <div class="row g-3 mb-4">
                     

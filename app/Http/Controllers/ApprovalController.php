@@ -14,8 +14,11 @@ class ApprovalController extends Controller
         $hod = auth()->user();
 
         // Fetch pending attendances ONLY for Staff in the HOD's department
-        $attendances = \App\Models\Attendance::with('user')
-            ->where('status', 'Pending')
+        $attendances = \App\Models\Attendance::with(['user', 'justification']) // Eager load user AND justification
+            ->whereHas('justification', function ($query) {
+                // Look inside the new justifications table for the pending status!
+                $query->where('status', 'pending'); 
+            })
             ->whereHas('user', function ($query) use ($hod) {
                 // 1. Must match the HOD's department
                 $query->where('department_id', $hod->department_id)

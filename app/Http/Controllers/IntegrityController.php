@@ -4,18 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; // <-- Added this so Auth::user() works!
 
 class IntegrityController extends Controller
 {
     // Integrity fetching HOD requests
-    public function approvals() // or index()
+    public function approvals()
     {
         // Fetch pending attendances ONLY for users with the HOD role
-        $attendances = \App\Models\Attendance::with('user')
-            ->where('status', 'Pending')
+        $attendances = Attendance::with(['user', 'justification']) 
+            ->whereHas('justification', function ($query) {
+                // Look inside the new table for the pending status!
+                $query->where('status', 'pending'); 
+            })
             ->whereHas('user', function ($query) {
-                $query->whereHas('role', function($roleQuery) {
-                    $roleQuery->where('name', 'HOD');
+                $query->whereHas('role', function ($roleQuery) {
+                    $roleQuery->where('name', 'HOD'); // Integrity only approves HODs
                 });
             })
             ->paginate(10);
@@ -25,13 +29,25 @@ class IntegrityController extends Controller
 
     public function approve($id)
     {
-        Attendance::findOrFail($id)->update(['status' => 'Approved']);
+        $attendance = Attendance::findOrFail($id);
+        
+        // Update the status inside the new justification table!
+        if ($attendance->justification) {
+            $attendance->justification->update(['status' => 'approved']);
+        }
+        
         return back()->with('success', 'HOD discrepancy approved.');
     }
 
     public function reject($id)
     {
-        Attendance::findOrFail($id)->update(['status' => 'Rejected']);
+        $attendance = Attendance::findOrFail($id);
+        
+        // Update the status inside the new justification table
+        if ($attendance->justification) {
+            $attendance->justification->update(['status' => 'rejected']);
+        }
+        
         return back()->with('success', 'HOD discrepancy rejected.');
     }
 
@@ -41,8 +57,10 @@ class IntegrityController extends Controller
         // 1. Get the currently logged-in Integrity officer
         $user = Auth::user();
 
-        // 2. Count ONLY Pending Discrepancies submitted by HODs (Perfectly matches the approvals list!)
-        $totalPending = Attendance::where('status', 'Pending')
+        // 2. Count ONLY Pending Discrepancies submitted by HODs
+        $totalPending = Attendance::whereHas('justification', function ($query) {
+                $query->where('status', 'pending'); // <-- FIX: Check the new table!
+            })
             ->whereHas('user', function ($query) {
                 $query->whereHas('role', function($roleQuery) {
                     $roleQuery->where('name', 'HOD');

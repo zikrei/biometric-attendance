@@ -6,7 +6,6 @@
 @section('page_title')
     Welcome, {{ $user->name ?? 'Head of Department' }}
 @endsection
-
 @section('page_subtitle', 'Manage departmental requests and monitor your attendance records.')
 
 @section('content')

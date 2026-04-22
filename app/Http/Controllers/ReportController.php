@@ -17,11 +17,10 @@ class ReportController extends Controller
         
         if ($currentUser->role?->name === 'HOD') {
             $departments = Department::where('id', $currentUser->department_id)->get();
-            // ONLY fetch Staff inside the HOD's department
+            
+            // Fetch EVERYONE in the HOD's department (Including the HOD themselves!)
             $users = User::where('department_id', $currentUser->department_id)
-                         ->whereHas('role', function($q) {
-                             $q->where('name', 'Staff');
-                         })->orderBy('name')->get(['id', 'name', 'department_id']);
+                         ->orderBy('name')->get(['id', 'name', 'department_id']);
         } else {
             $departments = Department::all();
             $users = User::orderBy('name')->get(['id', 'name', 'department_id']); 
@@ -45,7 +44,7 @@ class ReportController extends Controller
         $userId = $request->input('user_id');
         $currentUser = auth()->user();
 
-        $query = Attendance::with(['user.department']);
+        $query = Attendance::with(['user.department', 'justification']);
 
         // 1. Role Security Scoping
         if ($currentUser->role?->name === 'HOD') {
@@ -53,13 +52,13 @@ class ReportController extends Controller
             $departmentId = $currentUser->department_id; 
             
             $query->whereHas('user', function($q) use ($departmentId) {
-                $q->where('department_id', $departmentId)
-                  ->whereHas('role', function($roleQ) {
-                      $roleQ->where('name', 'Staff');
-                  });
+                // Allow them to see all records for their department
+                $q->where('department_id', $departmentId);
             });
         } elseif ($currentUser->role?->name === 'Integrity') {
-            $query->where('status', 'Approved');
+            $query->whereHas('justification', function($q) {
+                $q->where('status', 'approved');
+            });
         }
 
         // 2. Month Filter
@@ -84,7 +83,6 @@ class ReportController extends Controller
             $department = Department::find($departmentId);
         }
 
-        // Fetch secure dropdown data so the preview page form also obeys the rules!
         [$departments, $users] = $this->getDropdownData();
 
         return view('reports.preview', compact('monthInput', 'attendances', 'department', 'departments', 'users'));
@@ -100,22 +98,20 @@ class ReportController extends Controller
     {
         $selectedMonth = $request->input('month', now()->format('Y-m'));
         $departmentId = $request->input('department_id');
-        $userId = $request->input('user_id'); // <-- 1. Fetch the chosen user!
+        $userId = $request->input('user_id'); 
         $currentUser = auth()->user();
 
         $query = \App\Models\User::with(['attendances' => function($q) use ($selectedMonth) {
             $q->whereMonth('date', \Carbon\Carbon::parse($selectedMonth)->month)
-              ->whereYear('date', \Carbon\Carbon::parse($selectedMonth)->year);
+              ->whereYear('date', \Carbon\Carbon::parse($selectedMonth)->year)
+              ->with('justification');
         }]);
 
         // 2. Apply Security Scoping
         if ($currentUser->role?->name === 'HOD') {
-            $query->where('department_id', $currentUser->department_id)
-                  ->whereHas('role', function($q) {
-                      $q->where('name', 'Staff');
-                  });
+            // Allow printing for anyone in their department
+            $query->where('department_id', $currentUser->department_id);
         } elseif ($departmentId && !$userId) {
-            // Only grab the whole department if a specific user wasn't selected
             $query->where('department_id', $departmentId);
         }
 
@@ -134,20 +130,19 @@ class ReportController extends Controller
     {
         $selectedMonth = $request->input('month', now()->format('Y-m'));
         $departmentId = $request->input('department_id');
-        $userId = $request->input('user_id'); // <-- 1. Fetch the chosen user!
+        $userId = $request->input('user_id'); 
         $currentUser = auth()->user();
 
         $query = \App\Models\User::with(['attendances' => function($q) use ($selectedMonth) {
             $q->whereMonth('date', \Carbon\Carbon::parse($selectedMonth)->month)
-              ->whereYear('date', \Carbon\Carbon::parse($selectedMonth)->year);
+              ->whereYear('date', \Carbon\Carbon::parse($selectedMonth)->year)
+              ->with('justification');
         }]);
 
         // 2. Apply Security Scoping
         if ($currentUser->role?->name === 'HOD') {
-            $query->where('department_id', $currentUser->department_id)
-                  ->whereHas('role', function($q) {
-                      $q->where('name', 'Staff');
-                  });
+            // Allow exporting for anyone in their department
+            $query->where('department_id', $currentUser->department_id);
         } elseif ($departmentId && !$userId) {
             $query->where('department_id', $departmentId);
         }
