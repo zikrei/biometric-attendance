@@ -1,16 +1,12 @@
 @extends('layouts.app')
 
 @section('title', 'Admin Dashboard')
-
-{{-- Push the Welcome message directly into the Top Header --}}
 @section('page_title')
     Welcome, {{ $user->name ?? 'System Administrator' }}
 @endsection
-
 @section('page_subtitle', 'Overview of system activity and key metrics for the biometric attendance system.')
 
 @section('content')
-
 <div class="row g-4 mt-1">
 
     {{-- Active Users Metric Card --}}

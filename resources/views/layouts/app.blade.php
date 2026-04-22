@@ -20,7 +20,6 @@
 
         {{-- 2. THE RIGHT CONTENT WRAPPER --}}
         <div class="content-wrapper">
-            
             <header class="topbar">
                 <div class="topbar-left">
                     <button class="btn mobile-sidebar-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">

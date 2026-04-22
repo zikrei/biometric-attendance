@@ -1,13 +1,10 @@
 @extends('layouts.app')
 
 @section('title', 'Pending Attendance Approvals')
+@section('page_title', 'Pending Attendance Approvals')
+@section('page_subtitle', 'Review and process attendance discrepancy requests.')
 
 @section('content')
-    <div class="mb-4">
-        <h2>Pending Attendance Approvals</h2>
-        <p class="text-muted">Review and process attendance discrepancy requests.</p>
-    </div>
-
     @if(session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
