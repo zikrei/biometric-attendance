@@ -34,13 +34,24 @@ class ApprovalController extends Controller
 
     public function approve($id)
     {
-        Attendance::findOrFail($id)->update(['status' => 'Approved']);
+        // 1. Find the attendance record
+        $attendance = Attendance::findOrFail($id);
+        
+        // 2. Update the status inside the attached JUSTIFICATION table!
+        $attendance->justification()->update(['status' => 'approved']);
+
+        // 3. Return to the page with a success message
         return back()->with('success', 'Staff discrepancy approved.');
     }
 
     public function reject($id)
     {
-        Attendance::findOrFail($id)->update(['status' => 'Rejected']);
+        // 1. Find the attendance record
+        $attendance = Attendance::findOrFail($id);
+        
+        // 2. Update the status inside the attached JUSTIFICATION table!
+        $attendance->justification()->update(['status' => 'rejected']);
+
         return back()->with('success', 'Staff discrepancy rejected.');
     }
 }
