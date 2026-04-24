@@ -1,16 +1,12 @@
 @extends('layouts.app')
 
 @section('title', 'Integrity Dashboard')
-
-{{-- Push the Welcome message directly into the Top Header --}}
 @section('page_title')
     Welcome, {{ $user->name ?? 'Integrity Officer' }}
 @endsection
-
 @section('page_subtitle', 'Monitor HOD attendance records and system-wide discrepancies.')
 
 @section('content')
-
 <div class="row g-4 mt-1">
 
     {{-- 1. Integrity Pending Approvals Card (Purple Gradient) --}}
