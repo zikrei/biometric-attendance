@@ -4,86 +4,52 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Rats\Zkteco\Lib\ZKTeco;
 
 class SyncFingerTec extends Command
 {
-    // The command to run in the terminal
     protected $signature = 'sync:fingertec';
-    protected $description = 'Pulls raw attendance logs from the FingerTec biometric device via COM';
+    protected $description = 'Pulls raw attendance logs directly via Network Sockets (Bypassing Windows COM)';
 
     public function handle()
     {
-        $this->info('Starting FingerTec Sync via ActiveX/COM...');
+        $this->info('Starting pure PHP Socket Connection...');
 
-        // 1. Initialize the COM Object
-        try {
-            // This is the "magic" line that connects PHP to the BioBridgeSDKv3.ocx
-            $sdk = new \COM("BioBridgeSDKv3.BioBridgeSDK");
-        } catch (\Exception $e) {
-            $this->error("Failed to load COM Object. Did you register the OCX and enable com_dotnet in php.ini?");
-            $this->error($e->getMessage());
-            return;
-        }
+        $ipAddress = "10.30.0.110"; // Your device IP
+        $port = 4370;               // Default UDP port for all FingerTec/ZKTeco devices
 
-        // 2. Connect to the Device via TCP/IP
-        $deviceModel = "AC100"; // Change this to your exact model (e.g., "AC100+", "TA100")
-        $deviceNo = 1;
-        $ipAddress = "192.168.1.201"; // Change to your device's actual IP
-        $port = 4370;
-        $commKey = 0;
-
-        $this->info("Attempting to connect to {$deviceModel} at {$ipAddress}...");
+        $this->info("Connecting to {$ipAddress}:{$port}...");
         
-        // Calling the Connect_TCPIP method from the SDK [cite: 415, 433]
-        $isConnected = $sdk->Connect_TCPIP($deviceModel, $deviceNo, $ipAddress, $port, $commKey);
-
-        if ($isConnected !== 0) {
-            $this->error("Connection failed! Please check the IP address and make sure the device is on.");
+        // 1. Initialize the pure PHP Library
+        $zk = new ZKTeco($ipAddress, $port);
+        
+        // 2. Connect via UDP network socket
+        if (!$zk->connect()) {
+            $this->error("Connection failed! Make sure the device is powered on and connected to the network.");
             return;
         }
 
         $this->info("Connected successfully! Downloading logs...");
-
-        // 3. Read Logs into Device Memory
-        $logCount = new \VARIANT();
-        // Calling ReadGeneralLog method [cite: 1107]
-        $readResult = $sdk->ReadGeneralLog($logCount);
-
-        if ($readResult !== 0) {
-            $this->error("Failed to read logs from device memory.");
-            $sdk->Disconnect(); // Always clean up [cite: 485]
+        
+        // 3. Download the logs directly from the device's network port
+        $attendance = $zk->getAttendance();
+        
+        if (empty($attendance)) {
+            $this->info("No logs found on the device.");
+            $zk->disconnect();
             return;
         }
 
-        $this->info("Found " . (int)$logCount . " total logs on the device.");
-
-        // 4. Retrieve Logs one by one
-        $enrollNo = new \VARIANT();
-        $year = new \VARIANT();
-        $month = new \VARIANT();
-        $day = new \VARIANT();
-        $hour = new \VARIANT();
-        $minute = new \VARIANT();
-        $second = new \VARIANT();
-        $verifyMode = new \VARIANT();
-        $inOutMode = new \VARIANT();
-        $workCode = new \VARIANT();
+        $this->info("Found " . count($attendance) . " logs. Saving to database...");
 
         $insertedCount = 0;
 
-        // Loop through memory buffer using GetGeneralLog [cite: 1123, 1151]
-        while ($sdk->GetGeneralLog($enrollNo, $year, $month, $day, $hour, $minute, $second, $verifyMode, $inOutMode, $workCode) == 0) {
-            
-            // Format the timestamp (YYYY-MM-DD HH:MM:SS)
-            $timestamp = sprintf("%04d-%02d-%02d %02d:%02d:%02d", 
-                (int)$year, (int)$month, (int)$day, (int)$hour, (int)$minute, (int)$second
-            );
-
-            // 5. Insert into your database staging table
+        // 4. Loop through the logs and insert them
+        foreach ($attendance as $log) {
             DB::table('biometric_logs')->insertOrIgnore([
-                'device_user_id' => (string)$enrollNo,
-                'punch_time'     => $timestamp,
-                'punch_state'    => (int)$inOutMode,
+                'device_user_id' => (string) $log['id'],
+                'punch_time'     => $log['timestamp'],
+                'punch_state'    => (string) $log['state'],
                 'created_at'     => now(),
                 'updated_at'     => now(),
             ]);
@@ -91,8 +57,8 @@ class SyncFingerTec extends Command
             $insertedCount++;
         }
 
-        // 6. Disconnect
-        $sdk->Disconnect(); [cite: 485]
-        $this->info("Sync Complete! Saved {$insertedCount} logs to the database.");
+        // 5. Clean up network connection
+        $zk->disconnect();
+        $this->info("Sync Complete! Saved {$insertedCount} logs.");
     }
 }

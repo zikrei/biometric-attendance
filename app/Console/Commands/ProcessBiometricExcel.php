@@ -40,16 +40,30 @@ class ProcessBiometricExcel extends Command
 
             $insertedCount = 0;
 
-            // 3. Read the Excel file row by row
-            SimpleExcelReader::create($filePath)->getRows()->each(function(array $row) use (&$insertedCount) {
+            // 1. Assign the reader to a variable so we can control it
+            $reader = SimpleExcelReader::create($filePath);
+            
+            $reader->getRows()->each(function(array $row) use (&$insertedCount) {
                 
-                // IMPORTANT: Change 'EnrollNo', 'Time', and 'State' to the exact column names in your Excel file
+                // TEMPORARY: This will print the exact column names to your terminal!
+                // Once you know the exact names, you can delete this line.
+                if ($insertedCount === 0) {
+                    dump($row); 
+                }
+
+                // IMPORTANT: Change these to match what prints out in your terminal
                 $userId = $row['EnrollNo'] ?? null;
-                $time   = clone Carbon::parse($row['Time']); // Format to Y-m-d H:i:s
+                
+                // We use try-catch here in case the date format is weird in Excel
+                try {
+                    $time = isset($row['Time']) ? Carbon::parse($row['Time']) : null;
+                } catch (\Exception $e) {
+                    $time = null;
+                }
+
                 $state  = $row['State'] ?? 0;
 
                 if ($userId && $time) {
-                    // 4. Insert into the staging table (Thanks to our unique constraint, duplicates are ignored!)
                     DB::table('biometric_logs')->insertOrIgnore([
                         'device_user_id' => $userId,
                         'punch_time'     => $time,
@@ -61,10 +75,13 @@ class ProcessBiometricExcel extends Command
                 }
             });
 
+            // 2. FORCE Windows to let go of the file lock!
+            unset($reader);
+            gc_collect_cycles(); // Forces PHP to clean up memory immediately
+
             $this->info("Successfully inserted {$insertedCount} logs from {$fileName}.");
 
-            // 5. Move the file to the archive so it is not processed again
-            // We append the current timestamp to the filename to prevent overwriting older archives
+            // 3. Now move the file
             $newFileName = time() . '_' . $fileName;
             File::move($filePath, $archive . '/' . $newFileName);
             
