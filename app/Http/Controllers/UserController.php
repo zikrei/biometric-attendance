@@ -31,30 +31,44 @@ class UserController extends Controller
     }
 
     // Store new user in the database
-    public function store(Request $request)
-    {
-        // 1. Add device_user_id to the validation rules
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'role_id' => 'required|exists:roles,id',
-            'department_id' => 'required|exists:departments,id',
-            'device_user_id' => 'required|string|unique:users,device_user_id', // <-- Added validation (Ensures no duplicates)
-            'password' => 'required|string|min:6',
-        ]);
+ public function store(Request $request)
+{
+    // 1. Validate the request
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'role_id' => 'required|integer',
+        'department_id' => 'required', // Can be an ID or the word "new"
+        // Require the text box ONLY if they selected "new"
+        'new_department_name' => 'required_if:department_id,new|string|max:255|nullable', 
+        'device_user_id' => 'required|string',
+        'password' => 'required|string|min:6',
+    ]);
 
-        // 2. Include it when creating the User
-        User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'role_id' => $validated['role_id'],
-            'department_id' => $validated['department_id'],
-            'device_user_id' => $validated['device_user_id'], // <-- SAVE TO DATABASE
-            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
-        ]);
+    $departmentId = $request->department_id;
 
-        return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
+    // 2. Intercept the "new" department and save it to the DB first!
+    if ($departmentId === 'new') {
+        $department = Department::create([
+            'name' => $request->new_department_name
+        ]);
+        
+        // Grab the ID of the newly created department
+        $departmentId = $department->id; 
     }
+
+    // 3. Create the User
+    User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'role_id' => $request->role_id,
+        'department_id' => $departmentId, // Use the resolved ID here!
+        'device_user_id' => $request->device_user_id,
+        'password' => bcrypt($request->password),
+    ]);
+
+    return redirect()->route('admin.users.index')->with('success', 'User created successfully!');
+}
 
     // Show form to edit user
     public function edit($id)

@@ -61,7 +61,12 @@
                             @foreach($departments as $department)
                                 <option value="{{ $department->id }}">{{ $department->name }}</option>
                             @endforeach
+                            <option value="new" class="text-primary fw-bold">+ Add New Department</option>
                         </select>
+                        
+                        <div class="mt-2 d-none" id="new_department_wrapper">
+                            <input type="text" name="new_department_name" id="new_department_name" class="form-control border-primary" placeholder="Type new department name here...">
+                        </div>
                     </div>
                 </div>
                 
@@ -92,4 +97,39 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const departmentSelect = document.getElementById('department_id');
+            const newDeptWrapper = document.getElementById('new_department_wrapper');
+            const newDeptInput = document.getElementById('new_department_name');
+            const resetButton = document.querySelector('button[type="reset"]'); // Target the Reset button directly
+
+            if(departmentSelect) {
+                departmentSelect.addEventListener('change', function() {
+                    if (this.value === 'new') {
+                        // Show the input and make it required
+                        newDeptWrapper.classList.remove('d-none');
+                        newDeptInput.setAttribute('required', 'required');
+                        newDeptInput.focus();
+                    } else {
+                        // Hide the input, clear it, and remove required
+                        newDeptWrapper.classList.add('d-none');
+                        newDeptInput.removeAttribute('required');
+                        newDeptInput.value = '';
+                    }
+                });
+            }
+
+            // Listen for the physical click on the Reset button
+            if(resetButton) {
+                resetButton.addEventListener('click', function() {
+                    // Forcefully hide the box and clean up
+                    newDeptWrapper.classList.add('d-none');
+                    newDeptInput.removeAttribute('required');
+                    newDeptInput.value = '';
+                });
+            }
+        });
+    </script>
 @endsection
