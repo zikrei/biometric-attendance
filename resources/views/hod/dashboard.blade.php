@@ -2,7 +2,6 @@
 
 @section('title', 'HOD Dashboard')
 
-{{-- Push the Welcome message directly into the Top Header --}}
 @section('page_title')
     Welcome, {{ $user->name ?? 'Head of Department' }}
 @endsection
@@ -12,8 +11,8 @@
 
 <div class="row g-4 mt-1">
     
-    {{-- 1. My Attendance Card (Cyan Gradient) --}}
-    <div class="col-md-6 col-xl-4">
+    {{-- 1. My Attendance Card --}}
+    <div class="col-md-6 col-xl-3">
         <div class="dashboard-card card-attendance pattern-zigzag h-100">
             <div class="card-content">
                 <div>
@@ -29,8 +28,8 @@
         </div>
     </div>
 
-        {{-- 2. Pending Approvals Card (Orange Gradient) --}}
-    <div class="col-md-6 col-xl-4">
+    {{-- 2. Pending Approvals Card --}}
+    <div class="col-md-6 col-xl-3">
         <div class="dashboard-card card-hod-approvals pattern-grid h-100">
             <div class="card-content">
                 <div>
@@ -46,8 +45,8 @@
         </div>
     </div>
 
-    {{-- 3. Reporting Card (Green Gradient) --}}
-    <div class="col-md-6 col-xl-4">
+    {{-- 3. Reporting Card --}}
+    <div class="col-md-6 col-xl-3">
         <div class="dashboard-card card-admin-reports h-100">
             <div class="card-content">
                 <div>
@@ -59,13 +58,12 @@
                     <i class="bi bi-file-earmark-bar-graph"></i>
                 </div>
             </div>
-            {{-- Links directly to the reports page --}}
             <a href="{{ route('reports.index') }}" class="stretched-link" aria-label="View Reports"></a>
         </div>
     </div>
 
-        {{-- 4. Account Settings Card (Rose Gradient) --}}
-    <div class="col-md-6 col-xl-4  mb-4">
+    {{-- 4. Account Settings Card --}}
+    <div class="col-md-6 col-xl-3">
         <div class="dashboard-card card-profile pattern-lines h-100">
             <div class="card-content">
                 <div>

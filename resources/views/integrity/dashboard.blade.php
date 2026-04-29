@@ -9,7 +9,7 @@
 @section('content')
 <div class="row g-4 mt-1">
 
-    {{-- 1. Integrity Pending Approvals Card (Purple Gradient) --}}
+    {{-- 1. Integrity Pending Approvals Card --}}
     <div class="col-md-6 col-xl-4">
         <div class="dashboard-card card-integrity-approvals pattern-diagonal-reverse h-100">
             <div class="card-content">
@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    {{-- 2. System Reports Card (Green Gradient) --}}
+    {{-- 2. System Reports Card --}}
     <div class="col-md-6 col-xl-4">
         <div class="dashboard-card card-admin-reports pattern-diagonal h-100">
             <div class="card-content">
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    {{-- 3. Account Settings Card (Rose Gradient) --}}
+    {{-- 3. Account Settings Card --}}
     <div class="col-md-6 col-xl-4">
         <div class="dashboard-card card-profile pattern-lines h-100">
             <div class="card-content">

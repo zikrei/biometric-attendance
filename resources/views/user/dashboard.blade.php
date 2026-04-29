@@ -2,7 +2,6 @@
 
 @section('title', 'My Dashboard')
 
-{{-- Push the Welcome message directly into the Top Header --}}
 @section('page_title')
     Welcome back, {{ Auth::user()->name ?? 'Staff Member' }} 👋
 @endsection
@@ -14,7 +13,7 @@
 <div class="row g-4 mt-1">
 
     {{-- Attendance Log Card --}}
-    <div class="col-md-6 col-xl-4">
+    <div class="col-md-6">
         <div class="dashboard-card card-attendance h-100">
             <div class="card-content">
                 <div>
@@ -31,7 +30,7 @@
     </div>
 
     {{-- Account Settings Card --}}
-    <div class="col-md-6 col-xl-4">
+    <div class="col-md-6">
         <div class="dashboard-card card-profile h-100">
             <div class="card-content">
                 <div>
