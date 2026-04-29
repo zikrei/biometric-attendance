@@ -5,7 +5,6 @@
         
         <button class="btn btn-link text-white-50 p-0 d-none d-lg-flex position-absolute sidebar-toggle-btn" 
                 style="top: 20px; right: 12px;" id="sidebarToggleBtn">
-            {{-- CHANGE HERE: Swapped to fs-2 to make the arrow much bigger! --}}
             <i class="bi bi-chevron-double-left fs-2 toggle-icon"></i>
         </button>
 
@@ -15,17 +14,14 @@
             <h5 class="text-white fw-bold mb-0">Biometric</h5>
             <small class="text-white-50" style="font-size: 0.75rem;">Attendance System</small>
         </div>
-        
     </div>
 
     {{-- Navigation Links --}}
     <div class="sidebar-title">MAIN NAVIGATION</div>
     
     <ul class="nav flex-column gap-1 px-2 mb-auto">
-        
         @php $role = Auth::user()->role?->name; @endphp
 
-        {{-- 1. DASHBOARD (Dynamic based on role) --}}
         <li class="nav-item">
             @if($role === 'Admin')
                 <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
@@ -41,7 +37,6 @@
             </a>
         </li>
 
-        {{-- 2. USER MANAGEMENT (Admin Only) --}}
         @if($role === 'Admin')
         <li class="nav-item">
             <a href="{{ route('admin.users.index') }}" class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
@@ -51,7 +46,6 @@
         </li>
         @endif
 
-        {{-- 3. ATTENDANCE RECORDS (Staff & HOD) --}}
         @if(in_array($role, ['Staff', 'HOD']))
         <li class="nav-item">
             <a href="{{ route('attendance.list') }}" class="nav-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
@@ -61,7 +55,6 @@
         </li>
         @endif
 
-        {{-- 4. ATTENDANCE APPROVALS (HOD & Integrity) --}}
         @if($role === 'HOD')
         <li class="nav-item">
             <a href="{{ route('hod.approvals') }}" class="nav-link {{ request()->routeIs('hod.*') && !request()->routeIs('hod.dashboard') ? 'active' : '' }}">
@@ -78,7 +71,6 @@
         </li>
         @endif
 
-        {{-- 5. REPORTS (Admin, Integrity, AND NOW HOD!) --}}
         @if(in_array($role, ['Admin', 'Integrity', 'HOD']))
         <li class="nav-item">
             <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
@@ -87,6 +79,5 @@
             </a>
         </li>
         @endif
-
     </ul>
 </aside>

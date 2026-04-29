@@ -192,6 +192,22 @@ body {
     text-decoration: none;
     font-weight: 500;
 }
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.4); /* Dark semi-transparent color */
+    z-index: 1040; /* Sits exactly below the sidebar (1050) */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out;
+    backdrop-filter: blur(2px); /* Gives a cool glass blur effect to the background! */
+}
+
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
 .sidebar .nav-link:hover, .sidebar .nav-link.active { background: var(--bg-sidebar-hover); color: var(--bg-white); }
 
 body.sidebar-collapsed .sidebar { width: 80px !important; padding: 1.5rem 0.5rem; }
@@ -420,19 +436,38 @@ body.print-layout { font-family: Arial, sans-serif; font-size: var(--fs-sm); col
    11. Responsive Adjustments
 ========================================================= */
 @media (max-width: 991.98px) {
-    .sidebar, .desktop-sidebar-toggle { display: none !important; }
+    /* 1. Hide the desktop toggle button */
+    .desktop-sidebar-toggle { display: none !important; }
     .mobile-sidebar-toggle { display: inline-flex; align-items: center; justify-content: center; }
+
+    /* 2. Setup the off-screen sidebar */
+    .sidebar { 
+        position: fixed; 
+        left: -260px; 
+        top: 0;
+        height: 100vh;
+        z-index: 1050;
+        transition: transform 0.3s ease-in-out;
+    }
+    
+    /* 3. Prepare the dashboard for pushing */
+    .content-wrapper {
+        width: 100vw;
+        transition: transform 0.3s ease-in-out;
+        overflow-x: hidden; /* Prevents horizontal scrollbars while pushing */
+    }
+
+    /* 4. THE MAGIC PUSH EFFECT */
+    /* When the body has this class, slide both elements 260px to the right */
+    body.mobile-sidebar-open .sidebar,
+    body.mobile-sidebar-open .content-wrapper {
+        transform: translateX(260px);
+    }
+    
+    /* Spacing adjustments for mobile */
     .main-content { padding: 1rem; }
     .topbar { padding: 0 1rem; }
     .login-left, .login-right { padding: 2rem; }
-}
-
-@media (max-width: 767.98px) {
-    .page-header { flex-direction: column; align-items: flex-start; }
-    .topbar { height: auto; padding: 0.75rem 1rem; flex-wrap: wrap; gap: 0.75rem; }
-    .topbar-left, .topbar-right { width: 100%; justify-content: space-between; }
-    .brand-subtitle, .login-left { display: none; }
-    .login-right { padding: 2rem 1.5rem; }
 }
 
 /* =========================================================

@@ -13,21 +13,22 @@
     
     <div class="app-wrapper">
         
-        {{-- 1. THE FULL-HEIGHT SIDEBAR --}}
+        {{-- THE FULL-HEIGHT SIDEBAR --}}
         @if(Auth::check())
             @include('layouts.sidebar')
+            <div id="sidebarOverlay" class="sidebar-overlay d-lg-none"></div>
         @endif
 
-        {{-- 2. THE RIGHT CONTENT WRAPPER --}}
+        {{-- THE RIGHT CONTENT WRAPPER --}}
         <div class="content-wrapper">
             <header class="topbar">
                 <div class="topbar-left">
-                    <button class="btn mobile-sidebar-toggle d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
-                        <i class="bi bi-list"></i>
+                    {{-- RESTORED HAMBURGER ICON HERE --}}
+                    <button id="mobileMenuBtn" class="btn mobile-sidebar-toggle d-lg-none" type="button">
+                        <i class="bi bi-list fs-2 text-dark"></i>
                     </button>
 
                     @auth
-                        {{-- STANDARDIZED: Uses the CSS .user-badge class instead of inline styles --}}
                         <div class="user-badge">
                             <i class="bi bi-person-vcard fs-6"></i>
                             <span>{{ Auth::user()->role?->name ?? 'Staff' }}</span>
@@ -73,9 +74,6 @@
 
             {{-- MAIN PAGE CONTENT --}}
             <main class="main-content">
-                
-                {{-- STANDARDIZED DYNAMIC HEADER --}}
-                {{-- This automatically formats titles, subtitles, and buttons for EVERY page! --}}
                 @if(View::hasSection('page_title'))
                     <div class="page-header">
                         <div>
@@ -93,44 +91,12 @@
                     </div>
                 @endif
 
-                {{-- The main page cards load here --}}
                 @yield('content')
-                
             </main>
 
-            {{-- SCROLL TO TOP BUTTON --}}
-    <button id="scrollToTopBtn" title="Go to top">
-        <i class="bi bi-arrow-up"></i>
-    </button>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Because the login page might just use the body to scroll, we check for both
-            const contentWrapper = document.querySelector('.content-wrapper') || window;
-            const scrollTopBtn = document.getElementById('scrollToTopBtn');
-
-            if (scrollTopBtn) {
-                // Show button when scrolled down 300px
-                contentWrapper.addEventListener('scroll', function () {
-                    const scrollPos = contentWrapper.scrollTop || window.scrollY;
-                    if (scrollPos > 300) {
-                        scrollTopBtn.classList.add('show');
-                    } else {
-                        scrollTopBtn.classList.remove('show');
-                    }
-                });
-
-                // Smooth scroll back to top when clicked
-                scrollTopBtn.addEventListener('click', function () {
-                    if (contentWrapper === window) {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    } else {
-                        contentWrapper.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                });
-            }
-        });
-    </script>
+            <button id="scrollToTopBtn" title="Go to top">
+                <i class="bi bi-arrow-up"></i>
+            </button>
 
             <footer class="footer">
                 <span>&copy; {{ date('Y') }} Biometric Attendance Management System. All rights reserved.</span>
@@ -138,13 +104,37 @@
         </div>
     </div>
 
+    {{-- CLEANED, SINGLE SCRIPT BLOCK FOR BOTH SIDEBARS --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // --- 1. DESKTOP COLLAPSE MENU ---
             const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
-
             if (sidebarToggleBtn) {
-                sidebarToggleBtn.addEventListener('click', function () {
+                sidebarToggleBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
                     document.body.classList.toggle('sidebar-collapsed');
+                });
+            }
+
+            // --- 2. MOBILE PUSH MENU ---
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileSidebar = document.getElementById('mobileSidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            if (mobileMenuBtn && mobileSidebar) {
+                mobileMenuBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation(); 
+                    document.body.classList.toggle('mobile-sidebar-open');
+                    if (sidebarOverlay) sidebarOverlay.classList.toggle('show');
+                });
+            }
+
+            // --- 3. AUTO-CLOSE MOBILE MENU ---
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', function () {
+                    document.body.classList.remove('mobile-sidebar-open');
+                    sidebarOverlay.classList.remove('show');
                 });
             }
         });
