@@ -17,15 +17,24 @@ class ProcessBiometricExcel extends Command
     {
         $this->info('Looking for Excel files in the Dropzone...');
 
-        // 1. Define the folder paths
+        /**
+         * PHASE 1: DIRECTORY INITIALIZATION
+         * OBJECTIVE: Define and validate the existence of required system paths.
+         * PROCEDURES: 
+         * - Define 'dropzone' for incoming files and 'archive' for processed records.
+         * - Verify directory existence; auto-generate missing folders with 0755 permissions.
+         */
         $dropzone = storage_path('app/biometrics_dropzone');
         $archive  = storage_path('app/biometrics_archive');
 
-        // Make sure folders exist
         if (!File::exists($dropzone)) File::makeDirectory($dropzone, 0755, true);
         if (!File::exists($archive)) File::makeDirectory($archive, 0755, true);
 
-        // 2. Get all files in the dropzone (supports .xlsx and .csv)
+        /**
+         * PHASE 2: FILE DISCOVERY & VALIDATION
+         * OBJECTIVE: Identify all pending Excel or CSV datasets within the dropzone.
+         * CRITERIA: Supports .xlsx and .csv formats. Terminates execution if the directory is empty.
+         */
         $files = File::files($dropzone);
 
         if (empty($files)) {
@@ -40,21 +49,26 @@ class ProcessBiometricExcel extends Command
 
             $insertedCount = 0;
 
-            // 1. Assign the reader to a variable so we can control it
+            /**
+             * PHASE 3: DATA EXTRACTION & DATABASE SYNCHRONIZATION
+             * OBJECTIVE: Iterate through file rows and map data to the biometric_logs table.
+             * MAPPING LOGIC:
+             * - UID: Extracted from 'EnrollNo'.
+             * - Timestamp: Parsed from 'Time' via Carbon with Exception handling for malformed dates.
+             * - State: Extracted from 'State' (defaulting to 0).
+             * TRANSACTION: Uses 'insertOrIgnore' to prevent duplicate entries from the same file.
+             */
             $reader = SimpleExcelReader::create($filePath);
             
             $reader->getRows()->each(function(array $row) use (&$insertedCount) {
                 
-                // TEMPORARY: This will print the exact column names to your terminal!
-                // Once you know the exact names, you can delete this line.
+                // DATA DEBUGGING: Outputs the first row structure to the terminal for schema verification.
                 if ($insertedCount === 0) {
                     dump($row); 
                 }
 
-                // IMPORTANT: Change these to match what prints out in your terminal
                 $userId = $row['EnrollNo'] ?? null;
                 
-                // We use try-catch here in case the date format is weird in Excel
                 try {
                     $time = isset($row['Time']) ? Carbon::parse($row['Time']) : null;
                 } catch (\Exception $e) {
@@ -75,13 +89,21 @@ class ProcessBiometricExcel extends Command
                 }
             });
 
-            // 2. FORCE Windows to let go of the file lock!
+            /**
+             * PHASE 4: RESOURCE OPTIMIZATION & MEMORY MANAGEMENT
+             * OBJECTIVE: Release file locks and clear memory buffers to prevent Windows file-sharing violations.
+             * METHOD: Explicitly unset the reader and trigger a Garbage Collection cycle (gc_collect_cycles).
+             */
             unset($reader);
-            gc_collect_cycles(); // Forces PHP to clean up memory immediately
+            gc_collect_cycles(); 
 
             $this->info("Successfully inserted {$insertedCount} logs from {$fileName}.");
 
-            // 3. Now move the file
+            /**
+             * PHASE 5: FILE ARCHIVAL & FINALIZATION
+             * OBJECTIVE: Relocate the processed file to the archive to prevent re-processing.
+             * NAMING CONVENTION: Appends a Unix timestamp to the filename to ensure uniqueness in storage.
+             */
             $newFileName = time() . '_' . $fileName;
             File::move($filePath, $archive . '/' . $newFileName);
             

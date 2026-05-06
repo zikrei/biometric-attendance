@@ -15,15 +15,28 @@ class SyncFingerTec extends Command
     {
         $this->info('Starting pure PHP Socket Connection...');
 
-        $ipAddress = "10.30.0.110"; // Your device IP
-        $port = 4370;               // Default UDP port for all FingerTec/ZKTeco devices
+        /**
+         * PHASE 1: NETWORK CONFIGURATION
+         * OBJECTIVE: Define the target hardware address and communication port.
+         * PARAMETERS: 
+         * - IP Address: 10.30.0.110 (Static Device IP)
+         * - Port: 4370 (Standard UDP port for ZKTeco/FingerTec protocol)
+         */
+        $ipAddress = "10.30.0.110"; 
+        $port = 4370;               
 
         $this->info("Connecting to {$ipAddress}:{$port}...");
         
-        // 1. Initialize the pure PHP Library
+        /**
+         * PHASE 2: SOCKET INITIALIZATION & HANDSHAKE
+         * OBJECTIVE: Establish a low-level network connection with the biometric hardware.
+         * PROCEDURES:
+         * - Instantiate the ZKTeco socket wrapper.
+         * - Execute a connection handshake via UDP.
+         * EXCEPTION HANDLING: Aborts execution if the device is unreachable or the port is blocked.
+         */
         $zk = new ZKTeco($ipAddress, $port);
         
-        // 2. Connect via UDP network socket
         if (!$zk->connect()) {
             $this->error("Connection failed! Make sure the device is powered on and connected to the network.");
             return;
@@ -31,7 +44,12 @@ class SyncFingerTec extends Command
 
         $this->info("Connected successfully! Downloading logs...");
         
-        // 3. Download the logs directly from the device's network port
+        /**
+         * PHASE 3: REMOTE DATA RETRIEVAL
+         * OBJECTIVE: Extract raw attendance records stored in the device's internal memory.
+         * DATA STRUCTURE: Returns an array of log entries containing User ID, Timestamp, and Punch State.
+         * VALIDATION: Verifies if new data exists before proceeding to the database layer.
+         */
         $attendance = $zk->getAttendance();
         
         if (empty($attendance)) {
@@ -44,7 +62,15 @@ class SyncFingerTec extends Command
 
         $insertedCount = 0;
 
-        // 4. Loop through the logs and insert them
+        /**
+         * PHASE 4: DATABASE SYNCHRONIZATION & DUPLICATE PREVENTION
+         * OBJECTIVE: Transform raw device logs into persistent database records.
+         * DATA MAPPING:
+         * - device_user_id: Cast from device 'id'.
+         * - punch_time: Direct mapping of device 'timestamp'.
+         * - punch_state: Cast from device 'state'.
+         * INTEGRITY GUARD: Uses 'insertOrIgnore' to skip records already present in the 'biometric_logs' table.
+         */
         foreach ($attendance as $log) {
             DB::table('biometric_logs')->insertOrIgnore([
                 'device_user_id' => (string) $log['id'],
@@ -57,7 +83,11 @@ class SyncFingerTec extends Command
             $insertedCount++;
         }
 
-        // 5. Clean up network connection
+        /**
+         * PHASE 5: SESSION TERMINATION
+         * OBJECTIVE: Explicitly close the network socket to free up the device's communication channel.
+         * FINALIZATION: Output the total number of processed records to the console.
+         */
         $zk->disconnect();
         $this->info("Sync Complete! Saved {$insertedCount} logs.");
     }

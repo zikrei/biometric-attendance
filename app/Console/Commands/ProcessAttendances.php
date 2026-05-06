@@ -15,7 +15,11 @@ class ProcessAttendances extends Command
     {
         $this->info('Looking for unprocessed biometric logs...');
 
-        // 1. Get all logs we haven't processed yet, ordered by oldest first
+        /**
+         * PHASE 1: DATA ACQUISITION & SORTING
+         * OBJECTIVE: Retrieve a collection of raw biometric entries that have not yet been synchronized.
+         * PARAMETERS: Filtering by 'is_processed' status and sorting chronologically to ensure data integrity.
+         */
         $logs = DB::table('biometric_logs')
                   ->where('is_processed', false)
                   ->orderBy('punch_time', 'asc')
@@ -29,48 +33,57 @@ class ProcessAttendances extends Command
         $processedCount = 0;
 
         foreach ($logs as $log) {
-            // 2. Find the actual employee in your users table 
-            // (Assumes your users table has a 'device_user_id' column)
+            /**
+             * PHASE 2: IDENTITY VERIFICATION & MAPPING
+             * OBJECTIVE: Match the biometric 'device_user_id' with a registered employee record.
+             * EXCEPTION HANDLING: If no match is found, the log is flagged as processed to prevent system loops, and the iteration is terminated.
+             */
             $user = DB::table('users')->where('device_user_id', $log->device_user_id)->first();
 
             if (!$user) {
-                // If the user isn't in our system yet, mark as processed and skip
                 DB::table('biometric_logs')->where('id', $log->id)->update(['is_processed' => true]);
                 continue;
             }
 
-            // Split the datetime into Date and Time
+            // Normalization of timestamp into distinct Date and Time objects
             $punchTime = Carbon::parse($log->punch_time);
-            $date = $punchTime->toDateString();  // e.g., "2026-04-27"
-            $time = $punchTime->toTimeString();  // e.g., "08:30:00"
+            $date = $punchTime->toDateString();
+            $time = $punchTime->toTimeString();
 
-            // 3. Look for an existing attendance record for this user on this specific date
+            /**
+             * PHASE 3: ATTENDANCE LOGIC & RECORD EVALUATION
+             * OBJECTIVE: Determine if the entry represents a shift commencement or a shift conclusion.
+             * SCENARIO A (New Entry): Creates a new record if no entry exists for the user on this date (Clock-In).
+             * SCENARIO B (Existing Entry): Updates the existing record's final activity field (Clock-Out).
+             */
             $attendance = DB::table('attendances')
                 ->where('user_id', $user->id)
                 ->where('date', $date)
                 ->first();
 
             if (!$attendance) {
-                // Scenario A: First punch of the day! Create the record.
                 DB::table('attendances')->insert([
                     'user_id'   => $user->id,
                     'date'      => $date,
-                    'clock_in'  => $time,    // Changed to clock_in
-                    'clock_out' => null,     // Changed to clock_out
+                    'clock_in'  => $time,
+                    'clock_out' => null,
                     'created_at'=> now(),
                     'updated_at'=> now(),
                 ]);
             } else {
-                // Scenario B: They punched again! Update the clock_out time.
                 DB::table('attendances')
                     ->where('id', $attendance->id)
                     ->update([
-                        'clock_out'  => $time, // Changed to clock_out
+                        'clock_out'  => $time,
                         'updated_at' => now(),
                     ]);
             }
 
-            // 4. Mark the raw log as safely processed!
+            /**
+             * PHASE 4: TRANSACTION FINALIZATION
+             * OBJECTIVE: Mark the source log as successfully synchronized to prevent duplicate processing.
+             * METRIC: Increment the internal counter for the final execution summary.
+             */
             DB::table('biometric_logs')->where('id', $log->id)->update(['is_processed' => true]);
             $processedCount++;
         }

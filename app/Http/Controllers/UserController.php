@@ -10,130 +10,173 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    // Show all users
+    /**
+     * Display a comprehensive registry of all system users.
+     */
     public function index()
     {
-        // 1. Fetch all users from the database, including their roles and departments
+        /**
+         * PHASE 1: DATA AGGREGATION & RELATIONSHIP LOADING
+         * OBJECTIVE: Retrieve a complete list of users while minimizing database overhead.
+         * PROCEDURES: Eager loads 'role' and 'department' relationships to ensure all organizational metadata is available for the index view.
+         */
         $users = User::with(['role', 'department'])->get();
         
-        // 2. Send the $users variable to your new singular view path
         return view('admin.user.index', compact('users'));
     }
 
-    // Show form to create new user
+    /**
+     * Initialize the interface for new user registration.
+     */
     public function create()
     {
-        // Fetch roles and departments for the dropdown menus
+        /**
+         * PHASE 1: METADATA PREPARATION
+         * OBJECTIVE: Populate the registration form with valid organizational roles and departments.
+         */
         $roles = Role::all();
         $departments = Department::all();
         
         return view('admin.user.create', compact('roles', 'departments'));
     }
 
-    // Store new user in the database
- public function store(Request $request)
-{
-    // 1. Validate the request
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'role_id' => 'required|integer',
-        'department_id' => 'required', // Can be an ID or the word "new"
-        // Require the text box ONLY if they selected "new"
-        'new_department_name' => 'required_if:department_id,new|string|max:255|nullable', 
-        'device_user_id' => 'required|string',
-        'password' => 'required|string|min:6',
-    ]);
-
-    $departmentId = $request->department_id;
-
-    // 2. Intercept the "new" department and save it to the DB first!
-    if ($departmentId === 'new') {
-        $department = Department::create([
-            'name' => $request->new_department_name
+    /**
+     * Execute the registration of a new user and manage dynamic department creation.
+     */
+    public function store(Request $request)
+    {
+        /**
+         * PHASE 1: PAYLOAD VALIDATION & CONDITIONAL LOGIC
+         * OBJECTIVE: Sanitize inbound data and enforce record uniqueness.
+         * CONSTRAINTS: 
+         * - Ensures email is unique within the users table.
+         * - Requires 'new_department_name' only if 'department_id' is set to "new".
+         */
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'role_id' => 'required|integer',
+            'department_id' => 'required', 
+            'new_department_name' => 'required_if:department_id,new|string|max:255|nullable', 
+            'device_user_id' => 'required|string',
+            'password' => 'required|string|min:6',
         ]);
-        
-        // Grab the ID of the newly created department
-        $departmentId = $department->id; 
+
+        $departmentId = $request->department_id;
+
+        /**
+         * PHASE 2: DYNAMIC ENTITY RESOLUTION
+         * OBJECTIVE: Accommodate the creation of a new department on-the-fly during user registration.
+         * PROCEDURES: 
+         * - Checks for the "new" flag in the department field.
+         * - Persists the new department to the database and captures the generated ID for the user record.
+         */
+        if ($departmentId === 'new') {
+            $department = Department::create([
+                'name' => $request->new_department_name
+            ]);
+            
+            $departmentId = $department->id; 
+        }
+
+        /**
+         * PHASE 3: SECURE RECORD CREATION
+         * OBJECTIVE: Persist the user profile with a cryptographically hashed password.
+         * PROCEDURES: Maps the validated request data and the resolved department ID to a new User instance.
+         */
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'role_id' => $request->role_id,
+            'department_id' => $departmentId, 
+            'device_user_id' => $request->device_user_id,
+            'password' => bcrypt($request->password),
+        ]);
+
+        return redirect()->route('admin.users.index')->with('success', 'User created successfully!');
     }
 
-    // 3. Create the User
-    User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'role_id' => $request->role_id,
-        'department_id' => $departmentId, // Use the resolved ID here!
-        'device_user_id' => $request->device_user_id,
-        'password' => bcrypt($request->password),
-    ]);
-
-    return redirect()->route('admin.users.index')->with('success', 'User created successfully!');
-}
-
-    // Show form to edit user
+    /**
+     * Retrieve a specific user record for modification.
+     */
     public function edit($id)
     {
-        // 1. Find the exact user by their ID
+        /**
+         * PHASE 1: RECORD IDENTIFICATION & RESOURCE MAPPING
+         * OBJECTIVE: Load a specific user profile and its associated selection metadata.
+         */
         $user = User::findOrFail($id);
-        
-        // 2. Fetch roles and departments for the dropdown menus
         $roles = Role::all();
         $departments = Department::all();
         
-        // 3. Send all this data to the edit view (Notice the singular 'admin.user.edit'!)
         return view('admin.user.edit', compact('user', 'roles', 'departments'));
     }
 
-// Update user details
+    /**
+     * Update existing user details and manage credential security.
+     */
     public function update(Request $request, $id)
     {
-        // 1. Find the user we are updating
         $user = User::findOrFail($id);
 
-        // 2. Validate the incoming data
-    
+        /**
+         * PHASE 1: STATE MODIFICATION VALIDATION
+         * OBJECTIVE: Validate updates while allowing the user to retain their existing email.
+         */
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:6', // Nullable means it's optional!
+            'password' => 'nullable|string|min:6', 
             'role_id' => 'required|exists:roles,id',
             'department_id' => 'required|exists:departments,id',
             'status' => 'nullable|in:Active,Inactive'
         ]);
 
-        // 3. Handle the password securely
+        /**
+         * PHASE 2: CONDITIONAL SECURITY PROCESSING
+         * OBJECTIVE: Protect existing credentials if a password update is not requested.
+         * PROCEDURES: Hashes the new password if the field is filled; otherwise, removes the field to avoid overwriting current data.
+         */
         if ($request->filled('password')) {
-            // If they typed a new password, encrypt it
             $validated['password'] = Hash::make($validated['password']);
         } else {
-            // If they left it blank, remove it from the array so we don't overwrite the old one
             unset($validated['password']);
         }
 
-        // 4. Save the updates to the database
+        /**
+         * PHASE 3: PERSISTENCE FINALIZATION
+         * OBJECTIVE: Commit all changes and return a success confirmation.
+         */
         $user->update($validated);
 
-        // 5. Redirect back with a success message
         return redirect()->route('admin.users.index')->with('success', 'User updated successfully!');
     }
 
-    // Delete user (Placeholder for now)
+    /**
+     * Terminate a user account and remove its database entry.
+     */
     public function destroy($id)
-{
-        // 1. Find the exact user in the database
+    {
+        /**
+         * PHASE 1: RECORD DELETION & RESOURCE CLEANUP
+         * OBJECTIVE: Permanently remove a user from the system.
+         */
         $user = User::findOrFail($id);
-
-        // 2. Delete the user
         $user->delete();
 
-        // 3. Redirect back to the table with a success message
         return redirect()->route('admin.users.index')->with('success', 'User deleted successfully!');
     }
 
-    // Print all users list
+    /**
+     * Compile a formatted user directory for print production.
+     */
     public function print()
     {
-        // Fetch all users with their roles and departments, sorted alphabetically
+        /**
+         * PHASE 1: REPORTING DATA COMPILATION
+         * OBJECTIVE: Retrieve a sorted dataset of users for external reporting.
+         * PROCEDURES: Orders users alphabetically by name and includes all role/department relationships.
+         */
         $users = \App\Models\User::with(['role', 'department'])->orderBy('name')->get();
         
         return view('admin.user.print', compact('users'));

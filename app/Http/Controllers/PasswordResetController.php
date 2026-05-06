@@ -10,13 +10,24 @@ use Illuminate\Auth\Events\PasswordReset;
 
 class PasswordResetController extends Controller
 {
-    // 1. Show the form to request a reset link
+    /**
+     * PHASE 1: REQUEST INITIATION & VIEW RENDERING
+     * OBJECTIVE: Provide the user with an interface to request a password recovery link.
+     * PROCEDURES: Renders the 'auth.forgot-password' view to capture the user's registered email address.
+     */
     public function request()
     {
         return view('auth.forgot-password');
     }
 
-    // 2. Handle the form submission and send the email
+    /**
+     * PHASE 2: IDENTITY VERIFICATION & DISPATCH
+     * OBJECTIVE: Validate the existence of the email and trigger the recovery communication.
+     * PROCEDURES:
+     * - Validates that the input is a valid email and exists within the 'users' table.
+     * - Utilizes the Laravel Password facade to generate and send a secure reset link.
+     * FINALIZATION: Returns the user to the previous page with a generic success message to prevent email enumeration.
+     */
     public function email(Request $request)
     {
         $request->validate(['email' => 'required|email|exists:users,email']);
@@ -26,19 +37,33 @@ class PasswordResetController extends Controller
         return back()->with('success', 'If this email exists, a reset link has been sent!');
     }
 
-    // 3. Show the actual password reset form (when they click the link)
+    /**
+     * PHASE 3: SECURE TOKEN VALIDATION
+     * OBJECTIVE: Verify the authenticity of the reset request through a unique URL token.
+     * PROCEDURES: Captures the token from the inbound URL and passes it to the 'auth.reset-password' form for client-side processing.
+     */
     public function reset($token)
     {
         return view('auth.reset-password', ['token' => $token]);
     }
 
-    // 4. Save the new password to the database
+    /**
+     * PHASE 4: CRYPTOGRAPHIC UPDATE & TRANSACTION FINALIZATION
+     * OBJECTIVE: Execute the password change and terminate the recovery session.
+     * DATA INTEGRITY:
+     * - Validates that the token, email, and password (minimum 6 characters) meet system requirements.
+     * - Requires 'password_confirmation' to ensure user accuracy.
+     * PROCEDURES: 
+     * - Resets the password using a closure to hash the new value via 'Hash::make'.
+     * - Refreshes the 'Remember Token' to invalidate existing persistent sessions.
+     * - Fires the 'PasswordReset' event for system-wide auditing.
+     */
     public function update(Request $request)
     {
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:6|confirmed', // Requires a password_confirmation field in the HTML
+            'password' => 'required|min:6|confirmed', 
         ]);
 
         $status = Password::reset(

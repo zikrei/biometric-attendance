@@ -3,107 +3,138 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User; // <-- Added the User model import
+use App\Models\User; 
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;           
 
 class DashboardController extends Controller
 {
-    // Show User Dashboard
+    /**
+     * Compile personal attendance metrics and discrepancy status for the authenticated Staff user.
+     */
     public function userDashboard()
     {
-        // 1. Get the currently logged-in user
+        /**
+         * PHASE 1: IDENTITY RETRIEVAL
+         * OBJECTIVE: Establish the session context for the active user.
+         */
         $user = Auth::user();
 
-        // 2. Count their Pending Discrepancies
+        /**
+         * PHASE 2: DISCREPANCY AUDITING
+         * OBJECTIVE: Quantify unresolved attendance issues requiring user action.
+         * PROCEDURES: Counts Attendance records linked to a 'pending' status in the justifications table.
+         */
         $pendingDiscrepancies = Attendance::where('user_id', $user->id)
-        ->whereHas('justification', function ($query) {
-        $query->where('status', 'pending');
-        })
-    ->count();
+            ->whereHas('justification', function ($query) {
+                $query->where('status', 'pending');
+            })
+            ->count();
 
-        // 3. Calculate Attendance Percentage for the Current Month
+        /**
+         * PHASE 3: STATISTICAL ANALYSIS (MONTH-TO-DATE)
+         * OBJECTIVE: Calculate the user's attendance reliability for the current calendar month.
+         * METRICS: 
+         * - Total Records: All generated attendance rows for the current Year/Month.
+         * - Present Records: Rows containing a non-null 'clock_in' value.
+         * - Percentage: Calculated as (Present / Total) * 100, with a zero-divisor safety check.
+         */
         $currentMonth = date('m');
         $currentYear = date('Y');
 
-        // Get total recorded days for this user this month
         $totalRecords = Attendance::where('user_id', $user->id)
             ->whereMonth('date', $currentMonth)
             ->whereYear('date', $currentYear)
             ->count();
 
-        // Get days they actually clocked in
         $presentRecords = Attendance::where('user_id', $user->id)
             ->whereMonth('date', $currentMonth)
             ->whereYear('date', $currentYear)
             ->whereNotNull('clock_in')
             ->count();
 
-        // Prevent dividing by zero if they have no records yet!
         $attendancePercentage = $totalRecords > 0 ? round(($presentRecords / $totalRecords) * 100) : 0;
 
-        // 4. Send the data to the dashboard view
-        // (Make sure this view path matches your actual file, e.g., 'user.dashboard')
         return view('user.dashboard', compact('user', 'pendingDiscrepancies', 'attendancePercentage'));
     }
 
-    // Show Admin Dashboard
+    /**
+     * Compile system-wide administrative overview.
+     */
     public function adminDashboard()
     {
-        // 1. Get the currently logged-in Admin
+        /**
+         * PHASE 1: ADMINISTRATIVE CONTEXT & SYSTEM SCALE
+         * OBJECTIVE: Provide a high-level snapshot of the platform's user base.
+         * PROCEDURES: Authenticates the Admin and executes a global count of the User model.
+         */
         $user = Auth::user();
-
-        // 2. Count the total users in the system
         $totalUsers = \App\Models\User::count();
 
-        // 3. Return the view
         return view('admin.dashboard', compact('user', 'totalUsers'));
     }
 
-    // Show HOD Dashboard
+    /**
+     * Compile departmental oversight metrics for the Head of Department.
+     */
     public function hodDashboard()
     {
-        // 1. Get the currently logged-in HOD
+        /**
+         * PHASE 1: DEPARTMENTAL SCOPE DEFINITION
+         * OBJECTIVE: Identify the HOD's organizational unit to filter relevant staff data.
+         */
         $user = Auth::user();
 
-        //Using whereHas to check the justification status
+        /**
+         * PHASE 2: PEER REVIEW QUEUE (PENDING APPROVALS)
+         * OBJECTIVE: Identify subordinate justifications requiring HOD intervention.
+         * FILTERING LOGIC: 
+         * - Targets records with a 'pending' justification status.
+         * - Restricts results to the HOD's department.
+         * - Security: Explicitly excludes the HOD’s own attendance records from their approval queue.
+         */
         $pendingApprovals = Attendance::whereHas('justification', function ($query) {
-        $query->where('status', 'pending'); // Looks inside the new table!
+            $query->where('status', 'pending'); 
         })
         ->whereHas('user', function ($query) use ($user) {
             $query->where('department_id', $user->department_id)
-                    ->where('id', '!=', $user->id); // Exclude the HOD's own requests
+                    ->where('id', '!=', $user->id); 
         })
         ->count();
 
-        // 3. Send the data to the HOD dashboard view
         return view('hod.dashboard', compact('user', 'pendingApprovals'));
     }
 
-    // Integrity Unit Dashboard
+    /**
+     * Compile specialized compliance metrics for the Integrity Unit.
+     */
     public function integrityDashboard()
     {
-        // 1. Get the currently logged-in Integrity officer
+        /**
+         * PHASE 1: HIGH-LEVEL DISCREPANCY TRACKING
+         * OBJECTIVE: Monitor attendance justifications submitted specifically by Heads of Department.
+         * PROCEDURES: Filters 'pending' justifications where the associated user possesses the 'HOD' role.
+         */
         $user = Auth::user();
 
-        // 2. Count ONLY Pending Discrepancies from HODs
         $totalPending = Attendance::whereHas('justification', function ($query) {
             $query->where('status', 'pending');
         })
         ->whereHas('user.role', function ($query) {
-            // NOTE: Make sure 'HOD' matches exactly what is in your roles table! 
-            // If your database spells it out, change this to 'Head of Department'
             $query->where('name', 'HOD'); 
         })
         ->count();
 
-        // 3. Count system-wide Staff Attendance for Today
+        /**
+         * PHASE 2: SYSTEM-WIDE OPERATIONAL SNAPSHOT
+         * OBJECTIVE: View real-time attendance volume across the entire organization for the current date.
+         * PROCEDURES: Counts all attendance entries for 'today' where a clock-in event has been recorded.
+         */
         $today = date('Y-m-d');
         $totalAttendanceToday = Attendance::whereDate('date', $today)
             ->whereNotNull('clock_in')
             ->count();
 
-        // 4. Return the integrity dashboard view
         return view('integrity.dashboard', compact('user', 'totalPending', 'totalAttendanceToday'));
     }
 }
