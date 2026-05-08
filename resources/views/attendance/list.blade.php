@@ -4,7 +4,11 @@
 @section('page_subtitle', 'Review and process attendance discrepancy requests.')
 
 @section('content')
-{{-- Simple Flex Wrapper (No "row" negative margins to mess up your background colors!) --}}
+{{-- 
+  PHASE 1: TEMPORAL FILTER & REPORTING ACTIONS
+  OBJECTIVE: Allow users to navigate attendance records by month and generate printable audits.
+  PROCEDURE: Employs a GET request to refresh the view and provides a direct link to the print route.
+--}}
 <div class="d-flex justify-content-end mb-3">
     <form action="{{ url()->current() }}" method="GET" class="d-flex gap-2 align-items-center mb-0">
         <input type="month" name="month" class="form-control" style="width: 180px;" value="{{ $selectedMonth ?? now()->format('Y-m') }}" required>
@@ -15,6 +19,7 @@
         </a>
     </form>
 </div>
+
     <div class="card border-0 shadow-sm rounded-4 mt-3">
         <div class="card-body p-4">        
             <div class="table-responsive">
@@ -30,6 +35,10 @@
                     </thead>
                     <tbody>
                         @php
+                            /* PHASE 3: CALENDAR LOGIC & RECORD MAPPING
+                               OBJECTIVE: Generate a complete row for every day of the selected month.
+                               PROCEDURE: Parses the selected month via Carbon and maps records to a keyed collection.
+                            */
                             $currentMonth = \Carbon\Carbon::parse($selectedMonth ?? now()->format('Y-m'));
                             $daysInMonth = $currentMonth->daysInMonth;
                             $attendanceMap = $attendances->keyBy('date');
@@ -45,6 +54,10 @@
                                 $clockIn = $record->clock_in ?? null;
                                 $clockOut = $record->clock_out ?? null;
 
+                                /* PHASE 4: BUSINESS LOGIC & DISCREPANCY DETECTION
+                                   OBJECTIVE: Programmatically determine the attendance status based on shift requirements.
+                                   RULES: Flags records with missing clock times or < 9 hours worked as 'Need Discrepancy'.
+                                */
                                 $hoursWorked = 0;
                                 if ($clockIn && $clockOut) {
                                     $hoursWorked = \Carbon\Carbon::parse($clockIn)->diffInHours(\Carbon\Carbon::parse($clockOut));
@@ -88,6 +101,11 @@
                                 <td>{{ $clockIn ?? '--:--' }}</td>
                                 <td>{{ $clockOut ?? '--:--' }}</td>
                                 <td>
+                                    {{-- 
+                                      PHASE 5: STATUS VISUALIZATION (BADGES)
+                                      OBJECTIVE: Use color-coded indicators to provide immediate feedback.
+                                      CORRECTION: Restored emojis for visual status recognition.
+                                    --}}
                                     @if(strtolower($displayStatus) === 'approved')
                                         <span class="badge bg-success border">🟢 Approved</span>
                                     @elseif(strtolower($displayStatus) === 'awaiting approval')
@@ -103,6 +121,7 @@
                                     @endif
                                 </td>
                                 <td>
+                                    {{-- PHASE 6: WORKFLOW ENTRY POINTS --}}
                                     @if($needsAction)
                                         <a href="{{ $record ? route('attendance.edit', $record->id) : route('attendance.create', ['date' => $dateString]) }}" 
                                            class="btn btn-sm btn-primary text-white">

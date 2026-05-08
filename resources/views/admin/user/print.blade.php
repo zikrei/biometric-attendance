@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <title>System Users List</title>
     <style>
-        /* Force exact A4 dimensions and margins */
+        /**
+         * PHASE 1: PAGE ARCHITECTURE & A4 STANDARDIZATION
+         * OBJECTIVE: Force exact physical dimensions to ensure cross-browser print consistency.
+         * CONFIGURATION: Sets portrait orientation and a 15mm safety margin for industrial printers.
+         */
         @page { 
             size: A4 portrait; 
             margin: 15mm; 
@@ -82,13 +86,28 @@
 </head>
 <body>
     
+    {{-- 
+      PHASE 2: INTERACTIVE PRINT CONTROLS
+      OBJECTIVE: Provide a manual trigger for users while ensuring the button does not appear on the physical paper.
+      PROCEDURE: Utilizes the .no-print utility class to exclude the element during the print spooling phase.
+    --}}
     <button onclick="window.print()" class="print-btn no-print">🖨️ Print Document</button>
 
+    {{-- 
+      PHASE 3: REPORT METADATA & BRANDING
+      OBJECTIVE: Establish document authenticity and audit trailing.
+      PROCEDURE: Dynamically injects the generation timestamp to track the report's data freshness.
+    --}}
     <div class="header">
         <h2>System Users List</h2>
         <p>Generated on {{ now()->format('d M Y, h:i A') }}</p>
     </div>
 
+    {{-- 
+      PHASE 4: TABULAR DATA INGESTION
+      OBJECTIVE: Present the full system directory in a high-readability grid format.
+      RELATIONAL MAPPING: Resolves user roles and departments while highlighting Device IDs for biometric verification.
+    --}}
     <table class="data-table">
         <thead>
             <tr>
@@ -120,6 +139,11 @@
         </tbody>
     </table>
 
+    {{-- 
+      PHASE 5: AUTOMATED TRANSACTION TRIGGER (JS)
+      OBJECTIVE: Streamline the administrative workflow by initiating the print dialog on page load.
+      SAFETY: Implements a 500ms delay to ensure all assets and fonts are fully rendered before spooling.
+    --}}
     <script>
         window.onload = function() {
             setTimeout(function() {

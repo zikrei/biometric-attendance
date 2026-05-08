@@ -6,7 +6,10 @@
 
 @section('content')
 
-    {{-- The mt-4 (Margin Top) here forces the gap below the topbar --}}
+    {{-- 
+      PHASE 1: CONTEXTUAL NAVIGATION & GLOBAL ACTIONS
+      OBJECTIVE: Provide entry points for administrative tasks.
+    --}}
     <div class="mt-4">
         
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -24,6 +27,11 @@
 
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-body p-4">
+                
+                {{-- 
+                  PHASE 2: TABULAR DATA REPRESENTATION
+                  OBJECTIVE: Efficiently display the primary employee registry.
+                --}}
                 <div class="table-responsive">
                     <table class="table table-striped table-hover align-middle mb-0">
                         <thead class="table-light">
@@ -43,6 +51,8 @@
                                     <td class="fw-semibold">{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
                                     <td>{{ $user->department?->name ?? 'Not Assigned' }}</td>
+                                    
+                                    {{-- PHASE 4: BIOMETRIC & HARDWARE IDENTITY --}}
                                     <td>
                                         @if($user->device_user_id)
                                             <span class="fw-bold">{{ $user->device_user_id }}</span>
@@ -51,6 +61,7 @@
                                         @endif
                                     </td>
                                     
+                                    {{-- PHASE 5: AUTHORIZATION & ROLE VISUALIZATION --}}
                                     <td>
                                         @php $roleName = $user->role?->name; @endphp
                                         
@@ -75,13 +86,14 @@
                                         @endif
                                     </td>
                                     
+                                    {{-- PHASE 7: ADMINISTRATIVE CONTROL INTERFACE --}}
                                     <td>
                                         <div class="d-flex gap-2">
                                             <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-sm btn-outline-primary">
                                                 <i class="bi bi-pencil-square"></i> Edit
                                             </a>
                                             
-                                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete the account for {{ $user->name }}? This action cannot be undone.');">
+                                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete the account for {{ $user->name }}?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-outline-danger">
@@ -95,8 +107,17 @@
                         </tbody>
                     </table>
                 </div>
+
+                {{-- 
+                  PHASE 8: PAGINATION CONTROLS
+                  OBJECTIVE: Segment large datasets into manageable 10-record increments to optimize performance.
+                  PROCEDURE: Injects Laravel's standard pagination links, styled automatically by Bootstrap.
+                --}}
+                <div class="mt-4 pagination-layout-fix">
+                    {{ $users->links() }}
+                </div>
+
             </div>
         </div>
-        
     </div>
 @endsection

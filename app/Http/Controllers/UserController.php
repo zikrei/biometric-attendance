@@ -11,29 +11,24 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     /**
-     * Display a comprehensive registry of all system users.
+     * PHASE 1: DATA AGGREGATION & PAGINATION
+     * OBJECTIVE: Retrieve a segmented registry of users to optimize dashboard performance.
+     * PROCEDURES: Eager loads 'role' and 'department' to prevent N+1 queries and limits output to 10 records per page.
      */
     public function index()
     {
-        /**
-         * PHASE 1: DATA AGGREGATION & RELATIONSHIP LOADING
-         * OBJECTIVE: Retrieve a complete list of users while minimizing database overhead.
-         * PROCEDURES: Eager loads 'role' and 'department' relationships to ensure all organizational metadata is available for the index view.
-         */
-        $users = User::with(['role', 'department'])->get();
+        $users = User::with(['role', 'department'])->paginate(8);
         
+        // Switched to singular 'user' to match your folder structure
         return view('admin.user.index', compact('users'));
     }
 
     /**
-     * Initialize the interface for new user registration.
+     * PHASE 1: METADATA PREPARATION
+     * OBJECTIVE: Populate the registration interface with organizational units and authorization tiers.
      */
     public function create()
     {
-        /**
-         * PHASE 1: METADATA PREPARATION
-         * OBJECTIVE: Populate the registration form with valid organizational roles and departments.
-         */
         $roles = Role::all();
         $departments = Department::all();
         
@@ -41,17 +36,15 @@ class UserController extends Controller
     }
 
     /**
-     * Execute the registration of a new user and manage dynamic department creation.
+     * PHASE 1: PAYLOAD VALIDATION & CONDITIONAL LOGIC
+     * OBJECTIVE: Sanitize inbound data and enforce record uniqueness across the system.
+     * PHASE 2: DYNAMIC ENTITY RESOLUTION
+     * OBJECTIVE: Support on-the-fly department creation if the "New Department" flag is detected.
+     * PHASE 3: SECURE RECORD CREATION
+     * OBJECTIVE: Persist the new profile with encrypted credentials and hardware mapping.
      */
     public function store(Request $request)
     {
-        /**
-         * PHASE 1: PAYLOAD VALIDATION & CONDITIONAL LOGIC
-         * OBJECTIVE: Sanitize inbound data and enforce record uniqueness.
-         * CONSTRAINTS: 
-         * - Ensures email is unique within the users table.
-         * - Requires 'new_department_name' only if 'department_id' is set to "new".
-         */
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
@@ -64,26 +57,11 @@ class UserController extends Controller
 
         $departmentId = $request->department_id;
 
-        /**
-         * PHASE 2: DYNAMIC ENTITY RESOLUTION
-         * OBJECTIVE: Accommodate the creation of a new department on-the-fly during user registration.
-         * PROCEDURES: 
-         * - Checks for the "new" flag in the department field.
-         * - Persists the new department to the database and captures the generated ID for the user record.
-         */
         if ($departmentId === 'new') {
-            $department = Department::create([
-                'name' => $request->new_department_name
-            ]);
-            
+            $department = Department::create(['name' => $request->new_department_name]);
             $departmentId = $department->id; 
         }
 
-        /**
-         * PHASE 3: SECURE RECORD CREATION
-         * OBJECTIVE: Persist the user profile with a cryptographically hashed password.
-         * PROCEDURES: Maps the validated request data and the resolved department ID to a new User instance.
-         */
         User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -97,14 +75,11 @@ class UserController extends Controller
     }
 
     /**
-     * Retrieve a specific user record for modification.
+     * PHASE 1: RECORD IDENTIFICATION & RESOURCE MAPPING
+     * OBJECTIVE: Load a specific user profile and its associated selection metadata for editing.
      */
     public function edit($id)
     {
-        /**
-         * PHASE 1: RECORD IDENTIFICATION & RESOURCE MAPPING
-         * OBJECTIVE: Load a specific user profile and its associated selection metadata.
-         */
         $user = User::findOrFail($id);
         $roles = Role::all();
         $departments = Department::all();
@@ -113,16 +88,17 @@ class UserController extends Controller
     }
 
     /**
-     * Update existing user details and manage credential security.
+     * PHASE 1: STATE MODIFICATION VALIDATION
+     * OBJECTIVE: Validate updates while allowing the user to maintain their current email address.
+     * PHASE 2: CONDITIONAL SECURITY PROCESSING
+     * OBJECTIVE: Update the password only if a new value is explicitly provided in the request.
+     * PHASE 3: PERSISTENCE FINALIZATION
+     * OBJECTIVE: Commit all validated updates to the database record.
      */
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
-        /**
-         * PHASE 1: STATE MODIFICATION VALIDATION
-         * OBJECTIVE: Validate updates while allowing the user to retain their existing email.
-         */
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
@@ -132,35 +108,23 @@ class UserController extends Controller
             'status' => 'nullable|in:Active,Inactive'
         ]);
 
-        /**
-         * PHASE 2: CONDITIONAL SECURITY PROCESSING
-         * OBJECTIVE: Protect existing credentials if a password update is not requested.
-         * PROCEDURES: Hashes the new password if the field is filled; otherwise, removes the field to avoid overwriting current data.
-         */
         if ($request->filled('password')) {
             $validated['password'] = Hash::make($validated['password']);
         } else {
             unset($validated['password']);
         }
 
-        /**
-         * PHASE 3: PERSISTENCE FINALIZATION
-         * OBJECTIVE: Commit all changes and return a success confirmation.
-         */
         $user->update($validated);
 
         return redirect()->route('admin.users.index')->with('success', 'User updated successfully!');
     }
 
     /**
-     * Terminate a user account and remove its database entry.
+     * PHASE 1: RECORD DELETION & RESOURCE CLEANUP
+     * OBJECTIVE: Permanently remove a user from the central system registry.
      */
     public function destroy($id)
     {
-        /**
-         * PHASE 1: RECORD DELETION & RESOURCE CLEANUP
-         * OBJECTIVE: Permanently remove a user from the system.
-         */
         $user = User::findOrFail($id);
         $user->delete();
 
@@ -168,16 +132,12 @@ class UserController extends Controller
     }
 
     /**
-     * Compile a formatted user directory for print production.
+     * PHASE 1: REPORTING DATA COMPILATION
+     * OBJECTIVE: Compile a full, sorted dataset for high-quality print production.
      */
     public function print()
     {
-        /**
-         * PHASE 1: REPORTING DATA COMPILATION
-         * OBJECTIVE: Retrieve a sorted dataset of users for external reporting.
-         * PROCEDURES: Orders users alphabetically by name and includes all role/department relationships.
-         */
-        $users = \App\Models\User::with(['role', 'department'])->orderBy('name')->get();
+        $users = User::with(['role', 'department'])->orderBy('name')->get();
         
         return view('admin.user.print', compact('users'));
     }

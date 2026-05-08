@@ -7,6 +7,10 @@
 @section('page_subtitle', 'Update the user’s account details, role, department, and status.')
 
 @section('content')
+    {{-- 
+      PHASE 1: NAVIGATION & CONTEXTUAL HEADER
+      OBJECTIVE: Establish page identity and provide a return path to the administrative registry.
+    --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h5 class="mb-0">Edit User</h5>
         <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary">
@@ -17,6 +21,10 @@
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-4">
             
+            {{-- 
+              PHASE 2: VALIDATION FEEDBACK MECHANISM
+              OBJECTIVE: Render server-side validation errors for failed update attempts.
+            --}}
             @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul class="mb-0">
@@ -29,12 +37,16 @@
 
             <form action="{{ route('admin.users.update', $user->id) }}" method="POST">
                 @csrf
-                @method('PUT') {{-- REQUIRED FOR UPDATING DATA IN LARAVEL --}}
+                @method('PUT') {{-- REQUIRED FOR RESTFUL UPDATE LOGIC IN LARAVEL --}}
                 
+                {{-- 
+                  PHASE 3: CORE IDENTITY MODIFICATION
+                  OBJECTIVE: Pre-fill and allow updates to primary user identification.
+                  PROCEDURE: Uses old() with fallback to $user attributes to maintain state after validation.
+                --}}
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label fw-bold">Full Name</label>
-                        {{-- Pre-filled with existing data using value="{{ $user->name }}" --}}
                         <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $user->name) }}" required>
                     </div>
                     
@@ -44,12 +56,16 @@
                     </div>
                 </div>
 
+                {{-- 
+                  PHASE 4: HIERARCHICAL RE-ASSIGNMENT
+                  OBJECTIVE: Update the user's organizational placement and permission tier.
+                  LOGIC: Checks existing relationship IDs to set the 'selected' state in the UI.
+                --}}
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="role_id" class="form-label fw-bold">Role</label>
                         <select name="role_id" id="role_id" class="form-select" required>
                             @foreach($roles as $role)
-                                {{-- We check if the user's role matches the loop to set it as 'selected' --}}
                                 <option value="{{ $role->id }}" {{ $user->role_id == $role->id ? 'selected' : '' }}>
                                     {{ $role->name }}
                                 </option>
@@ -69,11 +85,15 @@
                     </div>
                 </div>
 
+                {{-- 
+                  PHASE 5: ACCOUNT STATUS & SECURITY UPDATE
+                  OBJECTIVE: Manage the account lifecycle state and optional credential resets.
+                  SECURITY: Implements a "null-allowed" password update to prevent accidental credential overwriting.
+                --}}
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="status" class="form-label fw-bold">Status</label>
                         <select name="status" class="form-select">
-                            {{-- Notice the capital 'Active' and 'Inactive' in the == checks! --}}
                             <option value="Active" {{ $user->status == 'Active' ? 'selected' : '' }}>Active</option>
                             <option value="Inactive" {{ $user->status == 'Inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
@@ -88,6 +108,10 @@
                 
                 <hr>
 
+                {{-- 
+                  PHASE 6: TRANSACTION PERSISTENCE
+                  OBJECTIVE: Finalize record updates or abort the administrative session.
+                --}}
                 <div class="d-flex justify-content-end gap-2 mt-3">
                     <a href="{{ route('admin.users.index') }}" class="btn btn-light">Cancel</a>
                     <button type="submit" class="btn btn-primary">Save Changes</button>

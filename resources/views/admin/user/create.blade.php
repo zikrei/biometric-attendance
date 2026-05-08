@@ -7,6 +7,10 @@
 @section('page_subtitle', 'Complete the form below to create a new user account.')
 
 @section('content')
+    {{-- 
+      PHASE 1: NAVIGATION & CONTEXTUAL HEADER
+      OBJECTIVE: Establish page identity and provide an immediate exit route to the user registry.
+    --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h5 class="mb-0">Create User</h5>
         <a href="{{ route('admin.users.index') }}" class="btn btn-outline-secondary">
@@ -17,7 +21,10 @@
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-4">
             
-            {{-- Display Validation Errors --}}
+            {{-- 
+              PHASE 2: VALIDATION FEEDBACK MECHANISM
+              OBJECTIVE: Provide real-time reporting of submission errors to the administrator.
+            --}}
             @if ($errors->any())
                 <div class="alert alert-danger">
                     <ul class="mb-0">
@@ -31,6 +38,7 @@
             <form action="{{ route('admin.users.store') }}" method="POST">
                 @csrf
                 
+                {{-- PHASE 3: CORE IDENTITY ATTRIBUTES --}}
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="name" class="form-label fw-bold">Full Name</label>
@@ -43,6 +51,10 @@
                     </div>
                 </div>
 
+                {{-- 
+                  PHASE 4: HIERARCHICAL & ORGANIZATIONAL MAPPING
+                  OBJECTIVE: Assign permissions and departmental location while supporting on-the-fly expansion.
+                --}}
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="role_id" class="form-label fw-bold">Role</label>
@@ -64,13 +76,17 @@
                             <option value="new" class="text-primary fw-bold">+ Add New Department</option>
                         </select>
                         
+                        {{-- Hidden Input for Dynamic Department Creation --}}
                         <div class="mt-2 d-none" id="new_department_wrapper">
                             <input type="text" name="new_department_name" id="new_department_name" class="form-control border-primary" placeholder="Type new department name here...">
                         </div>
                     </div>
                 </div>
                 
-                {{-- 3rd Row: Device User ID & Password --}}
+                {{-- 
+                  PHASE 5: HARDWARE INTEGRATION & SECURITY
+                  OBJECTIVE: Map digital profiles to physical biometric hardware.
+                --}}
                 <div class="row mb-4">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Device User ID <span class="text-danger">*</span></label>
@@ -90,6 +106,7 @@
                 
                 <hr>
 
+                {{-- PHASE 6: TRANSACTION FINALIZATION --}}
                 <div class="d-flex justify-content-end gap-2 mt-3">
                     <button type="reset" class="btn btn-light">Reset Form</button>
                     <button type="submit" class="btn btn-dark">Create User</button>
@@ -98,22 +115,24 @@
         </div>
     </div>
 
+    {{-- 
+      PHASE 7: INTERFACE BEHAVIORAL LOGIC (JS)
+      OBJECTIVE: Manage the conditional visibility of organizational input fields.
+    --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const departmentSelect = document.getElementById('department_id');
             const newDeptWrapper = document.getElementById('new_department_wrapper');
             const newDeptInput = document.getElementById('new_department_name');
-            const resetButton = document.querySelector('button[type="reset"]'); // Target the Reset button directly
+            const resetButton = document.querySelector('button[type="reset"]');
 
             if(departmentSelect) {
                 departmentSelect.addEventListener('change', function() {
                     if (this.value === 'new') {
-                        // Show the input and make it required
                         newDeptWrapper.classList.remove('d-none');
                         newDeptInput.setAttribute('required', 'required');
                         newDeptInput.focus();
                     } else {
-                        // Hide the input, clear it, and remove required
                         newDeptWrapper.classList.add('d-none');
                         newDeptInput.removeAttribute('required');
                         newDeptInput.value = '';
@@ -121,10 +140,8 @@
                 });
             }
 
-            // Listen for the physical click on the Reset button
             if(resetButton) {
                 resetButton.addEventListener('click', function() {
-                    // Forcefully hide the box and clean up
                     newDeptWrapper.classList.add('d-none');
                     newDeptInput.removeAttribute('required');
                     newDeptInput.value = '';

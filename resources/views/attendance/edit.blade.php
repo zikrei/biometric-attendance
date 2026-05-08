@@ -2,6 +2,11 @@
 
 @section('title', 'Update Attendance Discrepancy')
 
+{{-- 
+  PHASE 1: WORKFLOW CONTEXT & INTERFACE IDENTITY
+  OBJECTIVE: Define the scope of the modification interface for existing attendance requests.
+  PROCEDURE: Establishes clear titling and instructional subtitles to guide the employee through the update process.
+--}}
 @section('page_title', 'Attendance Discrepancy Request')
 @section('page_subtitle', 'Provide a justification and supporting documents for attendance time adjustments or absences.')
 
@@ -11,11 +16,23 @@
             <h5 class="mb-0">Update Attendance Adjustment Request</h5>
         </div>
         <div class="card-body">
-            {{-- CRITICAL: Added enctype="multipart/form-data" for file uploads --}}
+            
+            {{-- 
+              PHASE 2: SECURE RESTFUL TRANSACTION INITIALIZATION
+              OBJECTIVE: Configure the form for data persistence and binary file transmission.
+              PROCEDURE: 
+              - Employs @method('PUT') to comply with RESTful update standards.
+              - CRITICAL: Includes enctype="multipart/form-data" to support supplemental document uploads.
+            --}}
             <form action="{{ route('attendance.update', $attendance->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
+                {{-- 
+                  PHASE 3: TEMPORAL DATA CALIBRATION
+                  OBJECTIVE: Modify the requested clock-in and clock-out times.
+                  LOGIC: Employs old() with fallbacks to handle both snake_case and camelCase database attributes.
+                --}}
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label for="clock_in" class="form-label fw-bold">Check-In Time</label>
@@ -27,6 +44,11 @@
                     </div>
                 </div>
 
+                {{-- 
+                  PHASE 4: QUALITATIVE JUSTIFICATION REVISION
+                  OBJECTIVE: Update the written narrative explaining the discrepancy.
+                  VALIDATION: Provides contextual feedback via .is-invalid and .invalid-feedback if the update is rejected.
+                --}}
                 <div class="mb-3">
                     <label for="reason" class="form-label fw-bold">Reason for Adjustment</label>
                     <textarea name="reason" id="reason" class="form-control @error('reason') is-invalid @enderror" rows="4" placeholder="e.g., Medical Leave, Annual Leave, Missed check-in" required>{{ old('reason', $attendance->reason) }}</textarea>
@@ -35,7 +57,13 @@
                     @enderror
                 </div>
 
-                {{-- NEW: File Upload Section --}}
+                {{-- 
+                  PHASE 5: EVIDENTIARY RESOURCE MANAGEMENT
+                  OBJECTIVE: Update or verify supplemental documentation such as Medical Certificates.
+                  PROCEDURES: 
+                  - Provides a file input restricted to PDF and images.
+                  - Dynamic Check: Renders a secure link to the existing attachment if one is already persisted in storage.
+                --}}
                 <div class="mb-4">
                     <label for="attachment" class="form-label fw-bold">Supporting Document (Optional)</label>
                     <input type="file" name="attachment" id="attachment" class="form-control @error('attachment') is-invalid @enderror" accept=".pdf,.jpg,.jpeg,.png">
@@ -44,7 +72,7 @@
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                     
-                    {{-- Show a link if they already uploaded an attachment previously --}}
+                    {{-- Displays current file status for the administrator/user --}}
                     @if($attendance->attachment)
                         <div class="mt-3 p-3 bg-light rounded border">
                             <i class="bi bi-paperclip"></i> Existing Attachment: 
@@ -53,6 +81,10 @@
                     @endif
                 </div>
 
+                {{-- 
+                  PHASE 6: TRANSACTION FINALIZATION
+                  OBJECTIVE: Commit updated request data or abort the editing session.
+                --}}
                 <div class="d-flex justify-content-end gap-2">
                     <a href="{{ route('attendance.list') }}" class="btn btn-outline-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary">Update Request</button>

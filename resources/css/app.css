@@ -2,518 +2,143 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /* =========================================================
-   1. Base & Variables
+   PHASE 1: BASE FOUNDATIONS & VARIABLES
 ========================================================= */
 :root {
-    /* Colors */
     --bg-body: #F5F3FF;         
     --bg-white: #ffffff;
     --bg-card: #ffffff;
     --bg-sidebar: #2E1065;      
     --bg-sidebar-hover: #4C1D95;
-    
     --border-color: #e2e8f0;
     --text-dark: #0f172a;
     --text-body: #334155;
     --text-muted: #64748b;
-    
     --primary: #2563eb;
     --primary-hover: #1d4ed8;
     --primary-soft: #eff6ff;
     --purple: #8b5cf6;
-    
-    /* Standardized Typography Scale */
-    --fs-xs: 0.75rem;    /* 12px */
-    --fs-sm: 0.875rem;   /* 14px - Base */
-    --fs-md: 1rem;       /* 16px */
-    --fs-lg: 1.25rem;    /* 20px */
-    --fs-xl: 1.5rem;     /* 24px */
-    --fs-xxl: 2.25rem;   /* 36px */
-
-    /* Standardized Box Styling */
+    --fs-xs: 0.75rem; --fs-sm: 0.875rem; --fs-md: 1rem; --fs-lg: 1.25rem; --fs-xl: 1.5rem; --fs-xxl: 2.25rem;
     --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-    
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --radius-pill: 9999px;
-
+    --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-pill: 9999px;
     --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-*, *::before, *::after { 
-    box-sizing: border-box; 
-}
-
-html, body { 
-    overflow-x: hidden; 
-}
-
 body {
-    margin: 0;
-    background: var(--bg-body);
-    color: var(--text-body);
+    margin: 0; background: var(--bg-body); color: var(--text-body);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: var(--fs-sm);
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
+    font-size: var(--fs-sm); line-height: 1.5; -webkit-font-smoothing: antialiased;
 }
 
 /* =========================================================
-   2. Layout & Structure
+   PHASE 2: LAYOUT STRUCTURE
 ========================================================= */
-.app-wrapper { 
-    height: 100vh; 
-    display: flex; 
-    overflow: hidden; 
-}
-
-.content-wrapper {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto; 
-    min-width: 0;
-    background: var(--bg-body);
-}
-
-.main-content {
-    flex: 1;
-    width: 100%;
-    padding: 1.5rem 2rem 2.5rem 2rem; 
-    transition: var(--transition);
-}
-
-.page-header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.page-title {
-    margin: 0 0 0.25rem;
-    font-size: var(--fs-xl);
-    font-weight: 700;
-    color: var(--text-dark);
-    letter-spacing: -0.025em;
-}
-
-.page-subtitle { 
-    margin: 0; 
-    color: var(--text-muted); 
-    font-size: var(--fs-sm); 
-}
+.app-wrapper { height: 100vh; display: flex; overflow: hidden; }
+.content-wrapper { flex: 1; display: flex; flex-direction: column; overflow-y: auto; min-width: 0; background: var(--bg-body); }
+.main-content { flex: 1; width: 100%; padding: 1.5rem 2rem 2.5rem 2rem; transition: var(--transition); }
+.page-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+.page-title { margin: 0 0 0.25rem; font-size: var(--fs-xl); font-weight: 700; color: var(--text-dark); letter-spacing: -0.025em; }
 
 /* =========================================================
-   3. Topbar
+   PHASE 3: TOPBAR NAVIGATION
 ========================================================= */
 .topbar {
-    height: 45px;
-    background: rgba(160, 152, 206, 0.85);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-    padding: 0 2rem 0 1.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 1030;
-    backdrop-filter: blur(8px);
+    height: 45px; background: rgba(160, 152, 206, 0.85); border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    padding: 0 2rem 0 1.25rem; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 1030; backdrop-filter: blur(8px);
 }
-
-.topbar-left, .topbar-right { 
-    display: flex; 
-    align-items: center; 
-    gap: 1rem; 
-}
-
-.brand-block { display: flex; flex-direction: column; }
-.brand-title { font-size: var(--fs-md); font-weight: 700; color: var(--text-dark); line-height: 1.2; }
-.brand-subtitle { color: var(--text-muted); font-size: var(--fs-xs); font-weight: 500; }
-
-.topbar .btn-light, 
-.topbar .btn-outline-secondary { background: transparent; border-color: #cbd5e1; }
-.topbar .btn-light:hover, 
-.topbar .btn-outline-secondary:hover { background: rgba(0,0,0,0.05); }
-
-.desktop-sidebar-toggle, .mobile-sidebar-toggle {
-    width: 40px; height: 40px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
-    background: transparent;
-    transition: var(--transition);
-    color: var(--text-muted);
-}
-.desktop-sidebar-toggle:hover, .mobile-sidebar-toggle:hover { background: rgba(0,0,0,0.05); color: var(--text-dark); }
 
 /* =========================================================
-   4. Sidebar
+   PHASE 4: SIDEBAR COMPONENT
 ========================================================= */
-.sidebar {
-    width: 260px;
-    height: 100vh;
-    background: var(--bg-sidebar);
-    color: var(--bg-white);
-    padding: 1.5rem 1rem;
-    overflow-y: auto;
-    white-space: nowrap;
-    transition: width 0.3s ease, padding 0.3s ease;
-    flex-shrink: 0; 
-}
-
-.sidebar-header { border-bottom: 1px solid rgba(255,255,255,0.05); min-height: 76px; }
-.brand-icon { font-size: var(--fs-lg); transition: opacity 0.2s ease; }
-.brand-text { transition: opacity 0.2s ease; }
-.brand-text h5 { letter-spacing: 0.5px; margin: 0; }
-.brand-text small { font-size: var(--fs-xs); }
-
-.sidebar .sidebar-title {
-    font-size: var(--fs-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #94a3b8;
-    margin: 1.25rem 0 0.5rem 0.875rem;
-    font-weight: 600;
-}
-
-.sidebar .nav-link {
-    color: #cbd5e1;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    border-radius: var(--radius-sm);
-    padding: 0.625rem 0.875rem;
-    margin-bottom: 0.25rem;
-    transition: var(--transition);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.sidebar-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.4); /* Dark semi-transparent color */
-    z-index: 1040; /* Sits exactly below the sidebar (1050) */
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease-in-out;
-    backdrop-filter: blur(2px); /* Gives a cool glass blur effect to the background! */
-}
-
-.sidebar-overlay.show {
-    opacity: 1;
-    visibility: visible;
-}
+.sidebar { width: 260px; height: 100vh; background: var(--bg-sidebar); color: var(--bg-white); padding: 1.5rem 1rem; transition: width 0.3s ease; flex-shrink: 0; }
+.sidebar .nav-link { color: #cbd5e1; display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 0.875rem; transition: var(--transition); text-decoration: none; font-weight: 500; }
 .sidebar .nav-link:hover, .sidebar .nav-link.active { background: var(--bg-sidebar-hover); color: var(--bg-white); }
-
-body.sidebar-collapsed .sidebar { width: 80px !important; padding: 1.5rem 0.5rem; }
-body.sidebar-collapsed .sidebar .sidebar-title,
-body.sidebar-collapsed .brand-text { display: none !important; }
-body.sidebar-collapsed .sidebar .nav-link { justify-content: center; padding: 0.75rem 0; }
-body.sidebar-collapsed .sidebar .nav-link span { display: none !important; }
-body.sidebar-collapsed .sidebar .nav-link i { margin: 0 !important; font-size: var(--fs-lg); }
-body.sidebar-collapsed .sidebar-header { justify-content: center !important; padding: 0 !important; }
-body.sidebar-collapsed .toggle-icon { transform: rotate(180deg); }
-body.sidebar-collapsed .sidebar-toggle-btn { position: static !important; margin-bottom: 15px; margin-top: 10px;}
+body.sidebar-collapsed .sidebar { width: 80px !important; }
 
 /* =========================================================
-   5. Dashboard Cards
+   PHASE 5: DASHBOARD ANALYTICS CARDS
 ========================================================= */
-.content-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    box-shadow: var(--shadow-sm);
-}
-
 .dashboard-card { 
-    position: relative; 
-    border-radius: var(--radius-lg); 
-    padding: 1.5rem; 
-    color: var(--bg-white); 
-    overflow: hidden; 
-    transition: transform 0.2s ease, box-shadow 0.2s ease; 
-    cursor: pointer; 
-    box-shadow: var(--shadow-sm); 
-    border: none; 
-    
-    /* ONLY ADD THESE 4 LINES TO YOUR EXISTING CARD CSS */
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    border-radius: var(--radius-lg); padding: 1.5rem; color: var(--bg-white); 
+    transition: transform 0.2s ease; cursor: pointer; height: 100%; display: flex; flex-direction: column; justify-content: center;
 }
-
-.dashboard-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-
-.card-content { display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
-.card-label { font-size: var(--fs-xs); text-transform: uppercase; opacity: 0.9; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 0.5rem; }
-.card-title { font-weight: 700; font-size: var(--fs-lg); margin: 0; }
-.card-number { font-size: var(--fs-xxl); font-weight: 800; margin: 0; line-height: 1; }
-.card-desc { font-size: var(--fs-sm); opacity: 0.8; margin-top: 0.5rem; }
-
-.card-icon { 
-    width: 64px; height: 64px; 
-    border-radius: 50%; 
-    background: rgba(255,255,255,0.2); 
-    display: flex; align-items: center; justify-content: center; 
-    font-size: var(--fs-xl); 
-}
-
 .card-attendance { background: linear-gradient(135deg, #06b6d4, #0891b2); }
-.card-profile { background: linear-gradient(135deg, #f43f5e, #e11d48); }
-.card-admin-users { background: linear-gradient(135deg, #4f46e5, #3b82f6); }
-.card-admin-reports { background: linear-gradient(135deg, #0d9488, #10b981); }
 .card-hod-approvals { background: linear-gradient(135deg, #f59e0b, #ea580c); }
-.card-integrity-approvals { background: linear-gradient(135deg, #8b5cf6, #6d28d9);  }
+.card-integrity-approvals { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
 
 /* =========================================================
-   6. Tables & Forms
+   PHASE 6: DATA TABLES & FORMS
 ========================================================= */
-.table-container {
-    background: var(--bg-white);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-}
-
-.table-responsive {
-    max-height: 65vh; /* Sets a max height (65% of screen height) */
-    overflow-y: auto; /* Adds a scrollbar to the table when it gets too long */
-}
-
-/* Make the header sticky */
-.table thead th {
-    position: sticky;
-    top: 0; /* Sticks to the very top of the table wrapper */
-    z-index: 10; /* Keeps the header floating above the rows below it */
-    background: #f8fafc; /* Critical: Solid background so rows don't show through! */
-    color: var(--text-muted);
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: var(--fs-xs);
-    letter-spacing: 0.05em;
-    padding: 0.75rem 1.25rem;
-    white-space: nowrap;
-    
-    /* Trick: Use a box-shadow instead of border-bottom so it doesn't glitch when scrolling */
-    border-bottom: none;
-    box-shadow: inset 0 -1px 0 var(--border-color); 
-}
-.table tbody td { padding: 1rem 1.25rem; border-color: #f1f5f9; color: var(--text-dark); font-size: var(--fs-sm); }
-.table tbody tr:hover { background: #f8fafc; }
-
-.form-container {
-    background: var(--bg-white);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: 2rem;
-    box-shadow: var(--shadow-sm);
-}
-
-.form-label { font-weight: 500; color: var(--text-body); margin-bottom: 0.375rem; font-size: var(--fs-sm); }
-.form-control, .form-select {
-    border-radius: var(--radius-sm);
-    border: 1px solid #cbd5e1;
-    padding: 0.625rem 0.875rem;
-    font-size: var(--fs-sm);
-    transition: var(--transition);
-    color: var(--text-dark);
-}
-.form-control:focus, .form-select:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 4px var(--primary-soft);
-    outline: none;
-}
+.table thead th { position: sticky; top: 0; z-index: 10; background: #f8fafc; font-size: var(--fs-xs); box-shadow: inset 0 -1px 0 var(--border-color); }
+.form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-soft); }
 
 /* =========================================================
-   7. Buttons & Badges
+   PHASE 7: INTERACTIVE ELEMENTS (BUTTONS & BADGES)
 ========================================================= */
-.btn {
-    border-radius: var(--radius-sm);
-    font-weight: 500;
-    font-size: var(--fs-sm);
-    padding: 0.5rem 1rem;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.btn-primary { background: var(--primary); border-color: var(--primary); }
-.btn-primary:hover { background: var(--primary-hover); border-color: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-md); }
-
-.badge, .status-badge, .role-badge, .user-badge {
-    display: inline-flex; 
-    align-items: center;
-    gap: 0.25rem;
-    border-radius: var(--radius-pill); 
-    padding: 0.25rem 0.625rem; 
-    font-size: var(--fs-xs); 
-    font-weight: 600;
-}
-
-.user-badge { background: var(--primary-soft); color: var(--primary-hover); padding: 0.375rem 0.75rem; font-size: var(--fs-sm); gap: 0.5rem;}
-.status-badge-pending { background: #fef3c7; color: #b45309; }
-.status-badge-approved { background: #dcfce7; color: #15803d; }
-.status-badge-rejected { background: #fee2e2; color: #b91c1c; }
+.btn { border-radius: var(--radius-sm); font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem; }
 
 /* =========================================================
-   8. Shared Elements (Footer & Auth Layouts)
+   PHASE 8: SHARED UI COMPONENTS (FIXED FOOTER)
+   OBJECTIVE: Ensure the footer is persistently visible at the bottom of the content area.
+   PROCEDURE: Implements position: sticky with a bottom: 0 anchor to pin the footer during scrolling.
 ========================================================= */
-.footer {
+.footer { 
     margin-top: auto; 
-    background: var(--bg-white); 
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    padding: 0.875rem 1.25rem;
-    font-size: var(--fs-sm);
-    color: var(--text-muted);
+    padding: 0.875rem 1.25rem; 
+    font-size: var(--fs-sm); 
+    color: var(--text-muted); 
     text-align: center;
+    background: var(--bg-white);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    position: sticky; /* Anchors the footer */
+    bottom: 0;       /* Pins it to the bottom */
+    z-index: 1020;   /* Keeps it above content but below topbar (1030) */
 }
 
-.auth-page-wrapper { min-height: 75vh; }
-.auth-icon-circle { width: 60px; height: 60px; background: rgba(139, 92, 246, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-.text-purple-primary { color: #6d28d9 !important; }
-.btn-purple-gradient { background: linear-gradient(135deg, #8b5cf6, #6d28d9); border: none; color: var(--bg-white); }
-.btn-purple-gradient:hover { transform: translateY(-2px); color: var(--bg-white); box-shadow: var(--shadow-md); }
-.auth-back-link { color: #8b5cf6; text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
-.auth-back-link:hover { color: #6d28d9; }
+.user-badge { background: var(--primary-soft); color: var(--primary-hover); padding: 0.375rem 0.75rem; border-radius: var(--radius-pill); }
 
 /* =========================================================
-   9. Login Page Specific
+   PHASE 9: SECURITY GATEWAY (LOGIN)
 ========================================================= */
-.login-wrapper { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
-.login-container { width: 100%; max-width: 1100px; background: var(--bg-white); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-.login-left { background: linear-gradient(180deg, var(--bg-sidebar), var(--bg-sidebar-hover)); color: var(--bg-white); padding: 3rem; height: 100%; }
-.login-left h1 { font-size: var(--fs-xl); font-weight: 700; margin-bottom: 1rem; }
-.login-left p { color: rgba(255, 255, 255, 0.85); font-size: var(--fs-md); line-height: 1.7; }
-.feature-list { margin-top: 2rem; }
-.feature-item { display: flex; align-items: flex-start; gap: 0.8rem; margin-bottom: 1.2rem; }
-.feature-icon { width: 42px; height: 42px; border-radius: var(--radius-md); background: rgba(255, 255, 255, 0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: var(--fs-md); }
-.login-right { padding: 3rem; background: #f8fafc; }
-.login-card-title { font-size: 1.8rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem; }
-.login-card-subtitle { color: var(--text-muted); margin-bottom: 2rem; }
-.btn-login { height: 50px; border-radius: var(--radius-md); font-weight: 600; background: var(--bg-sidebar); border: none; color: var(--bg-white); transition: var(--transition); }
-.btn-login:hover { background: var(--bg-sidebar-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); color: var(--bg-white); }
-.system-badge { display: inline-block; padding: 0.4rem 0.85rem; background: rgba(255, 255, 255, 0.12); border-radius: var(--radius-pill); font-size: var(--fs-sm); margin-bottom: 1rem; }
-
-body.login-page .form-control:focus { border-color: var(--purple); box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15); }
+.login-wrapper { min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+.login-left { background: linear-gradient(180deg, var(--bg-sidebar), var(--bg-sidebar-hover)); color: var(--bg-white); padding: 3rem; }
 
 /* =========================================================
-   10. Consolidated Print Layouts (Reports & Direct Print)
+   PHASE 10: PRINT ENGINE
 ========================================================= */
-@page { size: A4 portrait; margin: 15mm; }
-
-/* For HTML generated Report Pages */
-body.print-layout { font-family: Arial, sans-serif; font-size: var(--fs-sm); color: #333; margin: 0; padding: 0; background: var(--bg-white); }
-.print-layout .header { text-align: center; margin-bottom: 1.25rem; border-bottom: 2px solid #000; padding-bottom: 0.625rem; }
-.print-layout .header h2 { margin: 0 0 0.25rem 0; text-transform: uppercase; font-size: var(--fs-md); }
-.print-layout .header p { margin: 0; color: #555; font-size: var(--fs-sm); }
-.print-layout .data-table { width: 100%; border-collapse: collapse; }
-.print-layout .data-table th, .print-layout .data-table td { border: 1px solid #999; padding: 0.5rem 0.625rem; text-align: left; vertical-align: middle; }
-.print-layout .data-table th { background-color: #f0f0f0; font-weight: bold; text-transform: uppercase; font-size: var(--fs-xs); }
-.print-layout .text-center { text-align: center !important; }
-
-/* Print Floating Button */
-.print-btn {
-    position: fixed; bottom: 30px; right: 30px;
-    padding: 0.75rem 1.5rem; background: var(--primary); color: var(--bg-white);
-    border: none; border-radius: var(--radius-sm); cursor: pointer;
-    font-weight: bold; box-shadow: var(--shadow-md); z-index: 1000;
-}
-
-/* Browser Print Dialog Rules */
 @media print { 
-    .no-print, .topbar, .sidebar, .sidebar-wrapper, .page-header, footer, .filter-section { display: none !important; } 
-    body, .app-wrapper, .content-wrapper, .layout-body, .main-content {
-        background-color: var(--bg-white) !important;
-        margin: 0 !important; padding: 0 !important; width: 100% !important; height: auto !important; overflow: visible !important;
-    }
-    .card { box-shadow: none !important; border: none !important; }
+    .no-print, .topbar, .sidebar { display: none !important; } 
+    @page { size: A4 portrait; margin: 15mm; }
 }
 
 /* =========================================================
-   11. Responsive Adjustments
+   PHASE 11: RESPONSIVE ADAPTATIONS
 ========================================================= */
 @media (max-width: 991.98px) {
-    /* 1. Hide the desktop toggle button */
-    .desktop-sidebar-toggle { display: none !important; }
-    .mobile-sidebar-toggle { display: inline-flex; align-items: center; justify-content: center; }
-
-    /* 2. Setup the off-screen sidebar */
-    .sidebar { 
-        position: fixed; 
-        left: -260px; 
-        top: 0;
-        height: 100vh;
-        z-index: 1050;
-        transition: transform 0.3s ease-in-out;
-    }
-    
-    /* 3. Prepare the dashboard for pushing */
-    .content-wrapper {
-        width: 100vw;
-        transition: transform 0.3s ease-in-out;
-        overflow-x: hidden; /* Prevents horizontal scrollbars while pushing */
-    }
-
-    /* 4. THE MAGIC PUSH EFFECT */
-    /* When the body has this class, slide both elements 260px to the right */
-    body.mobile-sidebar-open .sidebar,
-    body.mobile-sidebar-open .content-wrapper {
-        transform: translateX(260px);
-    }
-    
-    /* Spacing adjustments for mobile */
-    .main-content { padding: 1rem; }
-    .topbar { padding: 0 1rem; }
-    .login-left, .login-right { padding: 2rem; }
+    .sidebar { position: fixed; left: -260px; z-index: 1050; }
+    body.mobile-sidebar-open .sidebar { transform: translateX(260px); }
 }
 
 /* =========================================================
-   12. Scroll to Top Button
+   PHASE 12: UTILITY NAVIGATION (SCROLL TO TOP)
 ========================================================= */
 #scrollToTopBtn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: var(--bg-sidebar);
-    color: white;
-    border: none;
-    box-shadow: var(--shadow-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.25rem;
-    z-index: 1050;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(15px);
-    transition: all 0.3s ease;
-    cursor: pointer;
+    position: fixed; bottom: 80px; right: 30px; width: 48px; height: 48px;
+    border-radius: 50%; background: var(--bg-sidebar); color: white; display: flex; 
+    align-items: center; justify-content: center; z-index: 1050;
 }
+#scrollToTopBtn i { font-size: 1.2rem !important; line-height: 1; }
 
-#scrollToTopBtn.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+/* =========================================================
+   PHASE 13: PAGINATION OVERRIDE
+========================================================= */
+.pagination-layout-fix nav {
+    display: flex !important;
+    flex-direction: column-reverse !important; 
+    align-items: center !important;
+    gap: 0.75rem;
 }
-
-#scrollToTopBtn:hover {
-    background: var(--bg-sidebar-hover);
-    transform: translateY(-3px);
-}
-
-@media print {
-    #scrollToTopBtn { display: none !important; }
-}
+.pagination-layout-fix nav div p { margin-bottom: 0 !important; color: var(--text-muted); }
