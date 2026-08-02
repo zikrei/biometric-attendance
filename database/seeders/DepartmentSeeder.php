@@ -23,6 +23,9 @@ class DepartmentSeeder extends Seeder
             'Finance',
             'Production',
             'Logistics',
+            'Integrity',
+            'Systems Administration',
+
         ];
 
         /**

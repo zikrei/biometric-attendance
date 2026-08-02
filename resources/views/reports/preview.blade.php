@@ -66,6 +66,7 @@
             <i class="bi bi-printer me-2"></i> Print Individual Staff Reports
         </a>
     </div>
+
     {{-- REPORT PREVIEW SECTION --}}
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-body p-4">
@@ -90,28 +91,96 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($attendances as $attendance)
-                                <tr>
-                                    <td>{{ $attendance->user->name }}</td>
-                                    <td>{{ $attendance->user->department?->name ?? 'N/A' }}</td>
-                                    <td>{{ $attendance->date }}</td>
-                                    <td>{{ $attendance->clock_in ?? '--:--' }}</td>
-                                    <td>{{ $attendance->clock_out ?? '--:--' }}</td>
-                                    <td>
-                                        @if(strtolower($attendance->status) == 'pending')
-                                            <span class="badge bg-warning text-dark border">🟡 Awaiting Approval</span>
-                                        @elseif(strtolower($attendance->status) == 'approved')
-                                            <span class="badge bg-success border">🟢 Approved</span>
-                                        @elseif(strtolower($attendance->status) == 'rejected')
-                                            <span class="badge bg-danger border">🔴 Rejected</span>
-                                        @else
-                                            <span class="badge bg-secondary border">{{ ucfirst($attendance->status) }}</span>
-                                        @endif
-                                    </td>
-                                </tr>
+                            @php
+                                /* 
+                                  1. CALENDAR SETUP & LIMIT TO TODAY
+                                */
+                                $currentMonth = \Carbon\Carbon::parse($monthInput);
+                                
+                                if ($currentMonth->isFuture() && !$currentMonth->isCurrentMonth()) {
+                                    $daysToLoop = 0; 
+                                } elseif ($currentMonth->isCurrentMonth()) {
+                                    $daysToLoop = now()->day; 
+                                } else {
+                                    $daysToLoop = $currentMonth->daysInMonth; 
+                                }
+
+                                /* 
+                                  2. FILTER USERS TO DISPLAY
+                                */
+                                $displayUsers = collect($users ?? [])->filter(function($u) {
+                                    $deptMatch = request('department_id') ? $u->department_id == request('department_id') : true;
+                                    $userMatch = request('user_id') ? $u->id == request('user_id') : true;
+                                    return $deptMatch && $userMatch;
+                                });
+
+                                /* 
+                                  3. GROUP EXISTING ATTENDANCES BY USER
+                                */
+                                $groupedAttendances = $attendances->groupBy(function($item) {
+                                    return $item->user->id ?? $item->user_id;
+                                });
+                            @endphp
+
+                            @forelse($displayUsers as $user)
+                                @php
+                                    $departmentName = $user->department?->name ?? 'N/A';
+                                    $userRecords = $groupedAttendances->get($user->id, collect());
+                                    $attendanceMap = $userRecords->keyBy('date');
+                                @endphp
+
+                                {{-- 4. GENERATE GRID UNTIL TODAY (OR END OF MONTH) --}}
+                                @for($i = 1; $i <= $daysToLoop; $i++)
+                                    @php
+                                        $loopDate = $currentMonth->copy()->day($i);
+                                        $dateString = $loopDate->format('Y-m-d');
+                                        $isWeekend = $loopDate->isWeekend();
+
+                                        $record = $attendanceMap->get($dateString);
+
+                                        $clockIn = $record->clock_in ?? '--:--';
+                                        $clockOut = $record->clock_out ?? '--:--';
+
+                                        // Fallback status
+                                        $displayStatus = $isWeekend ? 'Weekend' : 'Absent';
+
+                                        // If a record exists, check for Justifications first!
+                                        if ($record) {
+                                            if ($record->justification) {
+                                                $jStatus = strtolower($record->justification->status);
+                                                $displayStatus = $jStatus === 'pending' ? 'Awaiting Approval' : ucfirst($jStatus);
+                                            } else {
+                                                $displayStatus = $record->status ?? $displayStatus;
+                                            }
+                                        }
+                                    @endphp
+
+                                    <tr class="{{ $isWeekend ? 'table-secondary text-muted' : '' }}">
+                                        <td class="fw-medium">{{ $user->name }}</td>
+                                        <td>{{ $departmentName }}</td>
+                                        <td>{{ $dateString }}</td>
+                                        <td>{{ $clockIn }}</td>
+                                        <td>{{ $clockOut }}</td>
+                                        <td>
+                                            @if(strtolower($displayStatus) === 'approved')
+                                                <span class="badge bg-success border">🟢 Approved</span>
+                                            @elseif(strtolower($displayStatus) === 'pending' || strtolower($displayStatus) === 'awaiting approval')
+                                                <span class="badge bg-warning text-dark border">🟡 Awaiting Approval</span>
+                                            @elseif(strtolower($displayStatus) === 'rejected')
+                                                <span class="badge bg-danger border">🔴 Rejected</span>
+                                            @elseif(strtolower($displayStatus) === 'weekend')
+                                                <span class="badge bg-light text-dark border">Weekend</span>
+                                            @elseif(strtolower($displayStatus) === 'absent')
+                                                <span class="badge bg-danger text-white border">🔴 Absent</span>
+                                            @else
+                                                <span class="badge bg-secondary border">{{ ucfirst($displayStatus) }}</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endfor
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">No attendance records available for the selected criteria.</td>
+                                    <td colspan="6" class="text-center text-muted py-4">No users found for the selected criteria.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -119,48 +188,41 @@
                 </div>
             </div>
 
-    {{-- SCROLL TO TOP BUTTON --}}
-    <button id="scrollToTopBtn" title="Go to top">
-        <i class="bi bi-arrow-up"></i>
-    </button>
+            {{-- SCROLL TO TOP BUTTON --}}
+            <button id="scrollToTopBtn" title="Go to top">
+                <i class="bi bi-arrow-up"></i>
+            </button>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Sidebar Toggle Logic
-            const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
-            if (sidebarToggleBtn) {
-                sidebarToggleBtn.addEventListener('click', function () {
-                    document.body.classList.toggle('sidebar-collapsed');
-                });
-            }
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+                    if (sidebarToggleBtn) {
+                        sidebarToggleBtn.addEventListener('click', function () {
+                            document.body.classList.toggle('sidebar-collapsed');
+                        });
+                    }
 
-            // Scroll to Top Logic (Targeting your specific content-wrapper)
-            const contentWrapper = document.querySelector('.content-wrapper');
-            const scrollTopBtn = document.getElementById('scrollToTopBtn');
+                    const contentWrapper = document.querySelector('.content-wrapper');
+                    const scrollTopBtn = document.getElementById('scrollToTopBtn');
 
-            if (contentWrapper && scrollTopBtn) {
-                // Show button when scrolled down 300px
-                contentWrapper.addEventListener('scroll', function () {
-                    if (contentWrapper.scrollTop > 300) {
-                        scrollTopBtn.classList.add('show');
-                    } else {
-                        scrollTopBtn.classList.remove('show');
+                    if (contentWrapper && scrollTopBtn) {
+                        contentWrapper.addEventListener('scroll', function () {
+                            if (contentWrapper.scrollTop > 300) {
+                                scrollTopBtn.classList.add('show');
+                            } else {
+                                scrollTopBtn.classList.remove('show');
+                            }
+                        });
+
+                        scrollTopBtn.addEventListener('click', function () {
+                            contentWrapper.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
+                        });
                     }
                 });
-
-                // Smooth scroll back to top when clicked
-                scrollTopBtn.addEventListener('click', function () {
-                    contentWrapper.scrollTo({
-                        top: 0,
-                        behavior: 'smooth'
-                    });
-                });
-            }
-        });
-    </script>
-</body>
-</html>
-
+            </script>
         </div>
     </div>
 
@@ -170,7 +232,6 @@
             const deptSelect = document.getElementById('departmentSelect');
             const userSelect = document.getElementById('userSelect');
             
-            // If the user is an HOD, skip this script!
             if (!deptSelect) return; 
 
             const allUserOptions = Array.from(userSelect.options);

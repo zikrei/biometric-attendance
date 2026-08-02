@@ -2,6 +2,9 @@
 
 @section('title', 'HOD Dashboard')
 
+{{-- 
+  PHASE 1: WORKFLOW CONTEXT & HEADER
+--}}
 @section('page_title')
     Welcome, {{ $user->name ?? 'Head of Department' }}
 @endsection
@@ -11,12 +14,12 @@
 
 <div class="row g-4 mt-1">
     
-    {{-- 1. My Attendance Card --}}
-    <div class="col-md-6 col-xl-3">
-        <div class="dashboard-card card-attendance pattern-zigzag h-100">
+    {{-- PHASE 2: ATTENDANCE CARD --}}
+    <div class="col-md-6 col-xl-4">
+        <div class="dashboard-card card-attendance pattern-zigzag h-100" style="min-height: 150px;">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Attendance</p>
+                    <p class="card-label">ATTENDANCE</p>
                     <h4 class="card-title">Attendance Records</h4>
                     <small class="card-desc">Review your attendance records and status updates</small>
                 </div>
@@ -28,12 +31,12 @@
         </div>
     </div>
 
-    {{-- 2. Pending Approvals Card --}}
-    <div class="col-md-6 col-xl-3">
-        <div class="dashboard-card card-hod-approvals pattern-grid h-100">
+    {{-- PHASE 3: PENDING APPROVALS CARD --}}
+    <div class="col-md-6 col-xl-4">
+        <div class="dashboard-card card-hod-approvals pattern-grid h-100" style="min-height: 150px;">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Approval Overview</p>
+                    <p class="card-label">APPROVAL OVERVIEW</p>
                     <h2 class="card-number">{{ $pendingApprovals ?? 0 }}</h2>
                     <small class="card-desc">Pending attendance and leave requests</small>
                 </div>
@@ -45,9 +48,9 @@
         </div>
     </div>
 
-    {{-- 3. Reporting Card --}}
-    <div class="col-md-6 col-xl-3">
-        <div class="dashboard-card card-admin-reports h-100">
+    {{-- PHASE 4: REPORTING CARD --}}
+    <div class="col-md-6 col-xl-4">
+        <div class="dashboard-card card-admin-reports h-100" style="min-height: 150px;">
             <div class="card-content">
                 <div>
                     <p class="card-label">REPORTING</p>
@@ -62,12 +65,12 @@
         </div>
     </div>
 
-    {{-- 4. Account Settings Card --}}
-    <div class="col-md-6 col-xl-3">
-        <div class="dashboard-card card-profile pattern-lines h-100">
+    {{-- PHASE 5: ACCOUNT SETTINGS CARD --}}
+    <div class="col-md-6 col-xl-4">
+        <div class="dashboard-card card-profile pattern-lines h-100" style="min-height: 150px;">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Account</p>
+                    <p class="card-label">ACCOUNT</p>
                     <h4 class="card-title">Profile Settings</h4>
                     <small class="card-desc">Manage your account information and credentials</small>
                 </div>

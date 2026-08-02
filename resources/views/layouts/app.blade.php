@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {{-- 
+      PHASE 1: DOCUMENT METADATA & DEPENDENCIES
+      OBJECTIVE: Establish the technical foundation and visual layout for the application.
+      PROCEDURE: Loads Bootstrap icons and Vite-compiled CSS/JS assets.
+    --}}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
@@ -13,17 +18,25 @@
     
     <div class="app-wrapper">
         
-        {{-- THE FULL-HEIGHT SIDEBAR --}}
+        {{-- 
+          PHASE 2: NAVIGATION & SIDEBAR INTEGRATION
+          OBJECTIVE: Render the primary navigation menu for authenticated users.
+          PROCEDURE: Includes the sidebar partial and establishes the mobile overlay barrier.
+        --}}
         @if(Auth::check())
             @include('layouts.sidebar')
             <div id="sidebarOverlay" class="sidebar-overlay d-lg-none"></div>
         @endif
 
-        {{-- THE RIGHT CONTENT WRAPPER --}}
         <div class="content-wrapper">
+            
+            {{-- 
+              PHASE 3: TOPBAR & USER CONTEXT
+              OBJECTIVE: Provide global actions, mobile menu toggles, and user identity visualization.
+              COMPONENTS: Displays the user's current role badge and a dropdown for profile/logout actions.
+            --}}
             <header class="topbar">
                 <div class="topbar-left">
-                    {{-- RESTORED HAMBURGER ICON HERE --}}
                     <button id="mobileMenuBtn" class="btn mobile-sidebar-toggle d-lg-none" type="button">
                         <i class="bi bi-list fs-2 text-dark"></i>
                     </button>
@@ -72,7 +85,11 @@
                 </div>
             </header>
 
-            {{-- MAIN PAGE CONTENT --}}
+            {{-- 
+              PHASE 4: DYNAMIC CONTENT YIELDING
+              OBJECTIVE: Define the structural skeleton where individual page views will inject their data.
+              PROCEDURE: Checks for optional page headers/actions before yielding the main 'content' block.
+            --}}
             <main class="main-content">
                 @if(View::hasSection('page_title'))
                     <div class="page-header">
@@ -104,10 +121,14 @@
         </div>
     </div>
 
-    {{-- CLEANED, SINGLE SCRIPT BLOCK FOR BOTH SIDEBARS --}}
+    {{-- 
+      PHASE 5: UI INTERACTIVITY SCRIPTS
+      OBJECTIVE: Manage the behavior of the responsive sidebar navigation.
+      LOGIC: Handles desktop collapsing, mobile push toggles, and overlay click-to-close events.
+    --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // --- 1. DESKTOP COLLAPSE MENU ---
+            // 1. Desktop Collapse Menu
             const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
             if (sidebarToggleBtn) {
                 sidebarToggleBtn.addEventListener('click', function (e) {
@@ -116,7 +137,7 @@
                 });
             }
 
-            // --- 2. MOBILE PUSH MENU ---
+            // 2. Mobile Push Menu
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
             const mobileSidebar = document.getElementById('mobileSidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -130,7 +151,7 @@
                 });
             }
 
-            // --- 3. AUTO-CLOSE MOBILE MENU ---
+            // 3. Auto-Close Mobile Menu
             if (sidebarOverlay) {
                 sidebarOverlay.addEventListener('click', function () {
                     document.body.classList.remove('mobile-sidebar-open');

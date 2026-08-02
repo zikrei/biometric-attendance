@@ -1,51 +1,51 @@
 @extends('layouts.app')
 
-@section('title', 'My Dashboard')
+@section('title', 'Staff Dashboard')
 
+{{-- 
+  PHASE 1: WORKFLOW CONTEXT & HEADER
+--}}
 @section('page_title')
-    Welcome back, {{ Auth::user()->name ?? 'Staff Member' }} 👋
+    Welcome, {{ Auth::user()->name ?? 'IT Staff' }}
 @endsection
-
-@section('page_subtitle', 'Manage your daily attendance and view your personal records.')
+@section('page_subtitle', 'View your attendance records and manage your profile.')
 
 @section('content')
-
 <div class="row g-4 mt-1">
-
-    {{-- Attendance Log Card --}}
-    <div class="col-md-6">
-        <div class="dashboard-card card-attendance h-100">
+    
+    {{-- PHASE 2: ATTENDANCE CARD --}}
+    <div class="col-md-6 col-xl-4">
+        <div class="dashboard-card card-attendance pattern-zigzag h-100" style="min-height: 150px;">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Daily Log</p>
-                    <h4 class="card-title">Attendance Log</h4>
-                    <small class="card-desc">Review your daily check-ins and statuses</small>
+                    <p class="card-label">ATTENDANCE</p>
+                    <h4 class="card-title">Attendance Records</h4>
+                    <small class="card-desc">Review your attendance records and status updates</small>
                 </div>
                 <div class="card-icon">
                     <i class="bi bi-calendar-check"></i>
                 </div>
             </div>
-            <a href="{{ url('/attendance') }}" class="stretched-link" aria-label="View My Attendance Log"></a>
+            <a href="{{ route('attendance.list') }}" class="stretched-link" aria-label="View Attendance Records"></a>
         </div>
     </div>
 
-    {{-- Account Settings Card --}}
-    <div class="col-md-6">
-        <div class="dashboard-card card-profile h-100">
+    {{-- PHASE 3: ACCOUNT SETTINGS CARD --}}
+    <div class="col-md-6 col-xl-4">
+        <div class="dashboard-card card-profile pattern-lines h-100" style="min-height: 150px;">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Account</p>
-                    <h4 class="card-title">Account Settings</h4>
-                    <small class="card-desc">Update your credentials and profile</small>
+                    <p class="card-label">ACCOUNT</p>
+                    <h4 class="card-title">Profile Settings</h4>
+                    <small class="card-desc">Manage your account information and credentials</small>
                 </div>
                 <div class="card-icon">
                     <i class="bi bi-person-gear"></i>
                 </div>
             </div>
-            <a href="{{ route('profile.edit') }}" class="stretched-link" aria-label="Manage Account Settings"></a>
+            <a href="{{ route('profile.edit') }}" class="stretched-link" aria-label="Manage Profile Settings"></a>
         </div>
     </div>
 
 </div>
-
 @endsection

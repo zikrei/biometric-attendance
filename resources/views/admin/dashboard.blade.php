@@ -3,75 +3,61 @@
 @section('title', 'Admin Dashboard')
 
 {{-- 
-  PHASE 1: DASHBOARD CONTEXT & PERSONALIZATION
-  OBJECTIVE: Dynamically greet the authenticated administrator and establish the system's operational purpose.
-  PROCEDURE: Pulls the user's name attribute with a fallback for system consistency.
+  PHASE 1: WORKFLOW CONTEXT & HEADER
 --}}
 @section('page_title')
-    Welcome, {{ $user->name ?? 'System Administrator' }}
+    Welcome, {{ Auth::user()->name ?? 'System Administrator' }}
 @endsection
-@section('page_subtitle', 'Overview of system activity and key metrics for the biometric attendance system.')
+@section('page_subtitle', 'Manage system users, roles, and generate reports.')
 
 @section('content')
 <div class="row g-4 mt-1">
 
-    {{-- 
-      PHASE 2: METRIC VISUALIZATION (USER STATISTICS)
-      OBJECTIVE: Provide an immediate count of active employee records for quick-glance auditing.
-      STYLING: Implements the 'card-admin-users' theme from app.css for visual distinction.
-    --}}
+    {{-- PHASE 2: USER MANAGEMENT CARD --}}
     <div class="col-md-6 col-xl-4">
-        <div class="dashboard-card card-admin-users h-100">
+        <div class="dashboard-card card-admin-users pattern-grid h-100" style="min-height: 150px;">
             <div class="card-content">
                 <div>
-                    <p class="card-label">User Statistics</p>
-                    <h2 class="card-number">{{ $totalUsers }}</h2>
-                    <small class="card-desc">Total active user accounts</small>
+                    <p class="card-label">ADMINISTRATION</p>
+                    <h2 class="card-title mb-2">Users</h2>
+                    <small class="card-desc">Manage system users, roles, and departments</small>
                 </div>
                 <div class="card-icon">
                     <i class="bi bi-people"></i>
                 </div>
             </div>
-            <a href="{{ url('/admin/users') }}" class="stretched-link" aria-label="View User Management"></a>
+            <a href="{{ route('admin.users.index') }}" class="stretched-link" aria-label="Manage Users"></a>
         </div>
     </div>
 
-    {{-- 
-      PHASE 3: ADMINISTRATIVE NAVIGATION (REPORTING)
-      OBJECTIVE: Create a high-visibility entry point for attendance record extraction and audit generation.
-      INTERACTION: Utilizes 'stretched-link' to ensure the entire card surface is actionable.
-    --}}
+    {{-- PHASE 3: REPORTING CARD --}}
     <div class="col-md-6 col-xl-4">
-        <div class="dashboard-card card-admin-reports h-100">
+        <div class="dashboard-card card-admin-reports h-100" style="min-height: 150px;">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Reporting</p>
-                    <h4 class="card-title">Reports</h4>
-                    <small class="card-desc">View and export attendance records</small>
+                    <p class="card-label">REPORTING</p>
+                    <h2 class="card-title mb-2">Reports</h2>
+                    <small class="card-desc">Generate and review system-wide attendance reports</small>
                 </div>
                 <div class="card-icon">
                     <i class="bi bi-file-earmark-bar-graph"></i>
                 </div>
             </div>
-            <a href="{{ url('/admin/reports') }}" class="stretched-link" aria-label="Access Reports"></a>
+            <a href="{{ route('reports.index') }}" class="stretched-link" aria-label="View Reports"></a>
         </div>
     </div>
 
-    {{-- 
-      PHASE 4: SECURITY & PERSONAL ACCOUNT MANAGEMENT
-      OBJECTIVE: Securely route the user to their individual profile and credential settings.
-      PROCEDURE: Maps to the 'profile.edit' route established in Phase 2 of the routing system.
-    --}}
+    {{-- PHASE 4: ACCOUNT SETTINGS CARD --}}
     <div class="col-md-6 col-xl-4">
-        <div class="dashboard-card card-profile h-100">
+        <div class="dashboard-card card-profile pattern-lines h-100" style="min-height: 150px;">
             <div class="card-content">
                 <div>
-                    <p class="card-label">Account</p>
+                    <p class="card-label">ACCOUNT</p>
                     <h4 class="card-title">Profile Settings</h4>
                     <small class="card-desc">Manage your account information and credentials</small>
                 </div>
                 <div class="card-icon">
-                    <i class="bi bi-shield-lock"></i>
+                    <i class="bi bi-person-gear"></i>
                 </div>
             </div>
             <a href="{{ route('profile.edit') }}" class="stretched-link" aria-label="Manage Profile Settings"></a>
@@ -79,5 +65,4 @@
     </div>
 
 </div>
-
 @endsection
